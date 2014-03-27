@@ -1,0 +1,21 @@
+/* The style sheet for pong.html, pong.css
+I have fantastic, creative solutions for naming convention */
+
+div#instructions
+{
+position: absolute;
+left:900px;
+top:50px;
+}
+div#lateral
+{
+position: absolute;
+left:660px;
+top:530px;
+}
+div#projection
+{
+position: absolute;
+left:660px;
+top:550px;
+}

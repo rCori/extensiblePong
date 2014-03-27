@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+		<meta content="utf-8" http-equiv="encoding">
+
+		<link rel="stylesheet" href="{{=URL('static/css', 'pong.css')}}"/>
+		<script type="text/javascript" src="{{=URL('static/js','jquery.js')}}" language="javascript"></script>
+		<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
+		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="{{=URL('static/js','util.js')}}" language="javascript"></script>
+        <script type="text/javascript" src="{{=URL('static/js', 'jquery.hotkeys.js')}}" language="javascript"></script>
+        <script type="text/javascript" src="{{=URL('static/js', 'key_status.js')}}" language="javascript"></script>
+
+
+
+	</head>
+	<body>
+        <script type="text/javascript" src="{{=URL('static/js','pong.js')}}" language="javascript"></script>
+        <div id="instructions">
+        <p>Use the spacebar to serve the ball</p>
+        <p>Arrow keys move paddle up and down</p>
+        <p>The p key pauses the game</p>
+        <p>Press the c key to change the color of the game</p>
+        
+        <p>The sliders at the bottom change the properties of the ball dynamically</p>
+        <p>The first one changes how many pixels per frame the paddle updates towards the ball</p>
+        <p>The second changes how many frames until the paddle skips it's movement on that frame</p>
+        <p>Many thanks to:</p>
+        <p>http://www.html5rocks.com/en/tutorials/canvas/notearsgame/</p>
+        <p>Much of the javascript ideas for this came right out of that tutorial</p>
+        <p>The projection stuff is basically working but since the computer paddle only moves on one axis, it's not exactly exciting to see how it's position over time. Going to try out ideas to make it better.</p>
+        </div>
+        <br>
+        <label for="amount">Speed of computer paddle:</label>
+		      <input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold;">
+		      <div style="width:50%" id="slider"></div>
+
+	   <label for="amount2">Frame skip rate of computer paddle:</label>
+	       <input type="text" id="amount2" style="border:0; color:#f6931f; font-weight:bold;">
+		   <div style="width:50%" id="slider2"></div>
+
+        <label for="infAmount">Directional Influence of paddle on ball:</label>
+               <input type="text" id="infAmount" style="border:0; color:#f6931f; font-weight:bold;">
+                <div style="width:50%" id="infSlider"></div>
+
+        <label for="timeAmount">Time Slider:</label>
+               <input type="text" id="timeAmount" style="border:0; color:#f6931f; font-weight:bold;">
+                <div style="width:50%" id="timeSlider"></div>
+        <div id="lateral">
+            Lateral Movement: <input type="checkbox" id="lat">
+        </div>
+        <div id="projection">
+            Projection: <input type="checkbox" id="proj">
+        </div>
+
+
+	</body>
+</html>
