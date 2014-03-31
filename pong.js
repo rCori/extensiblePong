@@ -4,7 +4,6 @@
  * in the game.
  */
 
-//new dodo
 
 //Much of the code here inspirded from a tutorial by Daniel X. Moore
 //http://www.html5rocks.com/en/tutorials/canvas/notearsgame/
@@ -24,11 +23,24 @@ var COLOR = ["#000","#0000FF", "#800000", "#006600","#CCCC00"];
 //The number of frames we can go forward in time
 var SNAPSHOTS = 500;
 
+//The Y location of the mouse is useful because it may
+//be what the players chooses to move the paddle with.
+var mouseY = 0;
+
 //This code puts the canvas we want in the browser
 var canvasElement = jQuery("<canvas width='" + CANVAS_WIDTH +
                       "'height='" + CANVAS_HEIGHT + "'></canvas>");
 var canvas = canvasElement.get(0).getContext("2d");
+var myCanv = canvasElement.get(0);
 canvasElement.appendTo('body');
+
+//Trying to read mouse movements
+//This is getting
+myCanv.addEventListener('mousemove', function(evt){
+	if(!gamePaused){
+		mouseY = evt.clientY;
+	}
+}, false);
 
 //The framerate the game will run at.
 //This determines how often the setInterval runs
@@ -148,6 +160,11 @@ function paddle(isPlayer) {
 
 		//User Input
 		if(I.isPlayer){
+			//Mouse movement
+			//mouseY is handled in an evenListener above
+			if(!gamePaused){
+				I.y = mouseY-I.height;
+			}
 			if(keydown.up){
 				I.y -= I.velocity;
 			}
