@@ -51,9 +51,12 @@ var gamePaused = false;
 
 //The current index we are on in the COLOR array
 var colorIndex = 0;
+//The current index in the COLOR array for the trails.
+var trailIndex = 0;
 
 var positionalData = new Array();
 var collisionRecords = new Array();
+
 
 /*Determine if the player is moving while the game is paused
  *like some time bending future pong player
@@ -243,6 +246,13 @@ function paddle(isPlayer) {
 			var t = (((ball.y-I.y)/I.height) - 0.5)*DIRECTIONALINFLUENCE;
 			ball.yVelocity += t;
 			ball.xVelocity = -ball.xVelocity;
+			//Normalize the speed of the ball coming off the paddle
+			//ball.xVelocity= -vec2_norm(ball.xVelocity,t).x;
+			//ball.yVelocity = vec2_norm(ball.xVelocity,t).y;
+			trailIndex++
+			if(trailIndex>=COLOR.length){
+				trailIndex = 0;
+			}
 			if(I.isPlayer){
 				collisionRecords.push({frame:$( "#timeSlider" ).slider( "value" ), object:"playerPaddle"});
 			}
@@ -338,6 +348,10 @@ function wall(I){
 		//this will deal with ball collision.
 		if(collides(I, ball)){
 			ball.yVelocity = -ball.yVelocity;
+			trailIndex++;
+			if(trailIndex>=COLOR.length){
+				trailIndex = 0;
+			}
 			//We are going to hack how we determine which wall is which
 			if(I.y == CANVAS_HEIGHT-6){
 				collisionRecords.push({frame:$( "#timeSlider" ).slider( "value" ), object:"bottomWall"});
@@ -369,6 +383,11 @@ function timeShot(I){
 	I.ballIsOut = ball.isOut;
 	I.computerScore = computer.score;
 	I.playerScore = player.score;
+	/* Keep track of what the color index is at the time
+	 * When we draw the trails we will draw this part of the trail
+	 * with the correct color.
+	 */
+	I.colorAtTime = COLOR[trailIndex];
 	return I;
 }
 
@@ -376,8 +395,9 @@ function timeShot(I){
  *positional data currently available
  */
 function drawTrails(){
+	//We gotta do something with collisionRecords here.
 	for(pos in positionalData){
-		canvas.fillStyle = "#FF0000";
+		canvas.fillStyle = positionalData[pos].colorAtTime;
 		canvas.fillRect(positionalData[pos].ballX+ball.width/2, positionalData[pos].ballY+ball.height/2, 2, 2);
 		canvas.fillRect(computer.x+computer.width/2, positionalData[pos].computerY+computer.height/2, 2, 2);
 	}
