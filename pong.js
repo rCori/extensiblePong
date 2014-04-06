@@ -47,7 +47,7 @@ myCanv.addEventListener('mousemove', function(evt){
 var FPS = 60;
 
 //The game needs to know at a top level if the game is paused
-var gamePaused = false;
+var gamePaused = true;
 
 //The current index we are on in the COLOR array
 var colorIndex = 0;
@@ -106,7 +106,7 @@ function draw(){
 	}
 	topWall.draw();
 	bottomWall.draw();
-	drawScores();
+	//drawScores();
 	//For drawing the trails of where the ball has been over all time
 	if(gamePaused && PROJECTION){
 		drawTrails();
@@ -304,12 +304,13 @@ var ball = {
 	update: function(){
 		ball.x += ball.xVelocity;
 		ball.y += ball.yVelocity;
-		if(ball.isOut && keydown.space){
+		if(ball.isOut && keydown.space && isPaused){
 			ball.x = Math.floor((Math.random()*(CANVAS_WIDTH/3))+CANVAS_WIDTH/3);
 			ball.y = Math.floor((Math.random()*(CANVAS_HEIGHT/3))+CANVAS_HEIGHT/3);
 			ball.xVelocity = Math.floor(((Math.random() < 0.5 ? -1 : 1)*2)+1);
 			ball.yVelocity = Math.floor(((Math.random() < 0.5 ? -1 : 1)*2)+1);
 			ball.isOut = false;
+			isPaused = true;
 		}
 	},
 
