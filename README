@@ -2,3 +2,17 @@ A project written by Ryan Cori. Part of a research project
 under guidance of Eric Kaltman and the Game Design department
 of the University of California, Santa Cruz.
 I think this is official enough, I dunno.
+
+Things that need doing by Wednesday April 9th:
+SImulation doesn't start immediatly. Don't start time running immediatly
+Ability to restart simulation.
+Better controls.
+Better text explanations
+Structure the right justified information better
+Fix UI in constant size.
+Provide better frame
+More space between sliders and text.
+Signify range of values on sliders
+Direct explanation of what sliders do and what checkboxes do.
+Eliminate score, simulation ends when ball is out and restarts
+when ball is put back in play.
