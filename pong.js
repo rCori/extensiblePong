@@ -11,7 +11,7 @@ var CANVAS_WIDTH = 800;
 var CANVAS_HEIGHT = 500;
 
 //Player controllable variables
-var SKIPFREQUENCY = 2;
+var SKIPFREQUENCY = 8;
 var COMPUTERSPEED = 5;
 var DIRECTIONALINFLUENCE = 1;
 var LATERALMOVEMENT = false;
@@ -58,11 +58,7 @@ var positionalData = new Array();
 var collisionRecords = new Array();
 
 
-/*Determine if the player is moving while the game is paused
- *like some time bending future pong player
- * To shut this off comment out the Off THe Rails check in draw()
- */
-var ISOFFTHERAILS = false;
+
 
 setInterval(function(){
 	update();
@@ -74,6 +70,7 @@ setInterval(function(){
 function update(){
 	player.update();
 	updateCheckboxes();
+	ball.getServed();
 	/* If the game is paused, don't update position or collision detection
 	 * These update events should only happen if the player is manually forcing
 	 * them too with the time slider.
@@ -98,26 +95,33 @@ function update(){
  * fro being drawn
  */
 function draw(){
-	canvas.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-	player.draw();
-	computer.draw();
+	//Draw the actual game
 	if(!ball.isOut){
-		ball.draw();
+		canvas.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+		player.draw();
+		computer.draw();
+		if(!ball.isOut){
+			ball.draw();
+		}
+		topWall.draw();
+		bottomWall.draw();
+		//For drawing the trails of where the ball has been over all time
+		if(gamePaused && PROJECTION){
+			drawTrails();
+		}
 	}
-	topWall.draw();
-	bottomWall.draw();
-	//drawScores();
-	//For drawing the trails of where the ball has been over all time
-	if(gamePaused && PROJECTION){
-		drawTrails();
+	//Draw the intro screen
+	else{
+		canvas.fillStyle="#000";
+		canvas.textAlign = 'center'
+		canvas.font="30pt Calibri";
+		canvas.fillText("Extensible Pong",CANVAS_WIDTH/2, CANVAS_HEIGHT/3);
+		canvas.font="15px Calibri";
+		canvas.fillText("An explorable explanation of the AI and mechanics of Pong", CANVAS_WIDTH/2, CANVAS_HEIGHT/2);
+		canvas.fillText("Read instructions on the right and press space to start", CANVAS_WIDTH/2,CANVAS_HEIGHT/1.5);
+
 	}
-	/* This is a silly feature that displays a message when the player
-	 * moves while the game is paused. Originally used for debugging I
-	 * thought it was neat to keep in.
-	if(ISOFFTHERAILS && gamePaused){
-		oFFTHERAILS();
-	}
-	*/
+
 }
 
 function paddle(isPlayer) {
@@ -146,7 +150,6 @@ function paddle(isPlayer) {
 	I.width = 5;
 	I.height = 40;
 	I.color = "#000";
-	I.score = 0;
 
 	//The drawing function for paddles
 	I.draw = function(){
@@ -168,7 +171,7 @@ function paddle(isPlayer) {
 			if(!gamePaused){
 				I.y = mouseY-I.height;
 			}
-			if(keydown.up){
+			else if(keydown.up){
 				I.y -= I.velocity;
 			}
 			else if(keydown.down){
@@ -176,22 +179,9 @@ function paddle(isPlayer) {
 			}
 			if(keydown.left && LATERALMOVEMENT){
 				I.x -= (I.velocity * 0.5);
-				ISOFFTHERAILS = true;
 			}
 			else if(keydown.right && LATERALMOVEMENT){
 				I.x += (I.velocity * 0.5);
-				ISOFFTHERAILS = true;
-			}
-			else{
-				if(keydown.up){
-					ISOFFTHERAILS = true;
-				}
-				else if(keydown.down){
-					ISOFFTHERAILS = true;
-				}
-				else{
-					ISOFFTHERAILS = false;
-				}
 			}
 			I.x = I.x.clamp(0, CANVAS_WIDTH/2);
 		}
@@ -304,25 +294,29 @@ var ball = {
 	update: function(){
 		ball.x += ball.xVelocity;
 		ball.y += ball.yVelocity;
-		if(ball.isOut && keydown.space && isPaused){
+	},
+
+	// Keep checking if a point needs to be given to a player.
+	awardPoint: function(){
+		if(ball.x<=0 && !gamePaused){
+			initValue();
+			canvas.fillStyle = "#FFF";
+			canvas.fillRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
+		}
+		if(ball.x>=CANVAS_WIDTH && !gamePaused){
+			initValue();
+			canvas.fillStyle = "#FFF";
+			canvas.fillRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
+		}
+	},
+	getServed: function(){
+		if(ball.isOut && keydown.space && gamePaused){
 			ball.x = Math.floor((Math.random()*(CANVAS_WIDTH/3))+CANVAS_WIDTH/3);
 			ball.y = Math.floor((Math.random()*(CANVAS_HEIGHT/3))+CANVAS_HEIGHT/3);
 			ball.xVelocity = Math.floor(((Math.random() < 0.5 ? -1 : 1)*2)+1);
 			ball.yVelocity = Math.floor(((Math.random() < 0.5 ? -1 : 1)*2)+1);
 			ball.isOut = false;
-			isPaused = true;
-		}
-	},
-
-	// Keep checking if a point needs to be given to a player.
-	awardPoint: function(){
-		if(ball.x<=0){
-			ball.isOut=true;
-			computer.score += 1;
-		}
-		if(ball.x>=CANVAS_WIDTH){
-			ball.isOut=true;
-			player.score += 1;
+			gamePaused = false;
 		}
 	}
 };
@@ -382,8 +376,6 @@ function timeShot(I){
 	I.ballYVel = ball.yVelocity;
 	I.computerY = computer.y;
 	I.ballIsOut = ball.isOut;
-	I.computerScore = computer.score;
-	I.playerScore = player.score;
 	/* Keep track of what the color index is at the time
 	 * When we draw the trails we will draw this part of the trail
 	 * with the correct color.
@@ -404,13 +396,6 @@ function drawTrails(){
 	}
 }
 
-//draw the scores of the players
-function drawScores(){
-	//Draw the players score
-	canvas.font = "bold 32px monospace";
-	canvas.fillText(player.score,(CANVAS_WIDTH/2)-50,CANVAS_HEIGHT-20);
-	canvas.fillText(computer.score,(CANVAS_WIDTH/2)+50, CANVAS_HEIGHT-20);
-}
 
 
 //This is user interactivity stuff that relies on HTML stuff being there.
@@ -523,17 +508,44 @@ function assertTime(change,value){
 			ball.xVelocity = positionalData[value].ballXVel;
 			ball.yVelocity = positionalData[value].ballYVel;
 			computer.y = positionalData[value].computerY;
-			player.score = positionalData[value].playerScore;
-			computer.score = positionalData[value].computerScore;
 		}
 	}
 }
 
 
-function oFFTHERAILS(){
-	canvas.font = "bold 48px monospace";
-	canvas.fillStyle = "#000";
-  	canvas.fillText("OFF THE RAILS", 300, 300);
+
+
+/* Reinitialize the values of the variables when the
+ * simulation needs to be reset.
+ */
+function initValue(){
+	SKIPFREQUENCY = 8;
+	COMPUTERSPEED = 5;
+	DIRECTIONALINFLUENCE = 1;
+	LATERALMOVEMENT = false;
+	PROJECTION = false;
+	SNAPSHOTS = 500;
+	gamePaused = true;
+	colorIndex = 0;
+	trailIndex = 0;
+	ball.isOut = true;
+	player.x = 40;
+	player.y = 200;
+	computer.y = 200;
+	positionalData = [];
+	collisionRecords = [];
+	$( "#amount" ).val(COMPUTERSPEED);
+	$( "#slider" ).slider( "value", COMPUTERSPEED);
+	$( "#amount2" ).val(SKIPFREQUENCY);
+	$( "#slider2" ).slider( "value", SKIPFREQUENCY);
+	$( "#infAmount" ).val(DIRECTIONALINFLUENCE);
+	$( "#infSlider" ).slider( "value", DIRECTIONALINFLUENCE);
+	$( "#timeAmount" ).val(0);
+	$("#timeSlider").slider("value",0);
+	$("#timeSlider").slider("option","min",0);
+	$("#timeSlider").slider("option","max",SNAPSHOTS);
+
+
 }
 
 //This update checks for the statuses on the checkboxes
@@ -581,7 +593,7 @@ function updateTimeForward(){
  */
 window.addEventListener('keypress', function (e) {
 	//the keycode for p is 122 for keypress
-	if(e.charCode == 112){
+	if(e.charCode == 112 && !ball.isOut){
 		//We must purge all data of the future
 		//It is no longer reliable, the future may be different now
 		if(gamePaused){

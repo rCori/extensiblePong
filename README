@@ -4,8 +4,9 @@ of the University of California, Santa Cruz.
 I think this is official enough, I dunno.
 
 Things that need doing by Wednesday April 9th:
-Simulation doesn't start immediatly. Don't start time running immediatly WORKING ON
-Ability to restart simulation.
+Simulation doesn't start immediatly. Don't start time running 
+immediatly DONE
+Ability to restart simulation. DONE
 Better controls.
 Better text explanations
 Structure the right justified information better
@@ -15,4 +16,4 @@ More space between sliders and text.
 Signify range of values on sliders
 Direct explanation of what sliders do and what checkboxes do.
 Eliminate score, simulation ends when ball is out and restarts
-when ball is put back in play.
+when ball is put back in play. DONE
