@@ -29,7 +29,7 @@ var mouseY = 0;
 
 //This code puts the canvas we want in the browser
 var canvasElement = jQuery("<canvas width='" + CANVAS_WIDTH +
-                      "'height='" + CANVAS_HEIGHT + "'></canvas>");
+                      "'height='" + CANVAS_HEIGHT + "'style='border:1px solid #000000'></canvas>");
 var canvas = canvasElement.get(0).getContext("2d");
 var myCanv = canvasElement.get(0);
 canvasElement.appendTo('body');
