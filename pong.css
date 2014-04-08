@@ -4,22 +4,30 @@ I have fantastic, creative solutions for naming convention */
 div#instructions
 {
 position: absolute;
-left:900px;
-top:50px;
+left:850px;
+top:10px;
 }
 div#lateral
 {
-position: absolute;
+position: fixed;
 left:660px;
 top:530px;
 }
 div#projection
 {
-position: absolute;
+position: fixed;
 left:660px;
 top:550px;
 }
 canvas
 {
-	cursor:none;
+position: fixed;
+cursor: none;
+}
+
+#allsliders
+{
+position:fixed;
+top:520px;
+width:100%;
 }

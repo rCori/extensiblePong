@@ -18,20 +18,27 @@
 	<body>
         <script type="text/javascript" src="{{=URL('static/js','pong.js')}}" language="javascript"></script>
         <div id="instructions">
-        <p>Use the spacebar to serve the ball</p>
-        <p>Use the mouse or arrow keys to move paddle up and down</p>
-        <p>The p key pauses the game</p>
-        <p>Press the c key to change the color of the game</p>
+        <h4>Pong Controls</h4>
+        <p>Spacebar: Start the game</p>
+        <p>Mouse: to move paddle when game is not paused</p>
+        <p>Arrow Keys: Move paddle when game IS paused</p>
+        <p>P: pause</p>
+        <p>C: change color of the game</p>
         
-        <p>The sliders at the bottom change the properties of the ball dynamically</p>
+        <h4>Extensible Controls</h4>
+        <p>The sliders at the bottom change the properties of the game dynamically</p>
         <p>The first one changes how many pixels per frame the paddle updates towards the ball</p>
         <p>The second changes how many frames until the paddle skips it's movement on that frame</p>
+        <p>The third changes how the inflection of the ball is changed depending on where it hits a paddle</p>
+        <p>The fourth can advance and rewind time when the game is paused</p>
+
+        <h4>Credits</h4>
         <p>Many thanks to:</p>
         <p>http://www.html5rocks.com/en/tutorials/canvas/notearsgame/</p>
         <p>Much of the javascript ideas for this came right out of that tutorial</p>
-        <p>The projection stuff is basically working but since the computer paddle only moves on one axis, it's not exactly exciting to see how it's position over time. Going to try out ideas to make it better.</p>
         </div>
         <br>
+        <div id="allsliders">
         <label for="amount">Speed of computer paddle:</label>
 		      <input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold;">
 		      <div style="width:50%" id="slider"></div>
@@ -44,9 +51,10 @@
                <input type="text" id="infAmount" style="border:0; color:#f6931f; font-weight:bold;">
                 <div style="width:50%" id="infSlider"></div>
 
-        <label for="timeAmount">Time Slider:</label>
+        <label for="timeAmount">Time:</label>
                <input type="text" id="timeAmount" style="border:0; color:#f6931f; font-weight:bold;">
                 <div style="width:50%" id="timeSlider"></div>
+        </div>
         <div id="lateral">
             Lateral Movement: <input type="checkbox" id="lat">
         </div>
