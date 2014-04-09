@@ -27,10 +27,10 @@
         
         <h4>Extensible Controls</h4>
         <p>The sliders at the bottom change the properties of the game dynamically</p>
-        <p>The first one changes how many pixels per frame the paddle updates towards the ball</p>
-        <p>The second changes how many frames until the paddle skips it's movement on that frame</p>
-        <p>The third changes how the inflection of the ball is changed depending on where it hits a paddle</p>
-        <p>The fourth can advance and rewind time when the game is paused</p>
+        <p>The first one changes how many pixels per frame the paddle updates towards the ball. Scales from 1 to 10</p>
+        <p>The second changes how many frames until the paddle skips it's movement on that frame. Scales from 1 to 25</p>
+        <p>The third changes how the inflection of the ball is changed depending on where it hits a paddle. Scales from 1 to 10 in 0.1 increments</p>
+        <p>The fourth can advance and rewind time when the game is paused. 0 is the beginning of the game. When the game is paused time can be advanced 500 steps from the current position. The game will continue to record everything as long as it keeps going.</p>
 
         <h4>Credits</h4>
         <p>Many thanks to:</p>
@@ -40,20 +40,20 @@
         <br>
         <div id="allsliders">
         <label for="amount">Speed of computer paddle:</label>
-		      <input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold;">
-		      <div style="width:50%" id="slider"></div>
+		      <input type="text" id="amount" style="border:0; color:#000000; font-weight:bold;">
+		      <div style="width:100%" id="slider"></div>
 
 	   <label for="amount2">Frame skip rate of computer paddle:</label>
-	       <input type="text" id="amount2" style="border:0; color:#f6931f; font-weight:bold;">
-		   <div style="width:50%" id="slider2"></div>
+	       <input type="text" id="amount2" style="border:0; color:#000000; font-weight:bold;">
+		   <div style="width:100%" id="slider2"></div>
 
         <label for="infAmount">Directional Influence of paddle on ball:</label>
-               <input type="text" id="infAmount" style="border:0; color:#f6931f; font-weight:bold;">
-                <div style="width:50%" id="infSlider"></div>
+               <input type="text" id="infAmount" style="border:0; color:#000000; font-weight:bold;">
+                <div style="width:100%" id="infSlider"></div>
 
         <label for="timeAmount">Time:</label>
-               <input type="text" id="timeAmount" style="border:0; color:#f6931f; font-weight:bold;">
-                <div style="width:50%" id="timeSlider"></div>
+               <input type="text" id="timeAmount" style="border:0; color:#000000; font-weight:bold;">
+                <div style="width:100%" id="timeSlider"></div>
         </div>
         <div id="lateral">
             Lateral Movement: <input type="checkbox" id="lat">

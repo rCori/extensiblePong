@@ -10,10 +10,10 @@ Ability to restart simulation. DONE
 Better controls. DONE I THINK
 Better text explanations DONE
 Structure the right justified information better DONE I THINK
-Fix UI in constant size.
+Fix UI in constant size. DONE I THINK. Super HD displays or retina whatever might still make that look tiny but testing it on my laptop and large PC monitor it looks okay.
 Provide better frame DONE
-More space between sliders and text.
-Signify range of values on sliders
+More space between sliders and text. See above, still playing with css to make this work right.
+Signify range of values on sliders. DONE Explained in the sidebar.
 Direct explanation of what sliders do and what checkboxes do. DONE
 Eliminate score, simulation ends when ball is out and restarts
 when ball is put back in play. DONE
