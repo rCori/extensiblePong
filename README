@@ -3,17 +3,7 @@ under guidance of Eric Kaltman and the Game Design department
 of the University of California, Santa Cruz.
 I think this is official enough, I dunno.
 
-Things that need doing by Wednesday April 9th:
-Simulation doesn't start immediatly. Don't start time running 
-immediatly DONE
-Ability to restart simulation. DONE
-Better controls. DONE I THINK
-Better text explanations DONE
-Structure the right justified information better DONE I THINK
-Fix UI in constant size. DONE I THINK. Super HD displays or retina whatever might still make that look tiny but testing it on my laptop and large PC monitor it looks okay.
-Provide better frame DONE
-More space between sliders and text. See above, still playing with css to make this work right.
-Signify range of values on sliders. DONE Explained in the sidebar.
-Direct explanation of what sliders do and what checkboxes do. DONE
-Eliminate score, simulation ends when ball is out and restarts
-when ball is put back in play. DONE
+We have now begun work on PacMan. I have a basic tile manager
+going and have started to work on a simple sprite manager as
+well. I need to finish something to deal with sprites to
+draw a maze and have a PacMan running around in it.

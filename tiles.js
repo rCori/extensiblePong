@@ -110,7 +110,7 @@ function tileset(tileData, width, height){
 	 				canvas.fillStyle = "#000000";
 	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
 	 				canvas.fillStyle = "#0000FF";
-	 				canvas.fillRect((I.tileWidth * j) + (I.tileWdith/3), I.tileHeight * k, 2*(I.tileWidth/3), I.tileHeight);
+	 				canvas.fillRect(((I.tileWidth/3) * j), I.tileHeight * k, 2*(I.tileWidth/3), I.tileHeight);
 	 				console.log('Left end piece tile at ' + j + ', ' + k);
 	 				break;
 	 			case '8':
