@@ -1,8 +1,10 @@
 //sprite.js
 //Need something to deal with sprites
 
-var pathname = /* "the/path/to/the/sprites" */ "";
-
+//I got pathname from previously imported .js
+//var pathname = /* "the/path/to/the/sprites" */ {{=URL('static','images')}};
+pathname= pathname + '/';
+console.log(pathname);
 function sprite(image,canvas,width,height){
 	/* The building block basic one frame single image
 	 * sprite

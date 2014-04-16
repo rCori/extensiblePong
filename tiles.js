@@ -26,7 +26,7 @@ function checkMatrix(matrixHopeful){
 }
 
 //Tileset constructor
-function tileset(tileData, width, height){
+function tileset(tileData, width, height, spriteMap, canvas){
 	var I = {};
 
 	//Map needs to be a 2D array of data
@@ -48,6 +48,7 @@ function tileset(tileData, width, height){
 	 * 'M' is inside a barrier (blank space pacman cannot move)
 	 * 'e' is a space that pacman can move but has no dot
 	 */
+	 I.spriteMap = spritesheet(spriteMap,canvas,16,16,112,32);
 
 	if(checkMatrix(tileData) != 0){
 		I.valid = false;
@@ -61,17 +62,19 @@ function tileset(tileData, width, height){
 	I.tileHeight = height/I.map[0].length;
 
 	I.renderMap = function(canvas){
+
 	 	for(var j = 0; j<I.map.length; j++){
 	 		for(var k = 0; k<I.map[j].length; k++){
 	 			//Now draw the right piece for I.map[j][k]
 	 			switch(I.map[j][k]){
 	 			case 'o':
 	 				//draw pellet tile
-	 				canvas.fillStyle = "#000000";
-	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				canvas.fillStyle = "#FFFF00";
-	 				canvas.fillRect((I.tileWidth * j)+(I.tileWidth/3), (I.tileHeight * k)+(I.tileHeight/3), I.tileWidth/3, I.tileHeight/3);
-	 				console.log('Dot tile at ' + j + ', ' + k);
+	 				//canvas.fillStyle = "#000000";
+	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
+	 				//canvas.fillStyle = "#FFFF00";
+	 				//canvas.fillRect((I.tileWidth * j)+(I.tileWidth/3), (I.tileHeight * k)+(I.tileHeight/3), I.tileWidth/3, I.tileHeight/3);
+	 				//console.log('Dot tile at ' + j + ', ' + k);
+	 				I.spriteMap[0].draw(I.tileWidth * j, I.tileHeight * k);
 	 				break;
 	 			case 'O':
 	 				//draw energizer tile
@@ -79,104 +82,118 @@ function tileset(tileData, width, height){
 	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
 	 				canvas.fillStyle = "#FFFFFF";
 	 				canvas.fillRect((I.tileWidth * j)+(I.tileWidth/4), (I.tileHeight * k)+(I.tileHeight/4), I.tileWidth/2, I.tileHeight/2);
-	 				console.log('Energizer tile at ' + j + ', ' + k);
+	 				I.spriteMap[1].draw(I.tileWidth * j, I.tileHeight * k);
+	 				//console.log('Energizer tile at ' + j + ', ' + k);
 	 				break;
 	 			case '=':
 	 				//draw straight horizontal piece tile tile
-	 				canvas.fillStyle = "#000000";
-	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				canvas.fillStyle = "#0000FF";
-	 				canvas.fillRect(I.tileWidth * j, (I.tileHeight * k)+(I.tileHeight/3), I.tileWidth, I.tileHeight/3);
-	 				console.log('straight horiz piece tile at ' + j + ', ' + k);
+	 				//canvas.fillStyle = "#000000";
+	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
+	 				//canvas.fillStyle = "#0000FF";
+	 				//canvas.fillRect(I.tileWidth * j, (I.tileHeight * k)+(I.tileHeight/3), I.tileWidth, I.tileHeight/3);
+	 				I.spriteMap[2].draw(I.tileWidth * j, I.tileHeight * k);
+	 				//console.log('straight horiz piece tile at ' + j + ', ' + k);
 	 				break;
 	 			case 'I':
 	 				//draw straight vertical piece tile
-	 				canvas.fillStyle = "#000000";
-	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				canvas.fillStyle = "#0000FF";
-	 				canvas.fillRect((I.tileWidth * j)+(I.tileWidth/3), I.tileHeight * k, I.tileWidth/3, I.tileHeight);
-	 				console.log('straight vert piece tile at ' + j + ', ' + k);
+	 				//canvas.fillStyle = "#000000";
+	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
+	 				//canvas.fillStyle = "#0000FF";
+	 				//canvas.fillRect((I.tileWidth * j)+(I.tileWidth/3), I.tileHeight * k, I.tileWidth/3, I.tileHeight);
+	 				I.spriteMap[3].draw(I.tileWidth * j, I.tileHeight * k);
+	 				//console.log('straight vert piece tile at ' + j + ', ' + k);
 	 				break;
 	 			case '6':
 	 				//draw right end piece tile
-	 				canvas.fillStyle = "#000000";
-	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				canvas.fillStyle = "#0000FF";
-	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, 2*(I.tileWidth/3), I.tileHeight);
-	 				console.log('Right end piece tile at' + j + ', ' + k);
+	 				//canvas.fillStyle = "#000000";
+	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
+	 				//canvas.fillStyle = "#0000FF";
+	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, 2*(I.tileWidth/3), I.tileHeight);
+	 				I.spriteMap[4].draw(I.tileWidth * j, I.tileHeight * k);
+	 				//console.log('Right end piece tile at' + j + ', ' + k);
 	 				break;
 	 			case '4':
 	 				//draw left end piece  tile
-	 				canvas.fillStyle = "#000000";
-	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				canvas.fillStyle = "#0000FF";
-	 				canvas.fillRect(((I.tileWidth/3) * j), I.tileHeight * k, 2*(I.tileWidth/3), I.tileHeight);
-	 				console.log('Left end piece tile at ' + j + ', ' + k);
+	 				//canvas.fillStyle = "#000000";
+	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
+	 				//canvas.fillStyle = "#0000FF";
+	 				//canvas.fillRect(((I.tileWidth/3) * j), I.tileHeight * k, 2*(I.tileWidth/3), I.tileHeight);
+	 				I.spriteMap[5].draw(I.tileWidth * j, I.tileHeight * k);
+	 				//console.log('Left end piece tile at ' + j + ', ' + k);
 	 				break;
 	 			case '8':
 	 				//draw downward end piece tile
-	 				canvas.fillStyle = "#000000";
-	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				canvas.fillStyle = "#0000FF";
-	 				canvas.fillRect((I.tileWidth * j)+(I.tileWidth/3), I.tileHeight * k, I.tileWidth/3, I.tileHeight-(I.tileHeight/3));
-	 				console.log('Downward end piece tile at ' + j + ', ' + k);
+	 				//canvas.fillStyle = "#000000";
+	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
+	 				//canvas.fillStyle = "#0000FF";
+	 				//canvas.fillRect((I.tileWidth * j)+(I.tileWidth/3), I.tileHeight * k, I.tileWidth/3, I.tileHeight-(I.tileHeight/3));
+	 				I.spriteMap[6].draw(I.tileWidth * j, I.tileHeight * k);
+	 				//console.log('Downward end piece tile at ' + j + ', ' + k);
 	 				break;
 				case '2':
 	 				//draw upward end piece tile
-	 				canvas.fillStyle = "#000000";
-	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				canvas.fillStyle = "#0000FF";
-	 				canvas.fillRect((I.tileWidth * j)+(I.tileWidth/3), (I.tileHeight * k)+(I.tileHeght/3), I.tileWidth/3, 2*(I.tileHeight/3));
-	 				console.log('Upward end piece tile at ' + j + ', ' + k);
+	 				//canvas.fillStyle = "#000000";
+	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
+	 				//canvas.fillStyle = "#0000FF";
+	 				//canvas.fillRect((I.tileWidth * j)+(I.tileWidth/3), (I.tileHeight * k)+(I.tileHeght/3), I.tileWidth/3, 2*(I.tileHeight/3));
+	 				I.spriteMap[7].draw(I.tileWidth * j, I.tileHeight * k);
+	 				//console.log('Upward end piece tile at ' + j + ', ' + k);
 	 				break;
 	 			case '3':
 	 				//draw downright corner piece tile
-	 				canvas.fillStyle = "#000000";
-	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				canvas.fillStyle = "#0000FF";
-	 				canvas.fillRect((I.tileWidth * j)+(2*(I.tileWidth/3)), (I.tileHeight * k)+(2*(I.tileHeight/3)), I.tileWidth/3, I.tileHeight/3);
-	 				console.log('Downright corner piece tile at ' + j + ', ' + k);
+	 				//canvas.fillStyle = "#000000";
+	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
+	 				//canvas.fillStyle = "#0000FF";
+	 				//canvas.fillRect((I.tileWidth * j)+(2*(I.tileWidth/3)), (I.tileHeight * k)+(2*(I.tileHeight/3)), I.tileWidth/3, I.tileHeight/3);
+	 				I.spriteMap[8].draw(I.tileWidth * j, I.tileHeight * k);
+	 				//console.log('Downright corner piece tile at ' + j + ', ' + k);
 	 				break;
 	 			case '1':
 	 				//draw downleft corner piece tile
-	 				canvas.fillStyle = "#000000";
-	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				canvas.fillStyle = "#0000FF";
-	 				canvas.fillRect(I.tileWidth * j, (I.tileHeight * k)+(2*(I.tileHeight/3)), I.tileWidth/3, I.tileHeight/3);
-	 				console.log('Downleft corner piece tile at ' + j + ', ' + k);
+	 				//canvas.fillStyle = "#000000";
+	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
+	 				//canvas.fillStyle = "#0000FF";
+	 				//canvas.fillRect(I.tileWidth * j, (I.tileHeight * k)+(2*(I.tileHeight/3)), I.tileWidth/3, I.tileHeight/3);
+	 				I.spriteMap[9].draw(I.tileWidth * j, I.tileHeight * k);
+	 				//console.log('Downleft corner piece tile at ' + j + ', ' + k);
 	 				break;
 	 			case '7':
 	 				//draw upleft corner piece tile
-	 				canvas.fillStyle = "#000000";
-	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				canvas.fillStyle = "#0000FF";
-	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth/3, I.tileHeight/3);
-	 				console.log('upleft corner piece tile at ' + j + ', ' + k);
+	 				//canvas.fillStyle = "#000000";
+	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
+	 				//canvas.fillStyle = "#0000FF";
+	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth/3, I.tileHeight/3);
+	 				I.spriteMap[10].draw(I.tileWidth * j, I.tileHeight * k);
+	 				//console.log('upleft corner piece tile at ' + j + ', ' + k);
 	 				break;
 	 			case '9':
 	 				//draw upright corner piece tile
-	 				canvas.fillStyle = "#000000";
-	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				canvas.fillStyle = "#0000FF";
-	 				canvas.fillRect((I.tileWidth * j)+(2*(I.tileWidth/3)), I.tileHeight * k, I.tileWidth/3, I.tileHeight/3);
-	 				console.log('upright corner piece tile at ' + j + ', ' + k);
+	 				//canvas.fillStyle = "#000000";
+	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
+	 				//canvas.fillStyle = "#0000FF";
+	 				//canvas.fillRect((I.tileWidth * j)+(2*(I.tileWidth/3)), I.tileHeight * k, I.tileWidth/3, I.tileHeight/3);
+	 				I.spriteMap[11].draw(I.tileWidth * j, I.tileHeight * k);
+	 				//console.log('upright corner piece tile at ' + j + ', ' + k);
 	 				break;
 	 			case 'M':
 	 				//draw a piece inside the barrier(probably a solid color)
-	 				canvas.fillStyle = "#000000";
-	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				console.log('Inner barrier tile at ' + j + ', ' + k);
+	 				//canvas.fillStyle = "#000000";
+	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
+	 				I.spriteMap[12].draw(I.tileWidth * j, I.tileHeight * k);
+	 				//console.log('Inner barrier tile at ' + j + ', ' + k);
 	 				break;
 	 			case 'e':
 	 				//draw a blank movable space
-	 				canvas.fillStyle = "#000000";
-	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				console.log('Blank movable space tile at ' + j + ', ' + k);
+	 				//canvas.fillStyle = "#000000";
+	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
+	 				I.spriteMap[13].draw(I.tileWidth * j, I.tileHeight * k);
+	 				//console.log('Blank movable space tile at ' + j + ', ' + k);
 	 				break;
 	 			}
 
 	 		}
 	 	}
+
 	}
 
 	return I;
