@@ -61,6 +61,9 @@ function tileset(tileData, width, height, spriteMap, canvas){
 	I.tileWidth = width/I.map.length;
 	I.tileHeight = height/I.map[0].length;
 
+	I.width = width;
+	I.height = height;
+
 	I.renderMap = function(canvas){
 
 	 	for(var j = 0; j<I.map.length; j++){
@@ -191,6 +194,20 @@ function tileset(tileData, width, height, spriteMap, canvas){
 	 				break;
 	 			}
 
+	 		}
+	 		I.findTile = function(xLoc,yLoc){
+	 			var I = {}
+	 			I.xTile = Math.floor(xLoc/I.tileWidth);
+	 			I.yTile = Math.floor(yLoc/I.tileHeight);
+	 			return I;
+
+	 		}
+	 		//Returns location assuming pac man is in the middle of a tile
+	 		I.findLoc = function(xTile,yTile){
+	 			var I = {};
+	 			I.xLoc = xTile*I.tileWidth + (I.tileWidth/2);
+	 			I.yLoc = yTile*I.tileHeight + (I.tileHeight/2);
+	 			return I;
 	 		}
 	 	}
 

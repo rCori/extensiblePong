@@ -62,3 +62,57 @@ var myTileset = tileset(myMapData,CANVAS_WIDTH, CANVAS_HEIGHT,'spritesheet.png',
 setInterval(function(){
 	myTileset.renderMap(canvas);
 }, 1000/FPS);
+
+//Function for update game logic and drawing
+function update(){
+	//update here
+};
+
+function draw(){
+	myTileset.renderMap(canvas);
+}
+
+function player(){
+	var I = {};
+	//All the starting info
+	I.xLoc = 300/*Starting x*/;
+	I.yLoc = 300/*starting y*/;
+	I.width = 5/*something*/;
+	I.height = 5/* something */;
+	var startTiles = [30,50];/*myTileSet.findTile(I.xLoc,I.yLoc)*/
+	I.xTile = startTiles.xTile;
+	I.yTile = startTiles.yTile;
+	/* Movement gets 5 different values
+	 * 0 means it is still
+	 * 1 means go left
+	 * 2 means go right
+	 * 3 means go up
+	 * 4 means go down
+	 */
+	I.movement = 0;
+
+	I.velocity = 3;
+	//PacMan has to move
+	I.update = function(){
+		//Need to check the status of tiles above or below the current
+		if(movement === 1){
+			I.xLoc -= I.velcocity;
+		}
+		else if(movement === 2){
+			I.xLoc += I.velocity;
+		}
+		else if(movement === 3){
+			I.yLoc -= I.velocity;
+		}
+		else if(movement === 4){
+			I.yLoc += I.velocity;
+		}
+	}
+
+	I.draw = function(){
+		canvas.fillStyle = "#FFFF00";
+	 	canvas.fillRect(I.xLoc - (I.width/2), I.yLoc - (I.height/2), I.width, I.height);
+	}
+
+
+}
