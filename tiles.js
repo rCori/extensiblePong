@@ -81,10 +81,10 @@ function tileset(tileData, width, height, spriteMap, canvas){
 	 				break;
 	 			case 'O':
 	 				//draw energizer tile
-	 				canvas.fillStyle = "#000000";
-	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				canvas.fillStyle = "#FFFFFF";
-	 				canvas.fillRect((I.tileWidth * j)+(I.tileWidth/4), (I.tileHeight * k)+(I.tileHeight/4), I.tileWidth/2, I.tileHeight/2);
+	 				//canvas.fillStyle = "#000000";
+	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
+	 				//canvas.fillStyle = "#FFFFFF";
+	 				//canvas.fillRect((I.tileWidth * j)+(I.tileWidth/4), (I.tileHeight * k)+(I.tileHeight/4), I.tileWidth/2, I.tileHeight/2);
 	 				I.spriteMap[1].draw(I.tileWidth * j, I.tileHeight * k);
 	 				//console.log('Energizer tile at ' + j + ', ' + k);
 	 				break;
@@ -195,22 +195,64 @@ function tileset(tileData, width, height, spriteMap, canvas){
 	 			}
 
 	 		}
-	 		I.findTile = function(xLoc,yLoc){
-	 			var I = {}
-	 			I.xTile = Math.floor(xLoc/I.tileWidth);
-	 			I.yTile = Math.floor(yLoc/I.tileHeight);
-	 			return I;
 
-	 		}
-	 		//Returns location assuming pac man is in the middle of a tile
-	 		I.findLoc = function(xTile,yTile){
-	 			var I = {};
-	 			I.xLoc = xTile*I.tileWidth + (I.tileWidth/2);
-	 			I.yLoc = yTile*I.tileHeight + (I.tileHeight/2);
-	 			return I;
-	 		}
 	 	}
 
+	}
+
+	//Return the current tile based on the current absoulte map position
+	I.findTile = function(xLoc,yLoc){
+	 	var J = {}
+	 	J.xTile = Math.floor(xLoc/I.tileWidth);
+	 	J.yTile = Math.floor(yLoc/I.tileHeight);
+	 	return J;
+
+	}
+	//Returns location assuming pac man is in the middle of a tile
+	I.findLoc = function(xTile,yTile){
+		var J = {};
+		J.xLoc = xTile*I.tileWidth + (I.tileWidth/2);
+	 	J.yLoc = yTile*I.tileHeight + (I.tileHeight/2);
+	 	return J;
+	}
+
+	//Now we need a series of functions to check if we are encountering walls
+	//Return true if this is a place that can be moved to
+	//False if pacman can't go here.
+	//I should never have to check array bounds
+	//PacMan can't get to the edge of the screen
+	//RIGHT
+	I.checkRight = function(xTile,yTile){
+		if(I.map[xTile+1][yTile] == ('o'||'O'||'M'||'e')){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	I.checkLeft = function(xTile,yTile){
+		if(I.map[xTile-1][yTile] == ('o'||'O'||'M'||'e')){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	I.checkUp = function(xTile,yTile){
+		if(I.map[xTile][yTile-1] == ('o'||'O'||'M'||'e')){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	I.checkDown = function(xTile,yTile){
+		if(I.map[xTile][yTile+1] == ('o'||'O'||'M'||'e')){
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 
 	return I;

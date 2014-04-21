@@ -60,26 +60,30 @@ var myMapData = /* 1 */[['M','M','M','7','4','4','4','4','4','4','4','4','1','M'
 				/*28 */ ['M','M','M','9','6','6','6','6','6','6','6','6','3','M','M','M','8','e','2','M','M','M','9','6','6','6','6','3','9','6','6','6','6','3','M','M']]
 var myTileset = tileset(myMapData,CANVAS_WIDTH, CANVAS_HEIGHT,'spritesheet.png',canvas);
 setInterval(function(){
-	myTileset.renderMap(canvas);
+	draw();
+	update();
 }, 1000/FPS);
 
 //Function for update game logic and drawing
 function update(){
 	//update here
+	pacman.update();
+	//console.log(pacman.xLoc);
 };
 
 function draw(){
 	myTileset.renderMap(canvas);
+	pacman.draw();
 }
 
 function player(){
 	var I = {};
 	//All the starting info
-	I.xLoc = 300/*Starting x*/;
-	I.yLoc = 300/*starting y*/;
-	I.width = 5/*something*/;
-	I.height = 5/* something */;
-	var startTiles = [30,50];/*myTileSet.findTile(I.xLoc,I.yLoc)*/
+	I.xLoc = 224;
+	I.yLoc = 420;
+	I.width = 12;
+	I.height = 12;
+	var startTiles = myTileset.findTile(I.xLoc,I.yLoc);
 	I.xTile = startTiles.xTile;
 	I.yTile = startTiles.yTile;
 	/* Movement gets 5 different values
@@ -92,27 +96,65 @@ function player(){
 	I.movement = 0;
 
 	I.velocity = 3;
+	
 	//PacMan has to move
 	I.update = function(){
+		//Update what tile pacman is on
+		var newTile = myTileset.findTile(I.xLoc,I.yLoc);
+		I.xTile = newTile.xTile;
+		I.yTile = newTile.yTile;
 		//Need to check the status of tiles above or below the current
-		if(movement === 1){
-			I.xLoc -= I.velcocity;
+		if(I.movement == 1){
+			if(myTileset.checkLeft(I.xTile,I.yTile)){
+				I.xLoc -= I.velocity;
+			}
 		}
-		else if(movement === 2){
-			I.xLoc += I.velocity;
+		else if(I.movement == 2){
+			if(myTileset.checkRight(I.xTile,I.yTile)){
+				I.xLoc += I.velocity;
+			}
 		}
-		else if(movement === 3){
-			I.yLoc -= I.velocity;
+		else if(I.movement == 3){
+			if(myTileset.checkUp(I.xTile,I.yTile)){
+				I.yLoc -= I.velocity;
+			}
 		}
-		else if(movement === 4){
-			I.yLoc += I.velocity;
+		else if(I.movement == 4){
+			if(myTileset.checkDown(I.xTile,I.yTile)){
+				I.yLoc += I.velocity;
+			}
 		}
-	}
+	};
 
 	I.draw = function(){
 		canvas.fillStyle = "#FFFF00";
 	 	canvas.fillRect(I.xLoc - (I.width/2), I.yLoc - (I.height/2), I.width, I.height);
-	}
-
-
+	};
+	
+	
+	return I;
 }
+
+var pacman = player();
+
+//I need this to handle input
+window.addEventListener('keydown', function (e) {
+	switch(e.keyCode){
+		//If left is pressed
+		case 37:
+			pacman.movement = 1;
+		break;
+		//If right is pressed
+		case 39:
+			pacman.movement = 2;
+		break;
+		//If up is pressed
+		case 38:
+			pacman.movement = 3;
+		break;
+		//If down is pressed
+		case 40:
+			pacman.movement = 4;
+		break;
+	}
+}, false);

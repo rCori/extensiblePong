@@ -105,7 +105,6 @@ function spritesheet(image, canvas,tileWidth, tileHeight, sheetWidth, sheetHeigh
 	 	for(var i = 0; i<tiles.length; i++){
 	 		sprites[i] = (sprite(tiles[i],canvas,tileWidth,tileHeight));
 	 	}
-	 	spinlock = false;
 
 	 }
 	 //Get the source of the tile sheet
