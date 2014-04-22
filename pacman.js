@@ -97,6 +97,9 @@ function player(){
 
 	I.velocity = 3;
 	
+	//We want an image for pacman
+	I.sprite = sprite("pacman.png",canvas,16,16);
+
 	//PacMan has to move
 	I.update = function(){
 		//Update what tile pacman is on
@@ -143,8 +146,9 @@ function player(){
 	};
 
 	I.draw = function(){
-		canvas.fillStyle = "#FFFF00";
-	 	canvas.fillRect(I.xLoc - (I.width/2), I.yLoc - (I.height/2), I.width, I.height);
+		//canvas.fillStyle = "#FFFF00";
+	 	//canvas.fillRect(I.xLoc - (I.width/2), I.yLoc - (I.height/2), I.width, I.height);
+	 	I.sprite.draw(I.xLoc - (I.width/2), I.yLoc - (I.height/2), I.width, I.height);
 	};
 	
 	
