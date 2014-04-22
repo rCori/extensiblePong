@@ -180,16 +180,16 @@ function tileset(tileData, width, height, spriteMap, canvas){
 	 				break;
 	 			case 'M':
 	 				//draw a piece inside the barrier(probably a solid color)
-	 				//canvas.fillStyle = "#000000";
-	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				I.spriteMap[12].draw(I.tileWidth * j, I.tileHeight * k);
+	 				canvas.fillStyle = "#000000";
+	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
+	 				//I.spriteMap[12].draw(I.tileWidth * j, I.tileHeight * k);
 	 				//console.log('Inner barrier tile at ' + j + ', ' + k);
 	 				break;
 	 			case 'e':
 	 				//draw a blank movable space
-	 				//canvas.fillStyle = "#000000";
-	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				I.spriteMap[13].draw(I.tileWidth * j, I.tileHeight * k);
+	 				canvas.fillStyle = "#000000";
+	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
+	 				//I.spriteMap[13].draw(I.tileWidth * j, I.tileHeight * k);
 	 				//console.log('Blank movable space tile at ' + j + ', ' + k);
 	 				break;
 	 			}
@@ -223,7 +223,8 @@ function tileset(tileData, width, height, spriteMap, canvas){
 	//PacMan can't get to the edge of the screen
 	//RIGHT
 	I.checkRight = function(xTile,yTile){
-		if(I.map[xTile+1][yTile] == ('o'||'O'||'M'||'e')){
+		var temp = I.map[xTile+1][yTile];
+		if((temp === 'o')||(temp === 'O')||(temp ==='M')||(temp === 'e')){
 			return true;
 		}
 		else{
@@ -231,7 +232,8 @@ function tileset(tileData, width, height, spriteMap, canvas){
 		}
 	}
 	I.checkLeft = function(xTile,yTile){
-		if(I.map[xTile-1][yTile] == ('o'||'O'||'M'||'e')){
+		var temp = I.map[xTile-1][yTile];
+		if((temp === 'o')||(temp === 'O')||(temp ==='M')||(temp === 'e')){
 			return true;
 		}
 		else{
@@ -239,7 +241,8 @@ function tileset(tileData, width, height, spriteMap, canvas){
 		}
 	}
 	I.checkUp = function(xTile,yTile){
-		if(I.map[xTile][yTile-1] == ('o'||'O'||'M'||'e')){
+		var temp = I.map[xTile][yTile-1];
+		if((temp === 'o')||(temp === 'O')||(temp ==='M')||(temp === 'e')){
 			return true;
 		}
 		else{
@@ -247,7 +250,8 @@ function tileset(tileData, width, height, spriteMap, canvas){
 		}
 	}
 	I.checkDown = function(xTile,yTile){
-		if(I.map[xTile][yTile+1] == ('o'||'O'||'M'||'e')){
+		var temp = I.map[xTile][yTile+1];
+		if((temp === 'o')||(temp === 'O')||(temp ==='M')||(temp === 'e')){
 			return true;
 		}
 		else{
