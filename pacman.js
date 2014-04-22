@@ -100,6 +100,9 @@ function player(){
 	//We want an image for pacman
 	I.sprite = sprite("pacman.png",canvas,16,16);
 
+	//How much to rotate
+	I.rotate = 0;
+
 	//PacMan has to move
 	I.update = function(){
 		//Update what tile pacman is on
@@ -120,6 +123,7 @@ function player(){
 			if(myTileset.checkLeft(I.xTile,I.yTile)){
 				I.xLoc -= I.velocity;
 				I.yLoc = I.yTile * myTileset.tileHeight+(myTileset.tileHeight/2);
+				I.rotate = 180;
 			}
 		}
 		else if(I.movement == 2){
@@ -127,6 +131,7 @@ function player(){
 			if(myTileset.checkRight(I.xTile,I.yTile)){
 				I.xLoc += I.velocity;
 				I.yLoc = I.yTile * myTileset.tileHeight+(myTileset.tileHeight/2);
+				I.rotate = 0;
 			}
 		}
 		else if(I.movement == 3){
@@ -134,6 +139,7 @@ function player(){
 			if(myTileset.checkUp(I.xTile,I.yTile)){
 				I.yLoc -= I.velocity;
 				I.xLoc = I.xTile * myTileset.tileWidth+(myTileset.tileWidth/2);
+				I.rotate = 270;
 			}
 		}
 		else if(I.movement == 4){
@@ -141,6 +147,7 @@ function player(){
 			if(myTileset.checkDown(I.xTile,I.yTile)){
 				I.yLoc += I.velocity;
 				I.xLoc = (I.xTile * myTileset.tileWidth)+(myTileset.tileWidth/2);
+				I.rotate = 90;
 			}
 		}
 	};
@@ -148,7 +155,7 @@ function player(){
 	I.draw = function(){
 		//canvas.fillStyle = "#FFFF00";
 	 	//canvas.fillRect(I.xLoc - (I.width/2), I.yLoc - (I.height/2), I.width, I.height);
-	 	I.sprite.draw(I.xLoc - (I.width/2), I.yLoc - (I.height/2), I.width, I.height);
+	 	I.sprite.draw(I.xLoc - (I.width/2), I.yLoc - (I.height/2),I.rotate);
 	};
 	
 	
