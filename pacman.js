@@ -18,6 +18,9 @@ var myCanv = canvasElement.get(0);
 canvasElement.appendTo('body');
 
 var FPS = 30;
+
+
+var DEBUG = false;
 //Lets call this a debug map
 /*Original pacman has a tileset of 28x36 so thats what we
  *will be going for here. Of course we will need to draw over
@@ -68,12 +71,15 @@ setInterval(function(){
 function update(){
 	//update here
 	pacman.update();
-	//console.log(pacman.xLoc);
+	blinky.update();
+	blinky.decide();
+	debug(DEBUG);
 };
 
 function draw(){
 	myTileset.renderMap(canvas);
 	pacman.draw();
+	blinky.draw();
 }
 
 function player(){
@@ -81,8 +87,8 @@ function player(){
 	//All the starting info
 	I.xLoc = 224;
 	I.yLoc = 420;
-	I.width = 12;
-	I.height = 12;
+	I.width = 16;
+	I.height = 16;
 	var startTiles = myTileset.findTile(I.xLoc,I.yLoc);
 	I.xTile = startTiles.xTile;
 	I.yTile = startTiles.yTile;
@@ -163,6 +169,124 @@ function player(){
 }
 
 var pacman = player();
+
+/* Time to make some spooky ghosts
+ * 2SPOOKY
+ * This will look a lot like the human player exept controls
+ * ghosts have no input
+ * or bones, those would be skelingtons. Also very scary
+ */
+
+function ghost(x,y,color){
+	var I = {};
+	//Eventually "color" will be "sprite" and hopefully then "animation"
+	I.x = x;
+	I.y = y;
+
+	//Height and width of the character
+	I.height = 16;
+	I.width =16;
+
+	var startTiles = myTileset.findTile(I.x,I.y);
+	I.xTile = startTiles.xTile;
+	I.yTile = startTiles.yTile;
+
+	//Similar to pacman's direction, but not player controlled
+	I.movement = 0;
+
+	//The speed the ghosts move
+	I.velocity = 2;
+
+	//PacMan has to move
+	I.update = function(){
+		//Update what tile the ghost is on
+		var newTile = myTileset.findTile(I.x,I.y);
+		I.xTile = newTile.xTile;
+		I.yTile = newTile.yTile;
+
+		//Need to check the status of tiles above or below the current
+		//LEFT
+		if(I.movement == 1){
+			if(myTileset.checkLeft(I.xTile,I.yTile)){
+				I.x -= I.velocity;
+				I.y = I.yTile * myTileset.tileHeight+(myTileset.tileHeight/2);
+			}
+		}
+		else if(I.movement == 2){
+			//RIGHT
+			if(myTileset.checkRight(I.xTile,I.yTile)){
+				I.x += I.velocity;
+				I.y = I.yTile * myTileset.tileHeight+(myTileset.tileHeight/2);
+			}
+		}
+		else if(I.movement == 3){
+			//UP
+			if(myTileset.checkUp(I.xTile,I.yTile)){
+				I.y -= I.velocity;
+				I.x = I.xTile * myTileset.tileWidth+(myTileset.tileWidth/2);
+			}
+		}
+		else if(I.movement == 4){
+			//DOWN
+			if(myTileset.checkDown(I.xTile,I.yTile)){
+				I.y += I.velocity;
+				I.x = (I.xTile * myTileset.tileWidth)+(myTileset.tileWidth/2);
+			}
+		}
+	};
+
+	//This controls the movement of the ghost's AI, very simple right now
+	I.decide = function(){
+		//potentially new movement vector
+		var move = Math.floor((Math.random()*4)+1);
+
+		//If you got Left and you aren't alreay going right
+		if((move == 1) && (I.movement != 2)){
+			if(myTileset.checkRight(I.xTile,I.yTile)){
+				I.movement = 2;
+			}
+		}
+		//If you got right and aren't already going left
+		else if((move == 2) && (I.movement != 1)){
+			if(myTileset.checkLeft(I.xTile,I.yTile)){
+				I.movement = 2;
+			}
+		}
+		//If you got up and arent aready going down
+		else if((move == 3) && (I.movement != 4)){
+			if(myTileset.checkUp(I.xTile,I.yTile)){
+				I.movement = 3;
+			}
+		}
+		//If you got down and aren't already going up
+		else if((move == 4) && (I.movement != 3)){
+			if(myTileset.checkUp(I.xTile,I.yTile)){
+				I.movement = 4;
+			}
+		}
+
+	};
+
+	I.draw = function(){
+		canvas.fillStyle = color;
+	 	canvas.fillRect(I.x - (I.width/2), I.y - (I.height/2), I.width, I.height);
+	};
+
+	return I;
+}
+
+var blinky = ghost(4*16,5*16,"#FF0000");
+
+function debug(ISDEBUG){
+	if(ISDEBUG){
+		canvas.fillStyle = "#FFF";
+		canvas.fillText("pacman movement = "+pacman.movement,0,10);
+		canvas.fillText("pacman pos: x = "+ pacman.xLoc + " y = " + pacman.yLoc,0,20);
+		canvas.fillText("blinky movement = "+blinky.movement,0,30);
+		canvas.fillText("blinky pos: x = "+ blinky.x + " y = " + blinky.y,0,40);
+
+	}
+}
 
 //I need this to handle input
 window.addEventListener('keydown', function (e) {
