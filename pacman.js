@@ -20,7 +20,7 @@ canvasElement.appendTo('body');
 var FPS = 30;
 
 
-var DEBUG = false;
+var DEBUG = true;
 //Lets call this a debug map
 /*Original pacman has a tileset of 28x36 so thats what we
  *will be going for here. Of course we will need to draw over
@@ -109,6 +109,12 @@ function player(){
 	//How much to rotate
 	I.rotate = 0;
 
+	//What options are available
+	I.left = false;
+	I.right = false;
+	I.up = false;
+	I.down = false;
+
 	//PacMan has to move
 	I.update = function(){
 		//Update what tile pacman is on
@@ -123,10 +129,17 @@ function player(){
 		if(myTileset.map[I.xTile][I.yTile] === 'O'){
 			myTileset.map[I.xTile][I.yTile] = 'e';
 		}
+
+		//update the movement options
+		I.left = myTileset.checkLeft(I.xTile,I.yTile);
+		I.right = myTileset.checkRight(I.xTile,I.yTile);
+		I.up = myTileset.checkUp(I.xTile,I.yTile);
+		I.down = myTileset.checkDown(I.xTile,I.yTile);
+
 		//Need to check the status of tiles above or below the current
 		//LEFT
 		if(I.movement == 1){
-			if(myTileset.checkLeft(I.xTile,I.yTile)){
+			if(I.left){
 				I.xLoc -= I.velocity;
 				I.yLoc = I.yTile * myTileset.tileHeight+(myTileset.tileHeight/2);
 				I.rotate = 180;
@@ -134,7 +147,7 @@ function player(){
 		}
 		else if(I.movement == 2){
 			//RIGHT
-			if(myTileset.checkRight(I.xTile,I.yTile)){
+			if(I.right){
 				I.xLoc += I.velocity;
 				I.yLoc = I.yTile * myTileset.tileHeight+(myTileset.tileHeight/2);
 				I.rotate = 0;
@@ -142,7 +155,7 @@ function player(){
 		}
 		else if(I.movement == 3){
 			//UP
-			if(myTileset.checkUp(I.xTile,I.yTile)){
+			if(I.up){
 				I.yLoc -= I.velocity;
 				I.xLoc = I.xTile * myTileset.tileWidth+(myTileset.tileWidth/2);
 				I.rotate = 270;
@@ -150,7 +163,7 @@ function player(){
 		}
 		else if(I.movement == 4){
 			//DOWN
-			if(myTileset.checkDown(I.xTile,I.yTile)){
+			if(I.down){
 				I.yLoc += I.velocity;
 				I.xLoc = (I.xTile * myTileset.tileWidth)+(myTileset.tileWidth/2);
 				I.rotate = 90;
@@ -163,6 +176,7 @@ function player(){
 	 	//canvas.fillRect(I.xLoc - (I.width/2), I.yLoc - (I.height/2), I.width, I.height);
 	 	I.sprite.draw(I.xLoc - (I.width/2), I.yLoc - (I.height/2),I.rotate);
 	};
+
 	
 	
 	return I;
@@ -239,30 +253,24 @@ function ghost(x,y,color){
 	I.decide = function(){
 		//potentially new movement vector
 		var move = Math.floor((Math.random()*4)+1);
+		//I.movement = move;
 
+		
 		//If you got Left and you aren't alreay going right
 		if((move == 1) && (I.movement != 2)){
-			if(myTileset.checkRight(I.xTile,I.yTile)){
-				I.movement = 2;
-			}
+				I.movement = 1;
 		}
 		//If you got right and aren't already going left
 		else if((move == 2) && (I.movement != 1)){
-			if(myTileset.checkLeft(I.xTile,I.yTile)){
 				I.movement = 2;
-			}
 		}
 		//If you got up and arent aready going down
 		else if((move == 3) && (I.movement != 4)){
-			if(myTileset.checkUp(I.xTile,I.yTile)){
 				I.movement = 3;
-			}
 		}
 		//If you got down and aren't already going up
 		else if((move == 4) && (I.movement != 3)){
-			if(myTileset.checkUp(I.xTile,I.yTile)){
 				I.movement = 4;
-			}
 		}
 
 	};
@@ -284,6 +292,11 @@ function debug(ISDEBUG){
 		canvas.fillText("pacman pos: x = "+ pacman.xLoc + " y = " + pacman.yLoc,0,20);
 		canvas.fillText("blinky movement = "+blinky.movement,0,30);
 		canvas.fillText("blinky pos: x = "+ blinky.x + " y = " + blinky.y,0,40);
+		canvas.fillText("pacman left = "+pacman.left,0,50);
+		canvas.fillText("pacman right = "+pacman.right,0,60);
+		canvas.fillText("pacman up = "+pacman.up,0,70);
+		canvas.fillText("pacman down = "+pacman.down,0,80);
+		canvas.fillText("key pressed = "+myKey,300,10);
 
 	}
 }
@@ -293,25 +306,26 @@ window.addEventListener('keydown', function (e) {
 	switch(e.keyCode){
 		//If left is pressed
 		case 37:
-			if(myTileset.checkLeft(pacman.xTile,pacman.yTile)){
+			if(pacman.left){
 				pacman.movement = 1;
 			}
+
 		break;
 		//If right is pressed
 		case 39:
-			if(myTileset.checkRight(pacman.xTile,pacman.yTile)){
+			if(pacman.right){
 				pacman.movement = 2;
 			}
 		break;
 		//If up is pressed
 		case 38:
-			if(myTileset.checkUp(pacman.xTile,pacman.yTile)){
+			if(pacman.up){
 				pacman.movement = 3;	
 			}
 		break;
 		//If down is pressed
 		case 40:
-			if(myTileset.checkDown(pacman.xTile,pacman.yTile)){
+			if(pacman.down){
 				pacman.movement = 4;
 			}
 		break;
