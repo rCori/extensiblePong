@@ -20,7 +20,7 @@ canvasElement.appendTo('body');
 var FPS = 30;
 
 
-var DEBUG = true;
+var DEBUG = false;
 //Lets call this a debug map
 /*Original pacman has a tileset of 28x36 so thats what we
  *will be going for here. Of course we will need to draw over
@@ -72,7 +72,9 @@ function update(){
 	//update here
 	pacman.update();
 	blinky.update();
-	blinky.decide();
+	pinky.update();
+	inky.update();
+	clyde.update();
 	debug(DEBUG);
 };
 
@@ -80,6 +82,9 @@ function draw(){
 	myTileset.renderMap(canvas);
 	pacman.draw();
 	blinky.draw();
+	pinky.draw();
+	inky.draw();
+	clyde.draw();
 }
 
 function player(){
@@ -218,6 +223,8 @@ function ghost(x,y,color){
 		I.xTile = newTile.xTile;
 		I.yTile = newTile.yTile;
 
+		I.decide();
+
 		//Need to check the status of tiles above or below the current
 		//LEFT
 		if(I.movement == 1){
@@ -252,25 +259,20 @@ function ghost(x,y,color){
 	//This controls the movement of the ghost's AI, very simple right now
 	I.decide = function(){
 		//potentially new movement vector
-		var move = Math.floor((Math.random()*4)+1);
-		//I.movement = move;
-
-		
-		//If you got Left and you aren't alreay going right
-		if((move == 1) && (I.movement != 2)){
-				I.movement = 1;
+		if(I.movement === 0){
+			I.movement = Math.floor((Math.random()*4)+1);
 		}
-		//If you got right and aren't already going left
-		else if((move == 2) && (I.movement != 1)){
-				I.movement = 2;
+		if(!myTileset.checkRight(I.xTile,I.yTile) && I.movement == 2){
+			I.movement = Math.floor((Math.random()*2)+3); 
 		}
-		//If you got up and arent aready going down
-		else if((move == 3) && (I.movement != 4)){
-				I.movement = 3;
+		if(!myTileset.checkLeft(I.xTile,I.yTile) && I.movement == 1){
+			I.movement = Math.floor((Math.random()*2)+3); 
 		}
-		//If you got down and aren't already going up
-		else if((move == 4) && (I.movement != 3)){
-				I.movement = 4;
+		if(!myTileset.checkUp(I.xTile,I.yTile) && I.movement == 3){
+			I.movement = Math.floor((Math.random()*2)+1); 
+		}
+		if(!myTileset.checkDown(I.xTile,I.yTile) && I.movement == 4){
+			I.movement = Math.floor((Math.random()*2)+1); 
 		}
 
 	};
@@ -283,7 +285,10 @@ function ghost(x,y,color){
 	return I;
 }
 
-var blinky = ghost(4*16,5*16,"#FF0000");
+var blinky = ghost(7*16,5*16,"#FF0000");
+var pinky = ghost(20*16,5*16,"#FF00FF");
+var inky = ghost(7*16,32*16,"#00FFFF");
+var clyde = ghost(20*16,32*16,"#FFA500");
 
 function debug(ISDEBUG){
 	if(ISDEBUG){
@@ -296,7 +301,6 @@ function debug(ISDEBUG){
 		canvas.fillText("pacman right = "+pacman.right,0,60);
 		canvas.fillText("pacman up = "+pacman.up,0,70);
 		canvas.fillText("pacman down = "+pacman.down,0,80);
-		canvas.fillText("key pressed = "+myKey,300,10);
 
 	}
 }
