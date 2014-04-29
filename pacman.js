@@ -20,7 +20,7 @@ canvasElement.appendTo('body');
 var FPS = 30;
 
 
-var DEBUG = false;
+var DEBUG = true;
 //Lets call this a debug map
 /*Original pacman has a tileset of 28x36 so thats what we
  *will be going for here. Of course we will need to draw over
@@ -72,6 +72,7 @@ function update(){
 	//update here
 	pacman.update();
 	blinky.update();
+	blinky.setTarget({x:pacman.xTile,y:pacman.yTile});
 	pinky.update();
 	inky.update();
 	clyde.update();
@@ -196,7 +197,7 @@ var pacman = player();
  * or bones, those would be skelingtons. Also very scary
  */
 
-function ghost(x,y,color,lookahead){
+function ghost(x,y,color,lookahead,target){
 	var I = {};
 	//Eventually "color" will be "sprite" and hopefully then "animation"
 	I.x = x;
@@ -214,55 +215,76 @@ function ghost(x,y,color,lookahead){
 	I.movement = 0;
 
 	//Wiith the lookahead implementation it's useful to save a "next" direction
-	I.nextDirection
+	I.nextDirection = 0;
 
 	//The speed the ghosts move
 	I.velocity = 2;
 
+	I.up = 9999;
+	I.down = 9999;
+	I.left = 9999;
+	I.right = 9999;
+
 	lookahead = lookahead || false;
 
+	I.target = target || {x:0,y:0};
 	//PacMan has to move
 	I.update = function(){
 		//Update what tile the ghost is on
 		var newTile = myTileset.findTile(I.x,I.y);
-		I.xTile = newTile.xTile;
-		I.yTile = newTile.yTile;
 
-
-		if(lookahead){
-			I.singleLookaheadSearch({x:pacman.xTile,y:pacman.yTile});
+		//Check if this tile is actually new
+		if (I.xTile !=newTile.xTile || I.yTile != newTile.yTile){
+			I.xTile = newTile.xTile;
+			I.yTile = newTile.yTile;
+			if(lookahead){
+				I.singleLookaheadSearch(I.target);
+			}
+			else{
+				I.decide();
+			}
 		}
 		else{
-			I.decide();
+			I.xTile = newTile.xTile;
+			I.yTile = newTile.yTile;
 		}
 
 		//Need to check the status of tiles above or below the current
 		//LEFT
-		if(I.movement == 1){
-			if(myTileset.checkLeft(I.xTile,I.yTile)){
+		if(I.movement == 1 && myTileset.checkLeft(I.xTile,I.yTile)){
+			//if(myTileset.checkLeft(I.xTile,I.yTile)){
 				I.x -= I.velocity;
 				I.y = I.yTile * myTileset.tileHeight+(myTileset.tileHeight/2);
-			}
+			//}
 		}
-		else if(I.movement == 2){
+		else if(I.movement == 2 && myTileset.checkRight(I.xTile,I.yTile)){
 			//RIGHT
-			if(myTileset.checkRight(I.xTile,I.yTile)){
+			//if(myTileset.checkRight(I.xTile,I.yTile)){
 				I.x += I.velocity;
 				I.y = I.yTile * myTileset.tileHeight+(myTileset.tileHeight/2);
-			}
+			//}
 		}
-		else if(I.movement == 3){
+		else if(I.movement == 3 && myTileset.checkUp(I.xTile,I.yTile)){
 			//UP
-			if(myTileset.checkUp(I.xTile,I.yTile)){
+			//if(myTileset.checkUp(I.xTile,I.yTile)){
 				I.y -= I.velocity;
 				I.x = I.xTile * myTileset.tileWidth+(myTileset.tileWidth/2);
-			}
+			//}
 		}
-		else if(I.movement == 4){
+		else if(I.movement == 4 && myTileset.checkDown(I.xTile,I.yTile)){
 			//DOWN
-			if(myTileset.checkDown(I.xTile,I.yTile)){
+			//if(myTileset.checkDown(I.xTile,I.yTile)){
 				I.y += I.velocity;
 				I.x = (I.xTile * myTileset.tileWidth)+(myTileset.tileWidth/2);
+			//}
+		}
+		//You are stuck and need to make a new decision
+		else{
+			if(lookahead){
+				I.singleLookaheadSearch({x:pacman.xTile,y:pacman.yTile});
+			}
+			else{
+				I.decide();
 			}
 		}
 	};
@@ -293,106 +315,100 @@ function ghost(x,y,color,lookahead){
 	//This is how pathfinding worked in old PacMan, not A* or Dijkstra
 	I.singleLookaheadSearch = function(target){
 		//assign these huge distances
-		var up = 9999;
-		var down = 9999;
-		var left = 9999;
-		var right = 9999;
+		I.up = 9999;
+		I.down = 9999;
+		I.left = 9999;
+		I.right = 9999;
 
-		//TAKE THIS OUT
-		if(I.movement === 0){
-			I.movement = 1;
+		if(I.movement == I.nextDirection){
+			//If you are going left and you can continue going left
+			if((I.movement == 1) && (myTileset.checkLeft(I.xTile,I.yTile))){
+				I.left = Math.sqrt(((I.xTile-2-target.x)*(I.xTile-2-target.x))+((I.yTile-target.y)*(I.yTile-target.y)));
+				if(myTileset.checkUp(I.xTile-1,I.yTile)){
+					I.up = Math.sqrt(((I.xTile-1-target.x)*(I.xTile-1-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
+				}
+				if(myTileset.checkDown(I.xTile-1,I.yTile)){
+					I.down = Math.sqrt(((I.xTile-1-target.x)*(I.xTile-1-target.x))+((I.yTile+1-target.y)*(I.yTile+1-target.y)));
+				}
+			}
+			//You are going right and you can continue going right
+			else if((I.movement == 2) && (myTileset.checkRight(I.xTile,I.yTile))){
+				I.right = Math.sqrt(((I.xTile+2-target.x)*(I.xTile+2-target.x))+((I.yTile-target.y)*(I.yTile-target.y)));
+				if(myTileset.checkUp(I.xTile+1,I.yTile)){
+					I.up = Math.sqrt(((I.xTile+1-target.x)*(I.xTile+1-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
+				}
+				if(myTileset.checkDown(I.xTile+1,I.yTile)){
+					I.down = Math.sqrt(((I.xTile+1-target.x)*(I.xTile+1-target.x))+((I.yTile+1-target.y)*(I.yTile+1-target.y)));
+				}
+			}
+			//You are going up and you can continue going up
+			else if((I.movement == 3) && (myTileset.checkUp(I.xTile,I.yTile))){
+				I.up = Math.sqrt(((I.xTile-target.x)*(I.xTile-target.x))+((I.yTile-2-target.y)*(I.yTile-2-target.y)));
+				if(myTileset.checkRight(I.xTile,I.yTile-1)){
+					I.right = Math.sqrt(((I.xTile+1-target.x)*(I.xTile+1-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
+				}
+				if(myTileset.checkLeft(I.xTile,I.yTile-1)){
+					I.left = Math.sqrt(((I.xTile-1-target.x)*(I.xTile-1-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
+				}
+			}
+			//You are going down and you can continue to go down
+			else if((I.movement == 4) && (myTileset.checkDown(I.xTile,I.yTile))){
+				I.down = Math.sqrt(((I.xTile-target.x)*(I.xTile-target.x))+((I.yTile+2-target.y)*(I.yTile+2-target.y)));
+				if(myTileset.checkRight(I.xTile,I.yTile+1)){
+					I.right = Math.sqrt(((I.xTile+1-target.x)*(I.xTile+1-target.x))+((I.yTile+1-target.y)*(I.yTile+1-target.y)));
+				}
+				if(myTileset.checkLeft(I.xTile,I.yTile+1)){
+					I.left = Math.sqrt(((I.xTile-1-target.x)*(I.xTile-1-target.x))+((I.yTile+1-target.y)*(I.yTile+1-target.y)));
+				}
+			}
+			//You have hit a dead end
+			//We need to find you a new direction
+			else{
+				//try right
+				if(myTileset.checkRight(I.xTile,I.yTile)){
+					I.right = Math.sqrt(((I.xTile+1-target.x)*(I.xTile+1-target.x))+((I.yTile-target.y)*(I.yTile-target.y)));
+				}
+				//try left
+				if(myTileset.checkLeft(I.xTile,I.yTile)){
+					I.left = Math.sqrt(((I.xTile-1-target.x)*(I.xTile-1-target.x))+((I.yTile-target.y)*(I.yTile-target.y)));
+				}
+				//try down
+				if(myTileset.checkDown(I.xTile,I.yTile)){
+					I.down = Math.sqrt(((I.xTile-target.x)*(I.xTile-target.x))+((I.yTile+1-target.y)*(I.yTile+1-target.y)));
+				}
+				//try up
+				if(myTileset.checkUp(I.xTile,I.yTile)){
+					I.up = Math.sqrt(((I.xTile-target.x)*(I.xTile-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
+				}
+
+			}
+			//So now we have all the distances, find the shortest one
+			var tempDist = Math.min(I.up,I.down,I.left,I.right);
+			//Make sure we actually found a smallest distance
+			if(tempDist != 9999){
+				//Now assign the shortest direction to the next direction
+				//Next time pacman changes diretion it will be to nextDirection
+				switch(tempDist){
+					case I.up:
+						I.nextDirection = 3;
+						break;
+					case I.down:
+						I.nextDirection = 4;
+						break;
+					case I.left:
+						I.nextDirection = 1;
+						break;
+					case I.right:
+						I.nextDirection = 2;
+						break;
+				}
+			}
+			/*Switch to nextDirection at the right time
+			 *If the direction we are going in is not nextDirection
+			 *We want to go in nextDirection as soon as possible
+			 */
 		}
-		//If you are going left and you can continue going left
-		if((I.movement == 1) && (myTileset.checkLeft(I.xTile,I.yTile))){
-			if(myTileset.checkUp(I.xTile-1,I.yTile)){
-				up = Math.sqrt(((I.xTile-1-target.x)*(I.xTile-1-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
-			}
-			if(myTileset.checkDown(I.xTile-1,I.yTile)){
-				down = Math.sqrt(((I.xTile-1-target.x)*(I.xTile-1-target.x))+((I.yTile+1-target.y)*(I.yTile+1-target.y)));
-			}
-		}
-		//You are going right and you can continue going right
-		else if((I.movement == 2) && (myTileset.checkRight(I.xTile,I.yTile))){
-			if(myTileset.checkUp(I.xTile+1,I.yTile)){
-				up = Math.sqrt(((I.xTile+1-target.x)*(I.xTile+1-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
-			}
-			if(myTileset.checkDown(I.xTile+1,I.yTile)){
-				down = Math.sqrt(((I.xTile+1-target.x)*(I.xTile+1-target.x))+((I.yTile+1-target.y)*(I.yTile+1-target.y)));
-			}
-		}
-		//You are going up and you can continue going up
-		else if((I.movement == 3) && (myTileset.checkUp(I.xTile,I.yTile))){
-			if(myTileset.checkRight(I.xTile,I.yTile-1)){
-				right = Math.sqrt(((I.xTile+1-target.x)*(I.xTile+1-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
-			}
-			if(myTileset.checkLeft(I.xTile,I.yTile-1)){
-				left = Math.sqrt(((I.xTile-1-target.x)*(I.xTile-1-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
-			}
-		}
-		//You are going down and you can continue to go down
-		else if((I.movement == 4) && (myTileset.checkDown(I.xTile,I.yTile))){
-			if(myTileset.checkRight(I.xTile,I.yTile+1)){
-				right = Math.sqrt(((I.xTile+1-target.x)*(I.xTile+1-target.x))+((I.yTile+1-target.y)*(I.yTile+1-target.y)));
-			}
-			if(myTileset.checkLeft(I.xTile,I.yTile+1)){
-				left = Math.sqrt(((I.xTile-1-target.x)*(I.xTile-1-target.x))+((I.yTile+1-target.y)*(I.yTile+1-target.y)));
-			}
-		}
-		//You have hit a dead end
-		//We need to find you a new direction
 		else{
-			//try right
-			if(myTileset.checkRight(I.xTile,I.yTile)){
-				right = Math.sqrt(((I.xTile+1-target.x)*(I.xTile+1-target.x))+((I.yTile-target.y)*(I.yTile-target.y)));
-			}
-			//try left
-			if(myTileset.checkLeft(I.xTile,I.yTile)){
-				left = Math.sqrt(((I.xTile-1-target.x)*(I.xTile-1-target.x))+((I.yTile-target.y)*(I.yTile-target.y)));
-			}
-			//try down
-			if(myTileset.checkDown(I.xTile,I.yTile)){
-				down = Math.sqrt(((I.xTile-target.x)*(I.xTile-target.x))+((I.yTile+1-target.y)*(I.yTile+1-target.y)));
-			}
-			//try up
-			if(myTileset.checkUp(I.xTile,I.yTile)){
-				down = Math.sqrt(((I.xTile-target.x)*(I.xTile-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
-			}
-			if(DEBUG){
-
-				canvas.fillText("blinky up = "+up,200,40);
-				canvas.fillText("blinky down = "+down,200,50);
-				canvas.fillText("blinky left = "+left,200,60);
-				canvas.fillText("blinky right = "+right,200,70);
-			}
-
-		}
-		//So now we have all the distances, find the shortest one
-		var tempDist = Math.min(up,down,left,right);
-		//Make sure we actually found a smallest distance
-		if(tempDist != 9999){
-			//Now assign the shortest direction to the next direction
-			//Next time pacman changes diretion it will be to nextDirection
-			switch(tempDist){
-				case up:
-					I.nextDirection = 3;
-					break;
-				case down:
-					I.nextDirection = 4;
-					break;
-				case left:
-					I.nextDirection = 1;
-					break;
-				case right:
-					I.nextDirection = 2;
-					break;
-			}
-		}
-		/*Switch to nextDirection at the right time
-		 *If the direction we are going in is not nextDirection
-		 *We want to go in nextDirection as soon as possible
-		 */
-
-		if(I.direction != I.nextDirection){
 			//If your next direction is up and you have the chance to switch do so
 			if(myTileset.checkUp(I.xTile,I.yTile) && I.nextDirection != 3){
 				I.movement = I.nextDirection;
@@ -415,6 +431,10 @@ function ghost(x,y,color,lookahead){
 
 	}
 
+	I.setTarget = function(target){
+		I.target = target;
+	}
+
 	I.draw = function(){
 		canvas.fillStyle = color;
 	 	canvas.fillRect(I.x - (I.width/2), I.y - (I.height/2), I.width, I.height);
@@ -423,7 +443,7 @@ function ghost(x,y,color,lookahead){
 	return I;
 }
 
-var blinky = ghost(7*16,5*16,"#FF0000", true);
+var blinky = ghost(7*16,5*16,"#FF0000", true, {x:pacman.xTile,y:pacman.yTile});
 var pinky = ghost(20*16,5*16,"#FF00FF");
 var inky = ghost(7*16,32*16,"#00FFFF");
 var clyde = ghost(20*16,32*16,"#FFA500");
@@ -440,15 +460,13 @@ function debug(ISDEBUG){
 		canvas.fillText("blinky movement = "+blinky.movement,200,10);
 		canvas.fillText("blinky nextDirection = "+blinky.nextDirection,200,20);
 		canvas.fillText("blinky pos: x = "+ blinky.x + " y = " + blinky.y,200,30);
-
+		canvas.fillText("blinky up = "+blinky.up,200,40);
+		canvas.fillText("blinky down = "+blinky.down,200,50);
+		canvas.fillText("blinky left = "+blinky.left,200,60);
+		canvas.fillText("blinky right = "+blinky.right,200,70);
 	}
 }
 
-//We need something that can find a shortest path
-//Must be given, start(x,y), end(x,y), and map
-function findPath(start, end, mapdata){
-
-}
 
 //I need this to handle input
 window.addEventListener('keydown', function (e) {
