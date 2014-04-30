@@ -20,7 +20,7 @@ canvasElement.appendTo('body');
 var FPS = 30;
 
 
-var DEBUG = true;
+var DEBUG = false;
 //Lets call this a debug map
 /*Original pacman has a tileset of 28x36 so thats what we
  *will be going for here. Of course we will need to draw over
@@ -86,6 +86,7 @@ function draw(){
 	pinky.draw();
 	inky.draw();
 	clyde.draw();
+	blinky.visualize();
 }
 
 function player(){
@@ -463,6 +464,60 @@ function ghost(x,y,ghostSprite,lookahead,target){
 	 	*/
 	 	I.sprite.draw(I.x - (I.width/2), I.y - (I.height/2));
 	};
+
+	/* Drawing lines to get a visual representaion of
+	 * the distance computation done by the AI
+	*/
+	I.visualize = function(){
+
+		canvas.strokeStyle = "#FF0000";
+		canvas.fillStyle = "#FF0000";
+		var extraRightCost = 0;
+		var extraDownCost = 0;
+
+		if(I.movement == 1) {extraRightCost = -1;}
+		if(I.movement == 2) {extraRightCost = 1;}
+		if(I.movement == 3) {extraDownCost = -1;}
+		if(I.movement == 4) {extraDownCost = 1;}
+
+		//If we calculated a right path
+		if(I.right != 9999){
+			canvas.beginPath();
+			canvas.moveTo((I.xTile+extraRightCost+1)*16+8,(I.yTile+extraDownCost)*16+8);
+			canvas.lineTo(pacman.xTile*16+8, pacman.yTile*16+8);
+			canvas.stroke();
+			canvas.fillRect((I.xTile+extraRightCost+1)*16,(I.yTile+extraDownCost)*16,16,16);
+
+		}
+		//If we calculated a left path
+		if(I.left != 9999){
+			canvas.beginPath();
+			canvas.moveTo((I.xTile+extraRightCost-1)*16+8,(I.yTile+extraDownCost)*16+8);
+			canvas.lineTo(pacman.xTile*16+8, pacman.yTile*16+8);
+			canvas.stroke();
+			canvas.fillRect((I.xTile+extraRightCost-1)*16,(I.yTile+extraDownCost)*16,16,16);
+
+		}
+		//If we calculated an up path
+		if(I.up != 9999){
+			canvas.beginPath();
+			canvas.moveTo((I.xTile+extraRightCost)*16+8,(I.yTile+extraDownCost-1)*16+8);
+			canvas.lineTo(pacman.xTile*16+8, pacman.yTile*16+8);
+			canvas.stroke();
+			canvas.fillRect((I.xTile+extraRightCost)*16,(I.yTile+extraDownCost-1)*16,16,16);
+
+		}
+		//If we calculated a down path
+		if(I.down != 9999){
+			canvas.beginPath();
+			canvas.moveTo((I.xTile+extraRightCost)*16+8,(I.yTile+extraDownCost+1)*16+8);
+			canvas.lineTo(pacman.xTile*16+8, pacman.yTile*16+8);
+			canvas.stroke();
+			canvas.fillRect((I.xTile+extraRightCost)*16,(I.yTile+extraDownCost+1)*16,16,16);
+
+		}
+
+	}
 
 	return I;
 }
