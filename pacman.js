@@ -121,6 +121,9 @@ function player(){
 	I.up = false;
 	I.down = false;
 
+	//Get the desired next direction
+	I.nextDirection = 0;
+
 	//PacMan has to move
 	I.update = function(){
 		//Update what tile pacman is on
@@ -142,6 +145,21 @@ function player(){
 		I.up = myTileset.checkUp(I.xTile,I.yTile);
 		I.down = myTileset.checkDown(I.xTile,I.yTile);
 
+
+		if(I.nextDirection != I.movement){
+			if(I.nextDirection == 1 && I.left){
+				I.movement = I.nextDirection;
+			}
+			else if(I.nextDirection == 2 && I.right){
+				I.movement = I.nextDirection;
+			}
+			else if(I.nextDirection == 3 && I.up){
+				I.movement = I.nextDirection;
+			}
+			else if(I.nextDirection == 4 && I.down){
+				I.movement = I.nextDirection;
+			}
+		}
 		//Need to check the status of tiles above or below the current
 		//LEFT
 		if(I.movement == 1){
@@ -197,7 +215,7 @@ var pacman = player();
  * or bones, those would be skelingtons. Also very scary
  */
 
-function ghost(x,y,color,lookahead,target){
+function ghost(x,y,ghostSprite,lookahead,target){
 	var I = {};
 	//Eventually "color" will be "sprite" and hopefully then "animation"
 	I.x = x;
@@ -219,6 +237,9 @@ function ghost(x,y,color,lookahead,target){
 
 	//The speed the ghosts move
 	I.velocity = 2;
+
+	//Assign a sprite
+	I.sprite = sprite(ghostSprite,canvas,16,16);
 
 	I.up = 9999;
 	I.down = 9999;
@@ -436,27 +457,31 @@ function ghost(x,y,color,lookahead,target){
 	}
 
 	I.draw = function(){
+		/*
 		canvas.fillStyle = color;
 	 	canvas.fillRect(I.x - (I.width/2), I.y - (I.height/2), I.width, I.height);
+	 	*/
+	 	I.sprite.draw(I.x - (I.width/2), I.y - (I.height/2));
 	};
 
 	return I;
 }
 
-var blinky = ghost(7*16,5*16,"#FF0000", true, {x:pacman.xTile,y:pacman.yTile});
-var pinky = ghost(20*16,5*16,"#FF00FF");
-var inky = ghost(7*16,32*16,"#00FFFF");
-var clyde = ghost(20*16,32*16,"#FFA500");
+var blinky = ghost(7*16,5*16,"blinky.png", true, {x:pacman.xTile,y:pacman.yTile});
+var pinky = ghost(20*16,5*16,"pinky.png");
+var inky = ghost(7*16,32*16,"inky.png");
+var clyde = ghost(20*16,32*16,"clyde.png");
 
 function debug(ISDEBUG){
 	if(ISDEBUG){
 		canvas.fillStyle = "#FFF";
 		canvas.fillText("pacman movement = "+pacman.movement,0,10);
-		canvas.fillText("pacman pos: x = "+ pacman.xLoc + " y = " + pacman.yLoc,0,20);
-		canvas.fillText("pacman left = "+pacman.left,0,30);
-		canvas.fillText("pacman right = "+pacman.right,0,40);
-		canvas.fillText("pacman up = "+pacman.up,0,50);
-		canvas.fillText("pacman down = "+pacman.down,0,60);
+		canvas.fillText("pacman nextDirection = "+pacman.nextDirection,0,20);
+		canvas.fillText("pacman pos: x = "+ pacman.xLoc + " y = " + pacman.yLoc,0,30);
+		canvas.fillText("pacman left = "+pacman.left,0,40);
+		canvas.fillText("pacman right = "+pacman.right,0,50);
+		canvas.fillText("pacman up = "+pacman.up,0,60);
+		canvas.fillText("pacman down = "+pacman.down,0,70);
 		canvas.fillText("blinky movement = "+blinky.movement,200,10);
 		canvas.fillText("blinky nextDirection = "+blinky.nextDirection,200,20);
 		canvas.fillText("blinky pos: x = "+ blinky.x + " y = " + blinky.y,200,30);
@@ -473,28 +498,20 @@ window.addEventListener('keydown', function (e) {
 	switch(e.keyCode){
 		//If left is pressed
 		case 37:
-			if(pacman.left){
-				pacman.movement = 1;
-			}
+			pacman.nextDirection = 1;
 
 		break;
 		//If right is pressed
 		case 39:
-			if(pacman.right){
-				pacman.movement = 2;
-			}
+			pacman.nextDirection = 2;
 		break;
 		//If up is pressed
 		case 38:
-			if(pacman.up){
-				pacman.movement = 3;	
-			}
+			pacman.nextDirection = 3;
 		break;
 		//If down is pressed
 		case 40:
-			if(pacman.down){
-				pacman.movement = 4;
-			}
+			pacman.nextDirection = 4;
 		break;
 	}
 }, false);
