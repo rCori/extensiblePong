@@ -20,7 +20,7 @@ canvasElement.appendTo('body');
 var FPS = 30;
 
 
-var DEBUG = false;
+var DEBUG = true;
 //Lets call this a debug map
 /*Original pacman has a tileset of 28x36 so thats what we
  *will be going for here. Of course we will need to draw over
@@ -345,7 +345,9 @@ function ghost(x,y,ghostSprite,lookahead,target){
 		if(I.movement == I.nextDirection){
 			//If you are going left and you can continue going left
 			if((I.movement == 1) && (myTileset.checkLeft(I.xTile,I.yTile))){
-				I.left = Math.sqrt(((I.xTile-2-target.x)*(I.xTile-2-target.x))+((I.yTile-target.y)*(I.yTile-target.y)));
+				if(myTileset.checkLeft(I.xTile-1,I.yTile)){
+					I.left = Math.sqrt(((I.xTile-2-target.x)*(I.xTile-2-target.x))+((I.yTile-target.y)*(I.yTile-target.y)));
+				}
 				if(myTileset.checkUp(I.xTile-1,I.yTile)){
 					I.up = Math.sqrt(((I.xTile-1-target.x)*(I.xTile-1-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
 				}
@@ -355,7 +357,9 @@ function ghost(x,y,ghostSprite,lookahead,target){
 			}
 			//You are going right and you can continue going right
 			else if((I.movement == 2) && (myTileset.checkRight(I.xTile,I.yTile))){
-				I.right = Math.sqrt(((I.xTile+2-target.x)*(I.xTile+2-target.x))+((I.yTile-target.y)*(I.yTile-target.y)));
+				if(myTileset.checkRight(I.xTile+1,I.yTile)){
+					I.right = Math.sqrt(((I.xTile+2-target.x)*(I.xTile+2-target.x))+((I.yTile-target.y)*(I.yTile-target.y)));
+				}
 				if(myTileset.checkUp(I.xTile+1,I.yTile)){
 					I.up = Math.sqrt(((I.xTile+1-target.x)*(I.xTile+1-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
 				}
@@ -365,7 +369,9 @@ function ghost(x,y,ghostSprite,lookahead,target){
 			}
 			//You are going up and you can continue going up
 			else if((I.movement == 3) && (myTileset.checkUp(I.xTile,I.yTile))){
-				I.up = Math.sqrt(((I.xTile-target.x)*(I.xTile-target.x))+((I.yTile-2-target.y)*(I.yTile-2-target.y)));
+				if(myTileset.checkUp(I.xTile,I.yTile-1)){
+					I.up = Math.sqrt(((I.xTile-target.x)*(I.xTile-target.x))+((I.yTile-2-target.y)*(I.yTile-2-target.y)));
+				}
 				if(myTileset.checkRight(I.xTile,I.yTile-1)){
 					I.right = Math.sqrt(((I.xTile+1-target.x)*(I.xTile+1-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
 				}
@@ -375,7 +381,9 @@ function ghost(x,y,ghostSprite,lookahead,target){
 			}
 			//You are going down and you can continue to go down
 			else if((I.movement == 4) && (myTileset.checkDown(I.xTile,I.yTile))){
-				I.down = Math.sqrt(((I.xTile-target.x)*(I.xTile-target.x))+((I.yTile+2-target.y)*(I.yTile+2-target.y)));
+				if(myTileset.checkDown(I.xTile,I.yTile+1)){
+					I.down = Math.sqrt(((I.xTile-target.x)*(I.xTile-target.x))+((I.yTile+2-target.y)*(I.yTile+2-target.y)));
+				}
 				if(myTileset.checkRight(I.xTile,I.yTile+1)){
 					I.right = Math.sqrt(((I.xTile+1-target.x)*(I.xTile+1-target.x))+((I.yTile+1-target.y)*(I.yTile+1-target.y)));
 				}
@@ -383,8 +391,24 @@ function ghost(x,y,ghostSprite,lookahead,target){
 					I.left = Math.sqrt(((I.xTile-1-target.x)*(I.xTile-1-target.x))+((I.yTile+1-target.y)*(I.yTile+1-target.y)));
 				}
 			}
+			//You are going nowhere or have hit a dead end.
+			else{
+				if(myTileset.checkDown(I.xTile,I.yTile) && I.movement != 3){
+					I.down = Math.sqrt(((I.xTile-target.x)*(I.xTile-target.x))+((I.yTile+1-target.y)*(I.yTile+1-target.y)));
+				}
+				if(myTileset.checkRight(I.xTile,I.yTile) && I.movement !=1){
+					I.right = Math.sqrt(((I.xTile+1-target.x)*(I.xTile+1-target.x))+((I.yTile-target.y)*(I.yTile-target.y)));
+				}
+				if(myTileset.checkLeft(I.xTile,I.yTile) && I.movement != 2){
+					I.left = Math.sqrt(((I.xTile-1-target.x)*(I.xTile-1-target.x))+((I.yTile-target.y)*(I.yTile-target.y)));
+				}
+				if(myTileset.checkUp(I.xTile,I.yTile) && I.movement != 4){
+					I.up = Math.sqrt(((I.xTile-target.x)*(I.xTile-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
+				}
+			}
 			//You have hit a dead end
-			//We need to find you a new direction
+			//We need to find you a new direction and that direction should not be backwards
+			/*
 			else{
 				//try right
 				if(myTileset.checkRight(I.xTile,I.yTile)){
@@ -403,7 +427,9 @@ function ghost(x,y,ghostSprite,lookahead,target){
 					I.up = Math.sqrt(((I.xTile-target.x)*(I.xTile-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
 				}
 
+
 			}
+			*/
 			//So now we have all the distances, find the shortest one
 			var tempDist = Math.min(I.up,I.down,I.left,I.right);
 			//Make sure we actually found a smallest distance

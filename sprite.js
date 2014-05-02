@@ -23,13 +23,42 @@ function sprite(image,canvas,width,height){
 	 else{
 	 	I.imageObj = image;
 	 }
-	 I.loaded = false;
+	 //I.loaded = false;
 	 I.width = width;
 	 I.height = height;
 
-	 if(typeof image === "string"){
-	 	I.imageObj.onload = function(){
-	 		I.loaded = true;
+	 I.draw = jQuery.noop;
+
+	 I.imageObj.onload = function(){
+	 	I.draw = function(x, y, degree){
+	 		//optional argument
+	 		degree = degree || 0;
+	 		//If you are getting an image filename
+	 		if(typeof image === "string"){
+	 			if(degree != 0){
+	 				//Save the context
+	 				canvas.save();
+	 				//translate the canvas to center of where we are drawing the the thing
+	 				canvas.translate(x+(I.width/2),y+(I.height/2));
+
+	 				//rotate the canvas
+	 				canvas.rotate(degree*(Math.PI/180));
+
+	 				//draw the thing
+	 				canvas.drawImage(I.imageObj,I.width/2*(-1),I.height/2*(-1),I.width,I.height);
+
+	 				//Now fix everything
+	 				canvas.rotate(degree *(Math.PI/180)*(-1));
+	 				canvas.translate((x+(I.width/2))*(-1),(y+(I.height/2))*(-1));
+	 			}
+	 			//There is no degree to rotate for.
+	 			else{
+	 				canvas.drawImage(I.imageObj,x,y,I.width,I.height);
+	 			}
+	 		}
+	 		else{
+	 			canvas.putImageData(I.imageObj,x,y);
+	 		}
 	 	};
 	 }
 
