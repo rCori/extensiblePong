@@ -72,8 +72,9 @@ function update(){
 	//update here
 	pacman.update();
 	blinky.update();
-	blinky.setTarget({x:pacman.xTile,y:pacman.yTile});
+	blinky.findTarget();
 	pinky.update();
+	pinky.findTarget();
 	inky.update();
 	clyde.update();
 	debug(DEBUG);
@@ -86,7 +87,8 @@ function draw(){
 	pinky.draw();
 	inky.draw();
 	clyde.draw();
-	blinky.visualize();
+	blinky.visualize("#FF0000");
+	pinky.visualize("#FF66CC")
 }
 
 function player(){
@@ -406,30 +408,6 @@ function ghost(x,y,ghostSprite,lookahead,target){
 					I.up = Math.sqrt(((I.xTile-target.x)*(I.xTile-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
 				}
 			}
-			//You have hit a dead end
-			//We need to find you a new direction and that direction should not be backwards
-			/*
-			else{
-				//try right
-				if(myTileset.checkRight(I.xTile,I.yTile)){
-					I.right = Math.sqrt(((I.xTile+1-target.x)*(I.xTile+1-target.x))+((I.yTile-target.y)*(I.yTile-target.y)));
-				}
-				//try left
-				if(myTileset.checkLeft(I.xTile,I.yTile)){
-					I.left = Math.sqrt(((I.xTile-1-target.x)*(I.xTile-1-target.x))+((I.yTile-target.y)*(I.yTile-target.y)));
-				}
-				//try down
-				if(myTileset.checkDown(I.xTile,I.yTile)){
-					I.down = Math.sqrt(((I.xTile-target.x)*(I.xTile-target.x))+((I.yTile+1-target.y)*(I.yTile+1-target.y)));
-				}
-				//try up
-				if(myTileset.checkUp(I.xTile,I.yTile)){
-					I.up = Math.sqrt(((I.xTile-target.x)*(I.xTile-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
-				}
-
-
-			}
-			*/
 			//So now we have all the distances, find the shortest one
 			var tempDist = Math.min(I.up,I.down,I.left,I.right);
 			//Make sure we actually found a smallest distance
@@ -479,9 +457,6 @@ function ghost(x,y,ghostSprite,lookahead,target){
 
 	}
 
-	I.setTarget = function(target){
-		I.target = target;
-	}
 
 	I.draw = function(){
 		/*
@@ -494,10 +469,10 @@ function ghost(x,y,ghostSprite,lookahead,target){
 	/* Drawing lines to get a visual representaion of
 	 * the distance computation done by the AI
 	*/
-	I.visualize = function(){
+	I.visualize = function(color){
 
-		canvas.strokeStyle = "#FF0000";
-		canvas.fillStyle = "#FF0000";
+		canvas.strokeStyle = color;
+		canvas.fillStyle = color;
 		var extraRightCost = 0;
 		var extraDownCost = 0;
 
@@ -510,7 +485,7 @@ function ghost(x,y,ghostSprite,lookahead,target){
 		if(I.right != 9999){
 			canvas.beginPath();
 			canvas.moveTo((I.xTile+extraRightCost+1)*16+8,(I.yTile+extraDownCost)*16+8);
-			canvas.lineTo(pacman.xTile*16+8, pacman.yTile*16+8);
+			canvas.lineTo(I.target.x*16+8, I.target.y*16+8);
 			canvas.stroke();
 			canvas.fillRect((I.xTile+extraRightCost+1)*16,(I.yTile+extraDownCost)*16,16,16);
 
@@ -519,7 +494,7 @@ function ghost(x,y,ghostSprite,lookahead,target){
 		if(I.left != 9999){
 			canvas.beginPath();
 			canvas.moveTo((I.xTile+extraRightCost-1)*16+8,(I.yTile+extraDownCost)*16+8);
-			canvas.lineTo(pacman.xTile*16+8, pacman.yTile*16+8);
+			canvas.lineTo(I.target.x*16+8, I.target.y*16+8);
 			canvas.stroke();
 			canvas.fillRect((I.xTile+extraRightCost-1)*16,(I.yTile+extraDownCost)*16,16,16);
 
@@ -528,7 +503,7 @@ function ghost(x,y,ghostSprite,lookahead,target){
 		if(I.up != 9999){
 			canvas.beginPath();
 			canvas.moveTo((I.xTile+extraRightCost)*16+8,(I.yTile+extraDownCost-1)*16+8);
-			canvas.lineTo(pacman.xTile*16+8, pacman.yTile*16+8);
+			canvas.lineTo(I.target.x*16+8, I.target.y*16+8);
 			canvas.stroke();
 			canvas.fillRect((I.xTile+extraRightCost)*16,(I.yTile+extraDownCost-1)*16,16,16);
 
@@ -537,7 +512,7 @@ function ghost(x,y,ghostSprite,lookahead,target){
 		if(I.down != 9999){
 			canvas.beginPath();
 			canvas.moveTo((I.xTile+extraRightCost)*16+8,(I.yTile+extraDownCost+1)*16+8);
-			canvas.lineTo(pacman.xTile*16+8, pacman.yTile*16+8);
+			canvas.lineTo(I.target.x*16+8, I.target.y*16+8);
 			canvas.stroke();
 			canvas.fillRect((I.xTile+extraRightCost)*16,(I.yTile+extraDownCost+1)*16,16,16);
 
@@ -548,10 +523,33 @@ function ghost(x,y,ghostSprite,lookahead,target){
 	return I;
 }
 
-var blinky = ghost(7*16,5*16,"blinky.png", true, {x:pacman.xTile,y:pacman.yTile});
-var pinky = ghost(20*16,5*16,"pinky.png");
+var blinky = ghost(7*16,5*16,"blinky.png", true);
+var pinky = ghost(20*16,5*16,"pinky.png", true);
 var inky = ghost(7*16,32*16,"inky.png");
 var clyde = ghost(20*16,32*16,"clyde.png");
+
+blinky.findTarget = function(){
+	blinky.target = {x:pacman.xTile,y:pacman.yTile};
+}
+
+//Pinky chases 4 ahead of PacMan
+//There is a noted bug which I am including here
+pinky.findTarget = function(){
+
+	if(pacman.movement == 1){
+		pinky.target = {x:pacman.xTile-4,y:pacman.yTile};
+	}
+	else if(pacman.movement == 2){
+		pinky.target = {x:pacman.xTile+4,y:pacman.yTile};
+	}
+	//Here I am implementing the bug
+	else if(pacman.movement == 3){
+		pinky.target = {x:pacman.xTile-4, y:pacman.yTile-4};
+	}
+	else if(pacman.movement == 4){
+		pinky.target = {x:pacman.xTile, y:pacman.yTile + 4};
+	}
+}
 
 function debug(ISDEBUG){
 	if(ISDEBUG){
