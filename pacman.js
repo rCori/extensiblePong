@@ -20,7 +20,7 @@ canvasElement.appendTo('body');
 var FPS = 30;
 
 
-var DEBUG = true;
+var DEBUG = false;
 //Lets call this a debug map
 /*Original pacman has a tileset of 28x36 so thats what we
  *will be going for here. Of course we will need to draw over
@@ -72,11 +72,8 @@ function update(){
 	//update here
 	pacman.update();
 	blinky.update();
-	blinky.findTarget();
 	pinky.update();
-	pinky.findTarget();
 	inky.update();
-	inky.findTarget();
 	clyde.update();
 	debug(DEBUG);
 };
@@ -91,6 +88,7 @@ function draw(){
 	blinky.visualize("#FF0000");
 	pinky.visualize("#FF66CC");
 	inky.visualize("#00FFFF");
+	clyde.visualize();
 }
 
 function player(){
@@ -279,13 +277,12 @@ function ghost(x,y,ghostSprite,lookahead,target){
 			I.yTile = newTile.yTile;
 			if(lookahead){
 				I.singleLookaheadSearch(I.target);
+				I.findTarget();
 			}
 			else{
 				I.decide();
 			}
-		}
-		I.xTile = newTile.xTile;
-		I.yTile = newTile.yTile;
+		};
 
 		//Need to check the status of tiles above or below the current
 		//LEFT
@@ -540,7 +537,7 @@ function ghost(x,y,ghostSprite,lookahead,target){
 var blinky = ghost(7*16,5*16,"blinky.png", true);
 var pinky = ghost(20*16,5*16,"pinky.png", true);
 var inky = ghost(7*16,32*16,"inky.png", true);
-var clyde = ghost(20*16,32*16,"clyde.png");
+var clyde = ghost(20*16,32*16,"clyde.png",true);
 
 
 //Blinky literally just follows pacman directly
@@ -616,10 +613,77 @@ inky.findTarget = function(){
 	var dist = {};
 	dist.x = 2*(offset.x-blinky.x);
 	dist.y = 2*(offset.y-blinky.y);
-	//var targetTile = myTileset.findTile(dist.x,dist.y);
 	var targetTile = myTileset.findTile(blinky.x+dist.x,blinky.y+dist.y);
 	inky.target = {x:targetTile.xTile,y:targetTile.yTile};
 
+}
+
+clyde.findTarget = function(){
+	//find the euclidian distance between clyde's tile
+	//and pacman's tile
+	//Get the pixel locations of these tiles
+	var clydeTile = myTileset.findLoc(clyde.xTile,clyde.yTile);
+	var pacTile = myTileset.findLoc(pacman.xTile,pacman.yTile);
+	var distance = Math.sqrt(((clydeTile.xLoc-pacTile.xLoc)*(clydeTile.xLoc-pacTile.xLoc))+((clydeTile.yLoc-pacTile.yLoc)*(clydeTile.yLoc-pacTile.yLoc)));
+	if(distance > 8*myTileset.tileWidth){
+		clyde.target = {x:pacman.xTile,y:pacman.yTile};
+	}
+	else{
+		clyde.target = {x:0,y:34};
+	}
+}
+
+//Right now this just draws a circle around pacman
+//Very cheap effect for right, can look better in the future
+clyde.visualize = function(){
+	canvas.strokeStyle = "#FF6600";
+	canvas.fillStyle = "#FF6600";
+	canvas.beginPath();
+	canvas.arc(pacman.xLoc,pacman.yLoc,16*8,0,2*Math.PI);
+	canvas.stroke();
+
+	var extraRightCost = 0;
+	var extraDownCost = 0;
+
+	if(clyde.movement == 1) {extraRightCost = -1;}
+	if(clyde.movement == 2) {extraRightCost = 1;}
+	if(clyde.movement == 3) {extraDownCost = -1;}
+	if(clyde.movement == 4) {extraDownCost = 1;}
+
+	//If we calculated a right path
+	if(clyde.right != 9999){
+		canvas.beginPath();
+		canvas.moveTo((clyde.xTile+extraRightCost+1)*16+8,(clyde.yTile+extraDownCost)*16+8);
+		canvas.lineTo(clyde.target.x*16+8, clyde.target.y*16+8);
+		canvas.stroke();
+		canvas.fillRect((clyde.xTile+extraRightCost+1)*16,(clyde.yTile+extraDownCost)*16,16,16);
+	}
+	//If we calculated a left path
+	if(clyde.left != 9999){
+		canvas.beginPath();
+		canvas.moveTo((clyde.xTile+extraRightCost-1)*16+8,(clyde.yTile+extraDownCost)*16+8);
+		canvas.lineTo(clyde.target.x*16+8, clyde.target.y*16+8);
+		canvas.stroke();
+		canvas.fillRect((clyde.xTile+extraRightCost-1)*16,(clyde.yTile+extraDownCost)*16,16,16);
+
+	}
+	//If we calculated an up path
+	if(clyde.up != 9999){
+		canvas.beginPath();
+		canvas.moveTo((clyde.xTile+extraRightCost)*16+8,(clyde.yTile+extraDownCost-1)*16+8);
+		canvas.lineTo(clyde.target.x*16+8, clyde.target.y*16+8);
+		canvas.stroke();
+		canvas.fillRect((clyde.xTile+extraRightCost)*16,(clyde.yTile+extraDownCost-1)*16,16,16);
+	}
+	//If we calculated a down path
+	if(clyde.down != 9999){
+		canvas.beginPath();
+		canvas.moveTo((clyde.xTile+extraRightCost)*16+8,(clyde.yTile+extraDownCost+1)*16+8);
+		canvas.lineTo(clyde.target.x*16+8, clyde.target.y*16+8);
+		canvas.stroke();
+		canvas.fillRect((clyde.xTile+extraRightCost)*16,(clyde.yTile+extraDownCost+1)*16,16,16);
+
+	}
 }
 
 function debug(ISDEBUG){
