@@ -76,6 +76,7 @@ function update(){
 	pinky.update();
 	pinky.findTarget();
 	inky.update();
+	inky.findTarget();
 	clyde.update();
 	debug(DEBUG);
 };
@@ -88,7 +89,8 @@ function draw(){
 	inky.draw();
 	clyde.draw();
 	blinky.visualize("#FF0000");
-	pinky.visualize("#FF66CC")
+	pinky.visualize("#FF66CC");
+	inky.visualize("#00FFFF");
 }
 
 function player(){
@@ -128,39 +130,53 @@ function player(){
 	I.nextDirection = 0;
 
 	//PacMan has to move
+	//STUB PLEASE REMEMBER
+	/* This needs to be optamized so it only happens when
+	 * pacman enters a new tile
+	 */
 	I.update = function(){
 		//Update what tile pacman is on
 		var newTile = myTileset.findTile(I.xLoc,I.yLoc);
-		I.xTile = newTile.xTile;
-		I.yTile = newTile.yTile;
-		//Check if we are eating a dot
-		if(myTileset.map[I.xTile][I.yTile] === 'o'){
-			myTileset.map[I.xTile][I.yTile] = 'e';
-		}
-		//Check if we are getting an energizer pellet
-		if(myTileset.map[I.xTile][I.yTile] === 'O'){
-			myTileset.map[I.xTile][I.yTile] = 'e';
-		}
+		if(newTile.xLoc != I.xLoc || newTile.yLoc != I.yLoc){
+			//Check if we are eating a dot
+			if(myTileset.map[I.xTile][I.yTile] === 'o'){
+				myTileset.map[I.xTile][I.yTile] = 'e';
+			}
+			//Check if we are getting an energizer pellet
+			if(myTileset.map[I.xTile][I.yTile] === 'O'){
+				myTileset.map[I.xTile][I.yTile] = 'e';
+			}
 
-		//update the movement options
-		I.left = myTileset.checkLeft(I.xTile,I.yTile);
-		I.right = myTileset.checkRight(I.xTile,I.yTile);
-		I.up = myTileset.checkUp(I.xTile,I.yTile);
-		I.down = myTileset.checkDown(I.xTile,I.yTile);
+			//update the movement options
+			I.left = myTileset.checkLeft(I.xTile,I.yTile);
+			I.right = myTileset.checkRight(I.xTile,I.yTile);
+			I.up = myTileset.checkUp(I.xTile,I.yTile);
+			I.down = myTileset.checkDown(I.xTile,I.yTile);
+			I.xTile = newTile.xTile;
+			I.yTile = newTile.yTile;
 
+		}
 
 		if(I.nextDirection != I.movement){
 			if(I.nextDirection == 1 && I.left){
-				I.movement = I.nextDirection;
+				if(myTileset.checkLeft(I.xTile,I.yTile)){
+					I.movement = I.nextDirection;
+				}
 			}
 			else if(I.nextDirection == 2 && I.right){
-				I.movement = I.nextDirection;
+				if(myTileset.checkRight(I.xTile,I.yTile)){
+					I.movement = I.nextDirection;
+				}
 			}
 			else if(I.nextDirection == 3 && I.up){
-				I.movement = I.nextDirection;
+				if(myTileset.checkUp(I.xTile,I.yTile)){
+					I.movement = I.nextDirection;
+				}
 			}
 			else if(I.nextDirection == 4 && I.down){
-				I.movement = I.nextDirection;
+				if(myTileset.checkDown(I.xTile,I.yTile)){
+					I.movement = I.nextDirection;
+				}
 			}
 		}
 		//Need to check the status of tiles above or below the current
@@ -228,7 +244,7 @@ function ghost(x,y,ghostSprite,lookahead,target){
 	I.height = 16;
 	I.width =16;
 
-	var startTiles = myTileset.findTile();
+	var startTiles = myTileset.findTile(I.x,I.y);
 	I.xTile = startTiles.xTile;
 	I.yTile = startTiles.yTile;
 
@@ -268,10 +284,8 @@ function ghost(x,y,ghostSprite,lookahead,target){
 				I.decide();
 			}
 		}
-		else{
-			I.xTile = newTile.xTile;
-			I.yTile = newTile.yTile;
-		}
+		I.xTile = newTile.xTile;
+		I.yTile = newTile.yTile;
 
 		//Need to check the status of tiles above or below the current
 		//LEFT
@@ -525,9 +539,12 @@ function ghost(x,y,ghostSprite,lookahead,target){
 
 var blinky = ghost(7*16,5*16,"blinky.png", true);
 var pinky = ghost(20*16,5*16,"pinky.png", true);
-var inky = ghost(7*16,32*16,"inky.png");
+var inky = ghost(7*16,32*16,"inky.png", true);
 var clyde = ghost(20*16,32*16,"clyde.png");
 
+
+//Blinky literally just follows pacman directly
+//His target tile is always just the target tile of pacman
 blinky.findTarget = function(){
 	blinky.target = {x:pacman.xTile,y:pacman.yTile};
 }
@@ -551,6 +568,60 @@ pinky.findTarget = function(){
 	}
 }
 
+
+/* Inky needs bliny's target tile and current location to find his
+ * own. Inky takes blinky's target, which is pacman, and adds 2 tiles
+ * in the direction pacman is facing. Then he takes that tile and gets
+ * difference between it and blinky's current location call it x. That difference
+ * is doubled to 2x. Inky's target tile is at the end of a line segment 2x
+ * long with one end at blinky's current location and midpoint being that
+ * 2 offset tile. The offset tile location has a bug much like pinky where
+ * When pacman is pointing up, the offset is 2 up AND 2 LEFT of blinky's
+ * target(pacman's location).
+ * 
+ */
+
+inky.findTarget = function(){
+	var offset = {};
+	if(pacman.movement == 1){
+		offset.x = blinky.target.x - 2;
+		offset.y = blinky.target.y;
+	}
+	else if(pacman.movement == 2){
+		offset.x = blinky.target.x + 2;
+		offset.y = blinky.target.y;
+	}
+	else if(pacman.movement == 3){
+		offset.x = blinky.target.x - 2;
+		offset.y = blinky.target.y - 2;
+	}
+	else if(pacman.movement == 4){
+		offset.x = blinky.target.x;
+		offset.y = blinky.target.y + 2;
+	}
+	//If pacman isn't moving make it chase
+	else{
+		inky.target = {x:28, y:34};
+		return;
+	}
+	//make offset in terms of pixel not tile
+	//get the pixel in the center of the offset tile
+	offset.x = (offset.x*16)+8;
+	offset.y = (offset.y*16)+8;
+
+	//Find distance between offset tile and blinky's location
+	//Not absolute because we are going to double this and
+	//find it i relation to blinky IE this might be below and
+	//to the left, so we retain the sign
+	var dist = {};
+	dist.x = 2*(offset.x-blinky.x);
+	dist.y = 2*(offset.y-blinky.y);
+	//var targetTile = myTileset.findTile(dist.x,dist.y);
+	var targetTile = myTileset.findTile(blinky.x+dist.x,blinky.y+dist.y);
+	inky.target = {x:targetTile.xTile,y:targetTile.yTile};
+
+}
+
 function debug(ISDEBUG){
 	if(ISDEBUG){
 		canvas.fillStyle = "#FFF";
@@ -564,10 +635,13 @@ function debug(ISDEBUG){
 		canvas.fillText("blinky movement = "+blinky.movement,200,10);
 		canvas.fillText("blinky nextDirection = "+blinky.nextDirection,200,20);
 		canvas.fillText("blinky pos: x = "+ blinky.x + " y = " + blinky.y,200,30);
-		canvas.fillText("blinky up = "+blinky.up,200,40);
-		canvas.fillText("blinky down = "+blinky.down,200,50);
-		canvas.fillText("blinky left = "+blinky.left,200,60);
-		canvas.fillText("blinky right = "+blinky.right,200,70);
+		canvas.fillText("blinky pos: xTile = "+ blinky.xTile + " yTile = " + blinky.yTile,200,40);
+		canvas.fillText("blinky up = "+blinky.up,200,50);
+		canvas.fillText("blinky down = "+blinky.down,200,60);
+		canvas.fillText("blinky left = "+blinky.left,200,70);
+		canvas.fillText("blinky right = "+blinky.right,200,80);
+		canvas.fillText("inky target.x = "+inky.target.x,200,90);
+		canvas.fillText("inky target.y = "+inky.target.y,200,100);
 	}
 }
 
@@ -593,4 +667,9 @@ window.addEventListener('keydown', function (e) {
 			pacman.nextDirection = 4;
 		break;
 	}
+}, false);
+//I need this to handle input
+window.addEventListener('keyup', function (e) {
+	pacman.nextDirection = 0;
+
 }, false);
