@@ -146,12 +146,29 @@ function player(){
 			}
 
 			//update the movement options
-			I.left = myTileset.checkLeft(I.xTile,I.yTile);
-			I.right = myTileset.checkRight(I.xTile,I.yTile);
-			I.up = myTileset.checkUp(I.xTile,I.yTile);
-			I.down = myTileset.checkDown(I.xTile,I.yTile);
+
+			//wrap around
+			if((newTile.xTile < 1) || (newTile.xTile>23)){
+				I.left = true;
+				I.right = true;
+				I.up = false;
+				I.down = false;
+				console.log("Wrap");
+			}
+			else{
+				I.left = myTileset.checkLeft(I.xTile,I.yTile);
+				I.right = myTileset.checkRight(I.xTile,I.yTile);
+				I.up = myTileset.checkUp(I.xTile,I.yTile);
+				I.down = myTileset.checkDown(I.xTile,I.yTile);
+			}
 			I.xTile = newTile.xTile;
 			I.yTile = newTile.yTile;
+			if(newTile.xTile < 1){
+				I.xTile = 23;
+			}
+			if(newTile.xTile>23){
+				I.xTile = 1;
+			}
 
 		}
 
@@ -183,6 +200,10 @@ function player(){
 			if(I.left){
 				I.xLoc -= I.velocity;
 				I.yLoc = I.yTile * myTileset.tileHeight+(myTileset.tileHeight/2);
+				//wrap around
+				if(I.xLoc < 0){
+					I.xLoc = myTileset.width;
+				}
 				I.rotate = 180;
 			}
 		}
@@ -191,6 +212,10 @@ function player(){
 			if(I.right){
 				I.xLoc += I.velocity;
 				I.yLoc = I.yTile * myTileset.tileHeight+(myTileset.tileHeight/2);
+				//Wrap around
+				if(I.xLoc > myTileset.width){
+					I.xLoc = 0;
+				}
 				I.rotate = 0;
 			}
 		}
@@ -275,6 +300,13 @@ function ghost(x,y,ghostSprite,lookahead,target){
 		if (I.xTile !=newTile.xTile || I.yTile != newTile.yTile){
 			I.xTile = newTile.xTile;
 			I.yTile = newTile.yTile;
+			//This is really hacky and needs changing
+			if(I.xTile < 2){
+				I.xTile = 23;
+			}
+			if(I.xTile > 22){
+				I.xTile = 2;
+			}
 			if(lookahead){
 				I.singleLookaheadSearch(I.target);
 				I.findTarget();
@@ -289,6 +321,9 @@ function ghost(x,y,ghostSprite,lookahead,target){
 		if(I.movement == 1 && myTileset.checkLeft(I.xTile,I.yTile)){
 			//if(myTileset.checkLeft(I.xTile,I.yTile)){
 				I.x -= I.velocity;
+				if(I.x < 0){
+					I.x = myTileset.width;
+				}
 				I.y = I.yTile * myTileset.tileHeight+(myTileset.tileHeight/2);
 			//}
 		}
@@ -296,6 +331,9 @@ function ghost(x,y,ghostSprite,lookahead,target){
 			//RIGHT
 			//if(myTileset.checkRight(I.xTile,I.yTile)){
 				I.x += I.velocity;
+				if(I.x >myTileset.width){
+					I.x = 0;
+				}
 				I.y = I.yTile * myTileset.tileHeight+(myTileset.tileHeight/2);
 			//}
 		}
