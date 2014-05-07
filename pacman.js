@@ -20,7 +20,7 @@ canvasElement.appendTo('body');
 var FPS = 30;
 
 
-var DEBUG = false;
+var DEBUG = true;
 //Lets call this a debug map
 /*Original pacman has a tileset of 28x36 so thats what we
  *will be going for here. Of course we will need to draw over
@@ -110,6 +110,9 @@ function player(){
 	 */
 	I.movement = 0;
 
+	//A timer for the energizer
+	I.energizer = 0;
+
 	I.velocity = 3;
 	
 	//We want an image for pacman
@@ -143,12 +146,13 @@ function player(){
 			//Check if we are getting an energizer pellet
 			if(myTileset.map[I.xTile][I.yTile] === 'O'){
 				myTileset.map[I.xTile][I.yTile] = 'e';
+				I.energizer = 250;
 			}
 
 			//update the movement options
 
 			//wrap around
-			if((newTile.xTile < 1) || (newTile.xTile>23)){
+			if(((newTile.xTile < 1) || (newTile.xTile>26)) && (I.yTile == 17)){
 				I.left = true;
 				I.right = true;
 				I.up = false;
@@ -164,9 +168,9 @@ function player(){
 			I.xTile = newTile.xTile;
 			I.yTile = newTile.yTile;
 			if(newTile.xTile < 1){
-				I.xTile = 23;
+				I.xTile = 26;
 			}
-			if(newTile.xTile>23){
+			if(newTile.xTile>26){
 				I.xTile = 1;
 			}
 
@@ -235,11 +239,12 @@ function player(){
 				I.rotate = 90;
 			}
 		}
+		//Tick down energy time
+		if(I.energizer>0) I.energizer--;
 	};
 
 	I.draw = function(){
-		//canvas.fillStyle = "#FFFF00";
-	 	//canvas.fillRect(I.xLoc - (I.width/2), I.yLoc - (I.height/2), I.width, I.height);
+		
 	 	I.sprite.draw(I.xLoc - (I.width/2), I.yLoc - (I.height/2),I.rotate);
 	};
 
@@ -301,10 +306,10 @@ function ghost(x,y,ghostSprite,lookahead,target){
 			I.xTile = newTile.xTile;
 			I.yTile = newTile.yTile;
 			//This is really hacky and needs changing
-			if(I.xTile < 2){
+			if(I.xTile < 2 && I.yTile == 17){
 				I.xTile = 23;
 			}
-			if(I.xTile > 22){
+			if(I.xTile > 22 && I.yTile == 17){
 				I.xTile = 2;
 			}
 			if(lookahead){
@@ -512,7 +517,13 @@ function ghost(x,y,ghostSprite,lookahead,target){
 		canvas.fillStyle = color;
 	 	canvas.fillRect(I.x - (I.width/2), I.y - (I.height/2), I.width, I.height);
 	 	*/
-	 	I.sprite.draw(I.x - (I.width/2), I.y - (I.height/2));
+	 	if(pacman.energizer == 0){
+	 		I.sprite.draw(I.x - (I.width/2), I.y - (I.height/2));
+	 	}
+	 	else{
+	 		canvas.fillStyle = "#0000FF";
+	 		canvas.fillRect(I.x - (I.width/2), I.y - (I.height/2), I.width, I.height);	
+	 	}
 	};
 
 	/* Drawing lines to get a visual representaion of
@@ -582,6 +593,9 @@ var clyde = ghost(20*16,32*16,"clyde.png",true);
 //His target tile is always just the target tile of pacman
 blinky.findTarget = function(){
 	blinky.target = {x:pacman.xTile,y:pacman.yTile};
+	if(pacman.energizer>0){
+		blinky.target = {x:0,y:2};
+	}
 }
 
 //Pinky chases 4 ahead of PacMan
@@ -600,6 +614,10 @@ pinky.findTarget = function(){
 	}
 	else if(pacman.movement == 4){
 		pinky.target = {x:pacman.xTile, y:pacman.yTile + 4};
+	}
+
+	if(pacman.energizer>0){
+		pinky.target={x:33,y:2};
 	}
 }
 
@@ -653,6 +671,9 @@ inky.findTarget = function(){
 	dist.y = 2*(offset.y-blinky.y);
 	var targetTile = myTileset.findTile(blinky.x+dist.x,blinky.y+dist.y);
 	inky.target = {x:targetTile.xTile,y:targetTile.yTile};
+	if(pacman.energizer>0){
+		inky.target = {x:28, y:34};
+	}
 
 }
 
@@ -667,6 +688,9 @@ clyde.findTarget = function(){
 		clyde.target = {x:pacman.xTile,y:pacman.yTile};
 	}
 	else{
+		clyde.target = {x:0,y:34};
+	}
+	if(pacman.energizer>0){
 		clyde.target = {x:0,y:34};
 	}
 }
@@ -734,6 +758,7 @@ function debug(ISDEBUG){
 		canvas.fillText("pacman right = "+pacman.right,0,50);
 		canvas.fillText("pacman up = "+pacman.up,0,60);
 		canvas.fillText("pacman down = "+pacman.down,0,70);
+		canvas.fillText("pacman energizer = "+pacman.energizer,0,80);
 		canvas.fillText("blinky movement = "+blinky.movement,200,10);
 		canvas.fillText("blinky nextDirection = "+blinky.nextDirection,200,20);
 		canvas.fillText("blinky pos: x = "+ blinky.x + " y = " + blinky.y,200,30);
