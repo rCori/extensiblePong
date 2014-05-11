@@ -1,0 +1,11 @@
+/* The style sheet for pacman.html, pacman.css
+ * I just need to be able to manipulate some elements
+ * around on the page so it looks nice
+ */
+
+#allsliders
+{
+position:fixed;
+top:0px;
+right:500px;
+}

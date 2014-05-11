@@ -4,7 +4,7 @@
 		<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 		<meta content="utf-8" http-equiv="encoding">
 
-		<link rel="stylesheet" href="{{=URL('static/css', 'pong.css')}}"/>
+		<link rel="stylesheet" href="{{=URL('static/css', 'pacman.css')}}"/>
 		<script type="text/javascript" src="{{=URL('static/js','jquery.js')}}" language="javascript"></script>
 		<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
 		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
@@ -20,6 +20,17 @@
             </script>
             <script type="text/javascript" src="{{=URL('static/js','sprite.js')}}" language="javascript"></script>
         	<script type="text/javascript" src="{{=URL('static/js','tiles.js')}}" language="javascript"></script>
+            <script type="text/javascript" src="{{=URL('static/js','timeModel.js')}}" language="javascript"></script>
+            <script type="text/javascript" src="{{=URL('static/js','pacPlayer.js')}}" language="javascript"></script>
+            <script type="text/javascript" src="{{=URL('static/js','pacGhost.js')}}" language="javascript"></script>
+            <script type="text/javascript" src="{{=URL('static/js','pacControls.js')}}" language="javascript"></script>
         	<script type="text/javascript" src="{{=URL('static/js','pacman.js')}}" language="javascript"></script>
+            <div id="allsliders">
+                <label for="timeAmount">Time:</label>
+                <input type="text" id="timeAmount" style="border:0; color:#000000; font-weight:bold;">
+                <div style="width:100%" id="timeSlider"></div>
+            </div>
+
+        </div>
         </body>
 </html>

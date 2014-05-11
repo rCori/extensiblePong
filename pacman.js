@@ -20,7 +20,7 @@ canvasElement.appendTo('body');
 var FPS = 30;
 
 
-var DEBUG = true;
+var DEBUG = false;
 //Lets call this a debug map
 /*Original pacman has a tileset of 28x36 so thats what we
  *will be going for here. Of course we will need to draw over
@@ -91,498 +91,11 @@ function draw(){
 	clyde.visualize();
 }
 
-function player(){
-	var I = {};
-	//All the starting info
-	I.xLoc = 224;
-	I.yLoc = 420;
-	I.width = 16;
-	I.height = 16;
-	var startTiles = myTileset.findTile(I.xLoc,I.yLoc);
-	I.xTile = startTiles.xTile;
-	I.yTile = startTiles.yTile;
-	/* Movement gets 5 different values
-	 * 0 means it is still
-	 * 1 means go left
-	 * 2 means go right
-	 * 3 means go up
-	 * 4 means go down
-	 */
-	I.movement = 0;
 
-	//A timer for the energizer
-	I.energizer = 0;
-
-	I.velocity = 3;
-	
-	//We want an image for pacman
-	I.sprite = sprite("pacman.png",canvas,16,16);
-
-	//How much to rotate
-	I.rotate = 0;
-
-	//What options are available
-	I.left = false;
-	I.right = false;
-	I.up = false;
-	I.down = false;
-
-	//Get the desired next direction
-	I.nextDirection = 0;
-
-	//PacMan has to move
-	//STUB PLEASE REMEMBER
-	/* This needs to be optamized so it only happens when
-	 * pacman enters a new tile
-	 */
-	I.update = function(){
-		//Update what tile pacman is on
-		var newTile = myTileset.findTile(I.xLoc,I.yLoc);
-		if(newTile.xLoc != I.xLoc || newTile.yLoc != I.yLoc){
-			//Check if we are eating a dot
-			if(myTileset.map[I.xTile][I.yTile] === 'o'){
-				myTileset.map[I.xTile][I.yTile] = 'e';
-			}
-			//Check if we are getting an energizer pellet
-			if(myTileset.map[I.xTile][I.yTile] === 'O'){
-				myTileset.map[I.xTile][I.yTile] = 'e';
-				I.energizer = 250;
-			}
-
-			//update the movement options
-
-			//wrap around
-			if(((newTile.xTile < 1) || (newTile.xTile>26)) && (I.yTile == 17)){
-				I.left = true;
-				I.right = true;
-				I.up = false;
-				I.down = false;
-				console.log("Wrap");
-			}
-			else{
-				I.left = myTileset.checkLeft(I.xTile,I.yTile);
-				I.right = myTileset.checkRight(I.xTile,I.yTile);
-				I.up = myTileset.checkUp(I.xTile,I.yTile);
-				I.down = myTileset.checkDown(I.xTile,I.yTile);
-			}
-			I.xTile = newTile.xTile;
-			I.yTile = newTile.yTile;
-			if(newTile.xTile < 1){
-				I.xTile = 26;
-			}
-			if(newTile.xTile>26){
-				I.xTile = 1;
-			}
-
-		}
-
-		if(I.nextDirection != I.movement){
-			if(I.nextDirection == 1 && I.left){
-				if(myTileset.checkLeft(I.xTile,I.yTile)){
-					I.movement = I.nextDirection;
-				}
-			}
-			else if(I.nextDirection == 2 && I.right){
-				if(myTileset.checkRight(I.xTile,I.yTile)){
-					I.movement = I.nextDirection;
-				}
-			}
-			else if(I.nextDirection == 3 && I.up){
-				if(myTileset.checkUp(I.xTile,I.yTile)){
-					I.movement = I.nextDirection;
-				}
-			}
-			else if(I.nextDirection == 4 && I.down){
-				if(myTileset.checkDown(I.xTile,I.yTile)){
-					I.movement = I.nextDirection;
-				}
-			}
-		}
-		//Need to check the status of tiles above or below the current
-		//LEFT
-		if(I.movement == 1){
-			if(I.left){
-				I.xLoc -= I.velocity;
-				I.yLoc = I.yTile * myTileset.tileHeight+(myTileset.tileHeight/2);
-				//wrap around
-				if(I.xLoc < 0){
-					I.xLoc = myTileset.width;
-				}
-				I.rotate = 180;
-			}
-		}
-		else if(I.movement == 2){
-			//RIGHT
-			if(I.right){
-				I.xLoc += I.velocity;
-				I.yLoc = I.yTile * myTileset.tileHeight+(myTileset.tileHeight/2);
-				//Wrap around
-				if(I.xLoc > myTileset.width){
-					I.xLoc = 0;
-				}
-				I.rotate = 0;
-			}
-		}
-		else if(I.movement == 3){
-			//UP
-			if(I.up){
-				I.yLoc -= I.velocity;
-				I.xLoc = I.xTile * myTileset.tileWidth+(myTileset.tileWidth/2);
-				I.rotate = 270;
-			}
-		}
-		else if(I.movement == 4){
-			//DOWN
-			if(I.down){
-				I.yLoc += I.velocity;
-				I.xLoc = (I.xTile * myTileset.tileWidth)+(myTileset.tileWidth/2);
-				I.rotate = 90;
-			}
-		}
-		//Tick down energy time
-		if(I.energizer>0) I.energizer--;
-	};
-
-	I.draw = function(){
-		
-	 	I.sprite.draw(I.xLoc - (I.width/2), I.yLoc - (I.height/2),I.rotate);
-	};
-
-	
-	
-	return I;
-}
-
+//Create the player object
 var pacman = player();
 
-/* Time to make some spooky ghosts
- * 2SPOOKY
- * This will look a lot like the human player exept controls
- * ghosts have no input
- * or bones, those would be skelingtons. Also very scary
- */
-
-function ghost(x,y,ghostSprite,lookahead,target){
-	var I = {};
-	//Eventually "color" will be "sprite" and hopefully then "animation"
-	I.x = x;
-	I.y = y;
-
-	//Height and width of the character
-	I.height = 16;
-	I.width =16;
-
-	var startTiles = myTileset.findTile(I.x,I.y);
-	I.xTile = startTiles.xTile;
-	I.yTile = startTiles.yTile;
-
-	//Similar to pacman's direction, but not player controlled
-	I.movement = 0;
-
-	//Wiith the lookahead implementation it's useful to save a "next" direction
-	I.nextDirection = 0;
-
-	//The speed the ghosts move
-	I.velocity = 2;
-
-	//Assign a sprite
-	I.sprite = sprite(ghostSprite,canvas,16,16);
-
-	I.up = 9999;
-	I.down = 9999;
-	I.left = 9999;
-	I.right = 9999;
-
-	lookahead = lookahead || false;
-
-	I.target = target || {x:0,y:0};
-	//PacMan has to move
-	I.update = function(){
-		//Update what tile the ghost is on
-		var newTile = myTileset.findTile(I.x,I.y);
-
-		//Check if this tile is actually new
-		if (I.xTile !=newTile.xTile || I.yTile != newTile.yTile){
-			I.xTile = newTile.xTile;
-			I.yTile = newTile.yTile;
-			//This is really hacky and needs changing
-			if(I.xTile < 2 && I.yTile == 17){
-				I.xTile = 23;
-			}
-			if(I.xTile > 22 && I.yTile == 17){
-				I.xTile = 2;
-			}
-			if(lookahead){
-				I.singleLookaheadSearch(I.target);
-				I.findTarget();
-			}
-			else{
-				I.decide();
-			}
-		};
-
-		//Need to check the status of tiles above or below the current
-		//LEFT
-		if(I.movement == 1 && myTileset.checkLeft(I.xTile,I.yTile)){
-			//if(myTileset.checkLeft(I.xTile,I.yTile)){
-				I.x -= I.velocity;
-				if(I.x < 0){
-					I.x = myTileset.width;
-				}
-				I.y = I.yTile * myTileset.tileHeight+(myTileset.tileHeight/2);
-			//}
-		}
-		else if(I.movement == 2 && myTileset.checkRight(I.xTile,I.yTile)){
-			//RIGHT
-			//if(myTileset.checkRight(I.xTile,I.yTile)){
-				I.x += I.velocity;
-				if(I.x >myTileset.width){
-					I.x = 0;
-				}
-				I.y = I.yTile * myTileset.tileHeight+(myTileset.tileHeight/2);
-			//}
-		}
-		else if(I.movement == 3 && myTileset.checkUp(I.xTile,I.yTile)){
-			//UP
-			//if(myTileset.checkUp(I.xTile,I.yTile)){
-				I.y -= I.velocity;
-				I.x = I.xTile * myTileset.tileWidth+(myTileset.tileWidth/2);
-			//}
-		}
-		else if(I.movement == 4 && myTileset.checkDown(I.xTile,I.yTile)){
-			//DOWN
-			//if(myTileset.checkDown(I.xTile,I.yTile)){
-				I.y += I.velocity;
-				I.x = (I.xTile * myTileset.tileWidth)+(myTileset.tileWidth/2);
-			//}
-		}
-		//You are stuck and need to make a new decision
-		else{
-			if(lookahead){
-				I.singleLookaheadSearch({x:pacman.xTile,y:pacman.yTile});
-			}
-			else{
-				I.decide();
-			}
-		}
-	};
-
-	//This controls the movement of the ghost's AI, very simple right now
-	I.decide = function(){
-		//potentially new movement vector
-		if(I.movement === 0){
-			I.movement = Math.floor((Math.random()*4)+1);
-		}
-		if(!myTileset.checkRight(I.xTile,I.yTile) && I.movement == 2){
-			I.movement = Math.floor((Math.random()*2)+3); 
-		}
-		if(!myTileset.checkLeft(I.xTile,I.yTile) && I.movement == 1){
-			I.movement = Math.floor((Math.random()*2)+3); 
-		}
-		if(!myTileset.checkUp(I.xTile,I.yTile) && I.movement == 3){
-			I.movement = Math.floor((Math.random()*2)+1); 
-		}
-		if(!myTileset.checkDown(I.xTile,I.yTile) && I.movement == 4){
-			I.movement = Math.floor((Math.random()*2)+1); 
-		}
-
-	};
-
-
-	//Allows the ghost to look ahead one tile to see where it should go next
-	//This is how pathfinding worked in old PacMan, not A* or Dijkstra
-	I.singleLookaheadSearch = function(target){
-		//assign these huge distances
-		I.up = 9999;
-		I.down = 9999;
-		I.left = 9999;
-		I.right = 9999;
-
-		if(I.movement == I.nextDirection){
-			//If you are going left and you can continue going left
-			if((I.movement == 1) && (myTileset.checkLeft(I.xTile,I.yTile))){
-				if(myTileset.checkLeft(I.xTile-1,I.yTile)){
-					I.left = Math.sqrt(((I.xTile-2-target.x)*(I.xTile-2-target.x))+((I.yTile-target.y)*(I.yTile-target.y)));
-				}
-				if(myTileset.checkUp(I.xTile-1,I.yTile)){
-					I.up = Math.sqrt(((I.xTile-1-target.x)*(I.xTile-1-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
-				}
-				if(myTileset.checkDown(I.xTile-1,I.yTile)){
-					I.down = Math.sqrt(((I.xTile-1-target.x)*(I.xTile-1-target.x))+((I.yTile+1-target.y)*(I.yTile+1-target.y)));
-				}
-			}
-			//You are going right and you can continue going right
-			else if((I.movement == 2) && (myTileset.checkRight(I.xTile,I.yTile))){
-				if(myTileset.checkRight(I.xTile+1,I.yTile)){
-					I.right = Math.sqrt(((I.xTile+2-target.x)*(I.xTile+2-target.x))+((I.yTile-target.y)*(I.yTile-target.y)));
-				}
-				if(myTileset.checkUp(I.xTile+1,I.yTile)){
-					I.up = Math.sqrt(((I.xTile+1-target.x)*(I.xTile+1-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
-				}
-				if(myTileset.checkDown(I.xTile+1,I.yTile)){
-					I.down = Math.sqrt(((I.xTile+1-target.x)*(I.xTile+1-target.x))+((I.yTile+1-target.y)*(I.yTile+1-target.y)));
-				}
-			}
-			//You are going up and you can continue going up
-			else if((I.movement == 3) && (myTileset.checkUp(I.xTile,I.yTile))){
-				if(myTileset.checkUp(I.xTile,I.yTile-1)){
-					I.up = Math.sqrt(((I.xTile-target.x)*(I.xTile-target.x))+((I.yTile-2-target.y)*(I.yTile-2-target.y)));
-				}
-				if(myTileset.checkRight(I.xTile,I.yTile-1)){
-					I.right = Math.sqrt(((I.xTile+1-target.x)*(I.xTile+1-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
-				}
-				if(myTileset.checkLeft(I.xTile,I.yTile-1)){
-					I.left = Math.sqrt(((I.xTile-1-target.x)*(I.xTile-1-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
-				}
-			}
-			//You are going down and you can continue to go down
-			else if((I.movement == 4) && (myTileset.checkDown(I.xTile,I.yTile))){
-				if(myTileset.checkDown(I.xTile,I.yTile+1)){
-					I.down = Math.sqrt(((I.xTile-target.x)*(I.xTile-target.x))+((I.yTile+2-target.y)*(I.yTile+2-target.y)));
-				}
-				if(myTileset.checkRight(I.xTile,I.yTile+1)){
-					I.right = Math.sqrt(((I.xTile+1-target.x)*(I.xTile+1-target.x))+((I.yTile+1-target.y)*(I.yTile+1-target.y)));
-				}
-				if(myTileset.checkLeft(I.xTile,I.yTile+1)){
-					I.left = Math.sqrt(((I.xTile-1-target.x)*(I.xTile-1-target.x))+((I.yTile+1-target.y)*(I.yTile+1-target.y)));
-				}
-			}
-			//You are going nowhere or have hit a dead end.
-			else{
-				if(myTileset.checkDown(I.xTile,I.yTile) && I.movement != 3){
-					I.down = Math.sqrt(((I.xTile-target.x)*(I.xTile-target.x))+((I.yTile+1-target.y)*(I.yTile+1-target.y)));
-				}
-				if(myTileset.checkRight(I.xTile,I.yTile) && I.movement !=1){
-					I.right = Math.sqrt(((I.xTile+1-target.x)*(I.xTile+1-target.x))+((I.yTile-target.y)*(I.yTile-target.y)));
-				}
-				if(myTileset.checkLeft(I.xTile,I.yTile) && I.movement != 2){
-					I.left = Math.sqrt(((I.xTile-1-target.x)*(I.xTile-1-target.x))+((I.yTile-target.y)*(I.yTile-target.y)));
-				}
-				if(myTileset.checkUp(I.xTile,I.yTile) && I.movement != 4){
-					I.up = Math.sqrt(((I.xTile-target.x)*(I.xTile-target.x))+((I.yTile-1-target.y)*(I.yTile-1-target.y)));
-				}
-			}
-			//So now we have all the distances, find the shortest one
-			var tempDist = Math.min(I.up,I.down,I.left,I.right);
-			//Make sure we actually found a smallest distance
-			if(tempDist != 9999){
-				//Now assign the shortest direction to the next direction
-				//Next time pacman changes diretion it will be to nextDirection
-				switch(tempDist){
-					case I.up:
-						I.nextDirection = 3;
-						break;
-					case I.down:
-						I.nextDirection = 4;
-						break;
-					case I.left:
-						I.nextDirection = 1;
-						break;
-					case I.right:
-						I.nextDirection = 2;
-						break;
-				}
-			}
-			/*Switch to nextDirection at the right time
-			 *If the direction we are going in is not nextDirection
-			 *We want to go in nextDirection as soon as possible
-			 */
-		}
-		else{
-			//If your next direction is up and you have the chance to switch do so
-			if(myTileset.checkUp(I.xTile,I.yTile) && I.nextDirection != 3){
-				I.movement = I.nextDirection;
-			}
-			//If your next direction is down and you have the chance to switch do so
-			if(myTileset.checkDown(I.xTile,I.yTile) && I.nextDirection != 4){
-				I.movement = I.nextDirection;
-			}
-			//If your next direction is right and you have the chance to switch do so
-			if(myTileset.checkRight(I.xTile,I.yTile) && I.nextDirection != 2){
-				I.movement = I.nextDirection;
-			}
-			//If your next direction is left and you have the chance to switch do so
-			if(myTileset.checkLeft(I.xTile,I.yTile) && I.nextDirection != 1){
-				I.movement = I.nextDirection;
-			}
-
-		}
-
-
-	}
-
-
-	I.draw = function(){
-		/*
-		canvas.fillStyle = color;
-	 	canvas.fillRect(I.x - (I.width/2), I.y - (I.height/2), I.width, I.height);
-	 	*/
-	 	if(pacman.energizer == 0){
-	 		I.sprite.draw(I.x - (I.width/2), I.y - (I.height/2));
-	 	}
-	 	else{
-	 		canvas.fillStyle = "#0000FF";
-	 		canvas.fillRect(I.x - (I.width/2), I.y - (I.height/2), I.width, I.height);	
-	 	}
-	};
-
-	/* Drawing lines to get a visual representaion of
-	 * the distance computation done by the AI
-	*/
-	I.visualize = function(color){
-
-		canvas.strokeStyle = color;
-		canvas.fillStyle = color;
-		var extraRightCost = 0;
-		var extraDownCost = 0;
-
-		if(I.movement == 1) {extraRightCost = -1;}
-		if(I.movement == 2) {extraRightCost = 1;}
-		if(I.movement == 3) {extraDownCost = -1;}
-		if(I.movement == 4) {extraDownCost = 1;}
-
-		//If we calculated a right path
-		if(I.right != 9999){
-			canvas.beginPath();
-			canvas.moveTo((I.xTile+extraRightCost+1)*16+8,(I.yTile+extraDownCost)*16+8);
-			canvas.lineTo(I.target.x*16+8, I.target.y*16+8);
-			canvas.stroke();
-			canvas.fillRect((I.xTile+extraRightCost+1)*16,(I.yTile+extraDownCost)*16,16,16);
-
-		}
-		//If we calculated a left path
-		if(I.left != 9999){
-			canvas.beginPath();
-			canvas.moveTo((I.xTile+extraRightCost-1)*16+8,(I.yTile+extraDownCost)*16+8);
-			canvas.lineTo(I.target.x*16+8, I.target.y*16+8);
-			canvas.stroke();
-			canvas.fillRect((I.xTile+extraRightCost-1)*16,(I.yTile+extraDownCost)*16,16,16);
-
-		}
-		//If we calculated an up path
-		if(I.up != 9999){
-			canvas.beginPath();
-			canvas.moveTo((I.xTile+extraRightCost)*16+8,(I.yTile+extraDownCost-1)*16+8);
-			canvas.lineTo(I.target.x*16+8, I.target.y*16+8);
-			canvas.stroke();
-			canvas.fillRect((I.xTile+extraRightCost)*16,(I.yTile+extraDownCost-1)*16,16,16);
-
-		}
-		//If we calculated a down path
-		if(I.down != 9999){
-			canvas.beginPath();
-			canvas.moveTo((I.xTile+extraRightCost)*16+8,(I.yTile+extraDownCost+1)*16+8);
-			canvas.lineTo(I.target.x*16+8, I.target.y*16+8);
-			canvas.stroke();
-			canvas.fillRect((I.xTile+extraRightCost)*16,(I.yTile+extraDownCost+1)*16,16,16);
-
-		}
-
-	}
-
-	return I;
-}
-
+//Create the ghost objects
 var blinky = ghost(7*16,5*16,"blinky.png", true);
 var pinky = ghost(20*16,5*16,"pinky.png", true);
 var inky = ghost(7*16,32*16,"inky.png", true);
@@ -622,7 +135,7 @@ pinky.findTarget = function(){
 }
 
 
-/* Inky needs bliny's target tile and current location to find his
+/* Inky needs blinky's target tile and current location to find his
  * own. Inky takes blinky's target, which is pacman, and adds 2 tiles
  * in the direction pacman is facing. Then he takes that tile and gets
  * difference between it and blinky's current location call it x. That difference
@@ -772,31 +285,56 @@ function debug(ISDEBUG){
 	}
 }
 
-
-//I need this to handle input
-window.addEventListener('keydown', function (e) {
-	switch(e.keyCode){
-		//If left is pressed
-		case 37:
-			pacman.nextDirection = 1;
-
-		break;
-		//If right is pressed
-		case 39:
-			pacman.nextDirection = 2;
-		break;
-		//If up is pressed
-		case 38:
-			pacman.nextDirection = 3;
-		break;
-		//If down is pressed
-		case 40:
-			pacman.nextDirection = 4;
-		break;
+/* This is the snapTime callback I need for
+ * getting a bundle object of important data
+ */
+function saveData(){
+	var data = {
+		pacX: pacman.xLoc,
+		pacY: pacman.yLoc,
+		blinkyX: blinky.x,
+		blinkyY: blinky.y,
+		inkyX: inky.x,
+		inkyY: inky.y,
+		pinkyX: pinky.x,
+		pinkyY: pinky.y,
+		clydeX: clyde.x,
+		clydeY: clyde.y
 	}
-}, false);
-//I need this to handle input
-window.addEventListener('keyup', function (e) {
-	pacman.nextDirection = 0;
+	return data;
+}
 
-}, false);
+/* This is the loadTime callback I need
+ * for loading a bundle of properly formatted
+ * data
+ */
+function loadData(data){
+	pacman.xLoc = data.pacX;
+	pacman.yLoc = data.pacY;
+	blinky.x = data.blinkyX;
+	blinky.y = data.blinkyY;
+	inky.x = data.inkyX;
+	inky.y = data.inkyY;
+	pinky.x = data.pinkyX;
+	pinky.y = data.pinkyY;
+	clyde.x = data.clydeX;
+	clyde.y = data.clydeY;
+}
+
+
+//This slider is for the user to be able to scrub through time
+$(function() {
+	var lastval;
+	var newval;
+	$( "#timeSlider" ).slider({
+		value:0,
+		min:0,
+		max:200,
+		//step:1,
+		slide: function( event, ui ) {
+			$( "#timeAmount" ).val( ui.value );
+			loadTime(ui.value,loadData)
+		}
+	});
+	$( "#timeAmount" ).val( $( "#timeSlider" ).slider( "value" ) );
+});
