@@ -27,3 +27,10 @@ window.addEventListener('keyup', function (e) {
 	pacman.nextDirection = 0;
 
 }, false);
+window.addEventListener('keypress', function (e) {
+	//the keycode for p is 122 for keypress
+	if(e.charCode == 112){
+		gamePaused = !gamePaused;
+	}
+
+}, false);

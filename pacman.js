@@ -20,7 +20,9 @@ canvasElement.appendTo('body');
 var FPS = 30;
 
 
-var DEBUG = false;
+var DEBUG = true;
+
+var gamePaused = false;
 //Lets call this a debug map
 /*Original pacman has a tileset of 28x36 so thats what we
  *will be going for here. Of course we will need to draw over
@@ -70,11 +72,13 @@ setInterval(function(){
 //Function for update game logic and drawing
 function update(){
 	//update here
-	pacman.update();
-	blinky.update();
-	pinky.update();
-	inky.update();
-	clyde.update();
+	if(!gamePaused){
+		pacman.update();
+		blinky.update();
+		pinky.update();
+		inky.update();
+		clyde.update();
+	}
 	debug(DEBUG);
 };
 
@@ -267,11 +271,12 @@ function debug(ISDEBUG){
 		canvas.fillText("pacman movement = "+pacman.movement,0,10);
 		canvas.fillText("pacman nextDirection = "+pacman.nextDirection,0,20);
 		canvas.fillText("pacman pos: x = "+ pacman.xLoc + " y = " + pacman.yLoc,0,30);
-		canvas.fillText("pacman left = "+pacman.left,0,40);
-		canvas.fillText("pacman right = "+pacman.right,0,50);
-		canvas.fillText("pacman up = "+pacman.up,0,60);
-		canvas.fillText("pacman down = "+pacman.down,0,70);
-		canvas.fillText("pacman energizer = "+pacman.energizer,0,80);
+		canvas.fillText("pacman xTile = " + pacman.xTile + " yTile = "+ pacman.yTile,0,40);
+		canvas.fillText("pacman left = "+pacman.left,0,50);
+		canvas.fillText("pacman right = "+pacman.right,0,60);
+		canvas.fillText("pacman up = "+pacman.up,0,70);
+		canvas.fillText("pacman down = "+pacman.down,0,80);
+		canvas.fillText("pacman energizer = "+pacman.energizer,0,90);
 		canvas.fillText("blinky movement = "+blinky.movement,200,10);
 		canvas.fillText("blinky nextDirection = "+blinky.nextDirection,200,20);
 		canvas.fillText("blinky pos: x = "+ blinky.x + " y = " + blinky.y,200,30);
@@ -292,6 +297,8 @@ function saveData(){
 	var data = {
 		pacX: pacman.xLoc,
 		pacY: pacman.yLoc,
+		pacRot: pacman.rotate,
+		pacDir: pacman.movement,
 		blinkyX: blinky.x,
 		blinkyY: blinky.y,
 		inkyX: inky.x,
@@ -300,6 +307,14 @@ function saveData(){
 		pinkyY: pinky.y,
 		clydeX: clyde.x,
 		clydeY: clyde.y
+	}
+	//Find out what dot pacman is eating
+	//If he is eating one
+	if(pacman.dotEat){
+		var pacTile = myTileset.findTile(data.pacX,data.pacY);
+		//Find which tile this is
+		var dotNum = ((pacTile.xTile)*28) + pacTile.yTile;
+		data.dotNum = dotNum;
 	}
 	return data;
 }
@@ -311,6 +326,8 @@ function saveData(){
 function loadData(data){
 	pacman.xLoc = data.pacX;
 	pacman.yLoc = data.pacY;
+	pacman.rotate = data.pacRot;
+	pacman.movement = data.pacDir;
 	blinky.x = data.blinkyX;
 	blinky.y = data.blinkyY;
 	inky.x = data.inkyX;
@@ -319,6 +336,23 @@ function loadData(data){
 	pinky.y = data.pinkyY;
 	clyde.x = data.clydeX;
 	clyde.y = data.clydeY;
+	
+	//Now cycle through some updates
+	var tempTiles = myTileset.findTile(pacman.xLoc,pacman.yLoc);
+	pacman.xTile = tempTiles.xTile;
+	pacman.yTile = tempTiles.yTile;
+	blinky.update();
+	pinky.update();
+	inky.update();
+	clyde.update();
+
+	//Restore the dot
+	if(data.dotNum){
+		var row = data.dotNum%28;
+		var column = ((data.dotNum-row)/28);
+		myTileset.map[column][row] = 'o';
+
+	}
 }
 
 
@@ -334,6 +368,9 @@ $(function() {
 		slide: function( event, ui ) {
 			$( "#timeAmount" ).val( ui.value );
 			loadTime(ui.value,loadData)
+			if(!gamePaused){
+				gamePaused = true;
+			}
 		}
 	});
 	$( "#timeAmount" ).val( $( "#timeSlider" ).slider( "value" ) );

@@ -30,23 +30,30 @@ function player(){
 	//How much to rotate
 	I.rotate = 0;
 
-	//What options are available
-	I.left = false;
-	I.right = false;
+	//What options are available initially
+	I.left = true;
+	I.right = true;
 	I.up = false;
 	I.down = false;
 
 	//Get the desired next direction
 	I.nextDirection = 0;
 
+	//We need to know if we are eating a dot
+	I.dotEat = false;
+
 	//PacMan has to move
 	I.update = function(){
 		//Update what tile pacman is on
+		I.dotEat = false;
 		var newTile = myTileset.findTile(I.xLoc,I.yLoc);
-		if(newTile.xLoc != I.xLoc || newTile.yLoc != I.yLoc){
+		if(newTile.xTile != I.xTile || newTile.yTile != I.yTile){
+			I.xTile = newTile.xTile;
+			I.yTile = newTile.yTile;
 			//Check if we are eating a dot
 			if(myTileset.map[I.xTile][I.yTile] === 'o'){
 				myTileset.map[I.xTile][I.yTile] = 'e';
+				I.dotEat = true;
 			}
 			//Check if we are getting an energizer pellet
 			if(myTileset.map[I.xTile][I.yTile] === 'O'){
@@ -55,14 +62,12 @@ function player(){
 			}
 
 			//update the movement options
-
 			//wrap around
 			if(((newTile.xTile < 1) || (newTile.xTile>26)) && (I.yTile == 17)){
 				I.left = true;
 				I.right = true;
 				I.up = false;
 				I.down = false;
-				console.log("Wrap");
 			}
 			else{
 				I.left = myTileset.checkLeft(I.xTile,I.yTile);
@@ -70,8 +75,6 @@ function player(){
 				I.up = myTileset.checkUp(I.xTile,I.yTile);
 				I.down = myTileset.checkDown(I.xTile,I.yTile);
 			}
-			I.xTile = newTile.xTile;
-			I.yTile = newTile.yTile;
 			if(newTile.xTile < 1){
 				I.xTile = 26;
 			}
@@ -95,7 +98,9 @@ function player(){
 				}
 			}
 			else if(I.nextDirection == 3 && I.up){
+				console.log('this');
 				if(myTileset.checkUp(I.xTile,I.yTile)){
+					console.log('that');
 					I.movement = I.nextDirection;
 				}
 			}
