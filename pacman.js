@@ -323,7 +323,7 @@ function saveData(){
  * for loading a bundle of properly formatted
  * data
  */
-function loadData(data){
+function loadData(data,forward){
 	pacman.xLoc = data.pacX;
 	pacman.yLoc = data.pacY;
 	pacman.rotate = data.pacRot;
@@ -350,7 +350,12 @@ function loadData(data){
 	if(data.dotNum){
 		var row = data.dotNum%28;
 		var column = ((data.dotNum-row)/28);
-		myTileset.map[column][row] = 'o';
+		if(!forward){
+			myTileset.map[column][row] = 'o';
+		}
+		else if(forward){
+			myTileset.map[column][row] = 'e';
+		}
 
 	}
 }
@@ -361,17 +366,45 @@ $(function() {
 	var lastval;
 	var newval;
 	$( "#timeSlider" ).slider({
-		value:0,
+		value:timeSnaps.length,
 		min:0,
-		max:200,
+		max:timeSnaps.length,
 		//step:1,
 		slide: function( event, ui ) {
 			$( "#timeAmount" ).val( ui.value );
-			loadTime(ui.value,loadData)
+			//loadTime(ui.value,loadData)
 			if(!gamePaused){
 				gamePaused = true;
 			}
+			currentSlide = $("#timeSlider").slider('value');
+			nextSlide = ui.value
+			$( "#timeAmount" ).val( ui.value );
+			assertTime(nextSlide-currentSlide,ui.value);
 		}
 	});
 	$( "#timeAmount" ).val( $( "#timeSlider" ).slider( "value" ) );
 });
+
+//This is how I do the time warp again
+function assertTime(change,value){
+	//Game must be paused
+	if(gamePaused){
+		//The slider must have been moved forward
+		if(change>0){
+			//We must do each captured
+			var i = 0
+			while(i < change){
+				loadTime(value+i,loadData,true);
+				i++;
+			}
+		}
+		//Going backwards
+		else{	
+			var i = -change;
+			while(i > 0){
+				loadTime(value+i,loadData,false);
+				i--;
+			}
+		}
+	}
+}

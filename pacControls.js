@@ -31,6 +31,18 @@ window.addEventListener('keypress', function (e) {
 	//the keycode for p is 122 for keypress
 	if(e.charCode == 112){
 		gamePaused = !gamePaused;
-	}
+		if(!gamePaused){
+			timeSnaps = timeSnaps.slice(0,$( "#timeSlider" ).slider('value'));
+		}
+		$("#timeSlider").slider("option","max",timeSnaps.length-1);
+		$( "#timeAmount" ).val(timeSnaps.length-1);
+		$("#timeSlider").slider("value",timeSnaps.length-1);
+		//How you like them apples
+		pacman.left = myTileset.checkLeft(pacman.xTile,pacman.yTile);
+		pacman.right = myTileset.checkRight(pacman.xTile,pacman.yTile);
+		pacman.up = myTileset.checkUp(pacman.xTile,pacman.yTile);
+		pacman.down = myTileset.checkDown(pacman.xTile,pacman.yTile);
 
+
+	}
 }, false);

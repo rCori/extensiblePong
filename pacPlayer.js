@@ -98,9 +98,7 @@ function player(){
 				}
 			}
 			else if(I.nextDirection == 3 && I.up){
-				console.log('this');
 				if(myTileset.checkUp(I.xTile,I.yTile)){
-					console.log('that');
 					I.movement = I.nextDirection;
 				}
 			}
