@@ -59,6 +59,10 @@ function player(){
 			if(myTileset.map[I.xTile][I.yTile] === 'O'){
 				myTileset.map[I.xTile][I.yTile] = 'e';
 				I.energizer = 250;
+				blinky.flip = true;
+				inky.flip = true;
+				clyde.flip = true;
+				pinky.flip = true
 			}
 
 			//update the movement options

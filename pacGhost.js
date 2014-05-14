@@ -37,6 +37,9 @@ function ghost(x,y,ghostSprite,lookahead,target){
 	I.left = 9999;
 	I.right = 9999;
 
+	//They might need to flip out
+	I.flip
+
 	lookahead = lookahead || false;
 
 	I.target = target || {x:0,y:0};

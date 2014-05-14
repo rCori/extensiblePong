@@ -20,7 +20,7 @@ canvasElement.appendTo('body');
 var FPS = 30;
 
 
-var DEBUG = true;
+var DEBUG = false;
 
 var gamePaused = false;
 //Lets call this a debug map
@@ -110,6 +110,13 @@ var clyde = ghost(20*16,32*16,"clyde.png",true);
 //His target tile is always just the target tile of pacman
 blinky.findTarget = function(){
 	blinky.target = {x:pacman.xTile,y:pacman.yTile};
+	if(blinky.flip == true){
+		if(blinky.movement === 1){blinky.nextDirection = 2;}
+		if(blinky.movement === 2){blinky.nextDirection = 1;}
+		if(blinky.movement === 3){blinky.nextDirection = 4;}
+		if(blinky.movement === 4){blinky.nextDirection = 3;}
+		blinky.flip = false
+	}
 	if(pacman.energizer>0){
 		blinky.target = {x:0,y:2};
 	}
@@ -132,7 +139,13 @@ pinky.findTarget = function(){
 	else if(pacman.movement == 4){
 		pinky.target = {x:pacman.xTile, y:pacman.yTile + 4};
 	}
-
+	if(pinky.flip == true){
+		if(pinky.movement === 1){pinky.nextDirection = 2;}
+		if(pinky.movement === 2){pinky.nextDirection = 1;}
+		if(pinky.movement === 3){pinky.nextDirection = 4;}
+		if(pinky.movement === 4){pinky.nextDirection = 3;}
+		pinky.flip = false;
+	}
 	if(pacman.energizer>0){
 		pinky.target={x:33,y:2};
 	}
@@ -188,6 +201,14 @@ inky.findTarget = function(){
 	dist.y = 2*(offset.y-blinky.y);
 	var targetTile = myTileset.findTile(blinky.x+dist.x,blinky.y+dist.y);
 	inky.target = {x:targetTile.xTile,y:targetTile.yTile};
+	//switch directions once pacman gets the energizer
+	if(inky.flip == true){
+		if(inky.movement === 1){inky.nextDirection = 2;}
+		if(inky.movement === 2){inky.nextDirection = 1;}
+		if(inky.movement === 3){inky.nextDirection = 4;}
+		if(inky.movement === 4){inky.nextDirection = 3;}
+		inky.flip = false;
+	}
 	if(pacman.energizer>0){
 		inky.target = {x:28, y:34};
 	}
@@ -206,6 +227,13 @@ clyde.findTarget = function(){
 	}
 	else{
 		clyde.target = {x:0,y:34};
+	}
+	if(clyde.flip == true){
+		if(clyde.movement === 1){clyde.nextDirection = 2;}
+		if(clyde.movement === 2){clyde.nextDirection = 1;}
+		if(clyde.movement === 3){clyde.nextDirection = 4;}
+		if(clyde.movement === 4){clyde.nextDirection = 3;}
+		clyde.flip = false;
 	}
 	if(pacman.energizer>0){
 		clyde.target = {x:0,y:34};
@@ -355,6 +383,7 @@ function loadData(data,forward){
 		}
 		else if(forward){
 			myTileset.map[column][row] = 'e';
+			console.log("eating dot at column" + column + "and row" + row);
 		}
 
 	}
@@ -366,13 +395,12 @@ $(function() {
 	var lastval;
 	var newval;
 	$( "#timeSlider" ).slider({
-		value:timeSnaps.length,
+		value:0,
 		min:0,
-		max:timeSnaps.length,
-		//step:1,
+		max:0,
+		step:1,
 		slide: function( event, ui ) {
 			$( "#timeAmount" ).val( ui.value );
-			//loadTime(ui.value,loadData)
 			if(!gamePaused){
 				gamePaused = true;
 			}
@@ -392,16 +420,16 @@ function assertTime(change,value){
 		//The slider must have been moved forward
 		if(change>0){
 			//We must do each captured
-			var i = 0
-			while(i < change){
-				loadTime(value+i,loadData,true);
-				i++;
+			var init = value-change;
+			while(init !== value){
+				loadTime(init,loadData,true);
+				init++;
 			}
 		}
 		//Going backwards
-		else{	
-			var i = -change;
-			while(i > 0){
+		else if(change<0){	
+			var i = -change
+			while(i >= 0){
 				loadTime(value+i,loadData,false);
 				i--;
 			}
