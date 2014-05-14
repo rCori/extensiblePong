@@ -38,7 +38,7 @@ function ghost(x,y,ghostSprite,lookahead,target){
 	I.right = 9999;
 
 	//They might need to flip out
-	I.flip
+	I.flip = false;
 
 	lookahead = lookahead || false;
 
@@ -62,7 +62,21 @@ function ghost(x,y,ghostSprite,lookahead,target){
 			}
 			if(lookahead){
 				I.singleLookaheadSearch(I.target);
-				I.findTarget();
+				if(I.ai === undefined){
+					I.findTarget();
+				}
+				else if(I.ai==="blinky"){
+					I.blinkyFindTarget();
+				}
+				else if(I.ai==="inky"){
+					I.inkyFindTarget();
+				}
+				else if(I.ai==="pinky"){
+					I.pinkyFindTarget();
+				}
+				else if(I.ai==="clyde"){
+					I.clydeFindTarget();
+				}
 			}
 			else{
 				I.decide();
@@ -322,6 +336,151 @@ function ghost(x,y,ghostSprite,lookahead,target){
 
 		}
 
+	}
+
+	//Blinky literally just follows pacman directly
+	//His target tile is always just the target tile of pacman
+	I.blinkyFindTarget = function(){
+		I.target = {x:pacman.xTile,y:pacman.yTile};
+		if(I.flip == true){
+			if(I.movement === 1){I.nextDirection = 2;}
+			if(I.movement === 2){I.nextDirection = 1;}
+			if(I.movement === 3){I.nextDirection = 4;}
+			if(I.movement === 4){I.nextDirection = 3;}
+			blinky.flip = false
+		}
+		if(pacman.energizer>0){
+			I.target = {x:0,y:2};
+		}
+	}
+
+	//Pinky chases 4 ahead of PacMan
+	//There is a noted bug which I am including here
+	I.pinkyFindTarget = function(){
+		if(pacman.movement == 1){
+			I.target = {x:pacman.xTile-4,y:pacman.yTile};
+		}
+		else if(pacman.movement == 2){
+			I.target = {x:pacman.xTile+4,y:pacman.yTile};
+		}
+		//Here I am implementing the bug
+		else if(pacman.movement == 3){
+			I.target = {x:pacman.xTile-4, y:pacman.yTile-4};
+		}
+		else if(pacman.movement == 4){
+			I.target = {x:pacman.xTile, y:pacman.yTile + 4};
+		}
+		if(I.flip == true){
+			if(I.movement === 1){I.nextDirection = 2;}
+			if(I.movement === 2){I.nextDirection = 1;}
+			if(I.movement === 3){I.nextDirection = 4;}
+			if(I.movement === 4){I.nextDirection = 3;}
+			I.flip = false;
+		}
+		if(pacman.energizer>0){
+			I.target={x:33,y:2};
+		}
+	}
+	/* Inky needs blinky's target tile and current location to find his
+ 	* own. Inky takes blinky's target, which is pacman, and adds 2 tiles
+ 	* in the direction pacman is facing. Then he takes that tile and gets
+ 	* difference between it and blinky's current location call it x. That difference
+ 	* is doubled to 2x. Inky's target tile is at the end of a line segment 2x
+ 	* long with one end at blinky's current location and midpoint being that
+ 	* 2 offset tile. The offset tile location has a bug much like pinky where
+ 	* When pacman is pointing up, the offset is 2 up AND 2 LEFT of blinky's
+ 	* target(pacman's location).
+ 	* 
+ 	*/
+	I.inkyFindTarget = function(){
+		var offset = {};
+		if(pacman.movement == 1){
+			offset.x = blinky.target.x - 2;
+			offset.y = blinky.target.y;
+		}
+		else if(pacman.movement == 2){
+			offset.x = blinky.target.x + 2;
+			offset.y = blinky.target.y;
+		}
+		else if(pacman.movement == 3){
+			offset.x = blinky.target.x - 2;
+			offset.y = blinky.target.y - 2;
+		}
+		else if(pacman.movement == 4){
+			offset.x = blinky.target.x;
+			offset.y = blinky.target.y + 2;
+		}
+		//If pacman isn't moving make it chase
+		else{
+			inky.target = {x:28, y:34};
+			return;
+		}
+		//make offset in terms of pixel not tile
+		//get the pixel in the center of the offset tile
+		offset.x = (offset.x*16)+8;
+		offset.y = (offset.y*16)+8;
+
+		//Find distance between offset tile and blinky's location
+		//Not absolute because we are going to double this and
+		//find it i relation to blinky IE this might be below and
+		//to the left, so we retain the sign
+		var dist = {};
+		dist.x = 2*(offset.x-blinky.x);
+		dist.y = 2*(offset.y-blinky.y);
+		var targetTile = myTileset.findTile(blinky.x+dist.x,blinky.y+dist.y);
+		I.target = {x:targetTile.xTile,y:targetTile.yTile};
+		//switch directions once pacman gets the energizer
+		if(I.flip == true){
+			if(I.movement === 1){I.nextDirection = 2;}
+			if(I.movement === 2){I.nextDirection = 1;}
+			if(I.movement === 3){I.nextDirection = 4;}
+			if(I.movement === 4){I.nextDirection = 3;}
+			I.flip = false;
+		}
+		if(pacman.energizer>0){
+			I.target = {x:28, y:34};
+		}
+
+	}
+
+	I.clydeFindTarget = function(){
+		//find the euclidian distance between clyde's tile
+		//and pacman's tile
+		//Get the pixel locations of these tiles
+		var clydeTile = myTileset.findLoc(I.xTile,I.yTile);
+		var pacTile = myTileset.findLoc(pacman.xTile,pacman.yTile);
+		var distance = Math.sqrt(((clydeTile.xLoc-pacTile.xLoc)*(clydeTile.xLoc-pacTile.xLoc))+((clydeTile.yLoc-pacTile.yLoc)*(clydeTile.yLoc-pacTile.yLoc)));
+		if(distance > 8*myTileset.tileWidth){
+			I.target = {x:pacman.xTile,y:pacman.yTile};
+		}
+		else{
+			I.target = {x:0,y:34};
+		}
+		if(I.flip == true){
+			if(I.movement === 1){I.nextDirection = 2;}
+			if(I.movement === 2){I.nextDirection = 1;}
+			if(I.movement === 3){I.nextDirection = 4;}
+			if(I.movement === 4){I.nextDirection = 3;}
+			I.flip = false;
+		}
+		if(pacman.energizer>0){
+			I.target = {x:0,y:34};
+		}
+	}
+
+	I.setAI = function(aiName){
+		if(aiName === "blinky"){
+			I.ai = "blinky";
+		}
+		if(aiName === "pinky"){
+			I.ai = "pinky";
+		}
+		if(aiName === "inky"){
+			I.ai = "inky";
+		}
+		if(aiName === "clyde"){
+			I.ai = "clyde";
+		}
 	}
 
 	return I;

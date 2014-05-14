@@ -436,3 +436,19 @@ function assertTime(change,value){
 		}
 	}
 }
+
+$(document).on("change", "#pinkySelect", function(){
+	 pinky.setAI($("#pinkySelect option:selected").text());
+});
+
+$(document).on("change", "#inkySelect", function(){
+	 inky.setAI($("#inkySelect option:selected").text());
+});
+
+$(document).on("change", "#blinkySelect", function(){
+	 blinky.setAI($("#blinkySelect option:selected").text());
+});
+
+$(document).on("change", "#clydeSelect", function(){
+	 clyde.setAI($("#clydeSelect option:selected").text());
+});
