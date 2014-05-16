@@ -347,7 +347,7 @@ function ghost(x,y,ghostSprite,lookahead,target){
 			if(I.movement === 2){I.nextDirection = 1;}
 			if(I.movement === 3){I.nextDirection = 4;}
 			if(I.movement === 4){I.nextDirection = 3;}
-			blinky.flip = false
+			I.flip = false
 		}
 		if(pacman.energizer>0){
 			I.target = {x:0,y:2};

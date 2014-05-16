@@ -341,8 +341,8 @@ function saveData(){
 	if(pacman.dotEat){
 		var pacTile = myTileset.findTile(data.pacX,data.pacY);
 		//Find which tile this is
-		var dotNum = ((pacTile.xTile)*28) + pacTile.yTile;
-		data.dotNum = dotNum;
+		data.dotNumX = pacTile.xTile;
+		data.dotNumY = pacTile.yTile;
 	}
 	return data;
 }
@@ -375,14 +375,12 @@ function loadData(data,forward){
 	clyde.update();
 
 	//Restore the dot
-	if(data.dotNum){
-		var row = data.dotNum%28;
-		var column = ((data.dotNum-row)/28);
+	if(data.dotNumX && data.dotNumY){
 		if(!forward){
-			myTileset.map[column][row] = 'o';
+			myTileset.map[data.dotNumX][data.dotNumY] = 'o';
 		}
 		else if(forward){
-			myTileset.map[column][row] = 'e';
+			myTileset.map[data.dotNumX][data.dotNumY] = 'e';
 			console.log("eating dot at column" + column + "and row" + row);
 		}
 
