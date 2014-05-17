@@ -19,8 +19,11 @@ canvasElement.appendTo('body');
 
 var FPS = 30;
 
+var timeout = 0;
 
-var DEBUG = false;
+var DEBUG = true;
+
+var gameOver = true;
 
 var gamePaused = false;
 //Lets call this a debug map
@@ -71,28 +74,53 @@ setInterval(function(){
 
 //Function for update game logic and drawing
 function update(){
-	//update here
-	if(!gamePaused){
-		pacman.update();
-		blinky.update();
-		pinky.update();
-		inky.update();
-		clyde.update();
+	//if the game is over don't do any of this
+	if(!gameOver){
+		//update here
+		if(!gamePaused){
+			if(timeout == 0){
+				pacman.update();
+				blinky.update();
+				pinky.update();
+				inky.update();
+				clyde.update();
+				ghostCollision(blinky);
+				ghostCollision(clyde);
+				ghostCollision(pinky);
+				ghostCollision(inky);
+			}
+			else{
+				timeout -= 1;
+			}
+		}
+		debug(DEBUG);
 	}
-	debug(DEBUG);
 };
 
 function draw(){
-	myTileset.renderMap(canvas);
-	pacman.draw();
-	blinky.draw();
-	pinky.draw();
-	inky.draw();
-	clyde.draw();
-	blinky.visualize("#FF0000");
-	pinky.visualize("#FF66CC");
-	inky.visualize("#00FFFF");
-	clyde.visualize();
+	if(!gameOver){
+		myTileset.renderMap(canvas);
+		pacman.draw();
+		blinky.draw();
+		pinky.draw();
+		inky.draw();
+		clyde.draw();
+		if(timeout == 0){
+			blinky.visualize("#FF0000");
+			pinky.visualize("#FF66CC");
+			inky.visualize("#00FFFF");
+			clyde.visualize();
+		}
+	}
+	else{
+		canvas.fillStyle="#000";
+		canvas.textAlign = 'center'
+		canvas.font="30pt Calibri";
+		canvas.fillText("Extensible PacMan",CANVAS_WIDTH/2, CANVAS_HEIGHT/3);
+		canvas.font="15px Calibri";
+		canvas.fillText("An explorable explanation of the AI and mechanics of PacMan", CANVAS_WIDTH/2, CANVAS_HEIGHT/2);
+		canvas.fillText("Press space to start", CANVAS_WIDTH/2,CANVAS_HEIGHT/1.5);
+	}
 }
 
 
@@ -293,9 +321,45 @@ clyde.visualize = function(){
 	}
 }
 
+function ghostCollision(ghost){
+	if(ghost.xTile == pacman.xTile && ghost.yTile == pacman.yTile){
+		if(pacman.energizer == 0){
+			pacman.lives -= 1;
+			pacman.xLoc = 224;
+			pacman.yLoc = 420;
+			var startTiles = myTileset.findTile(pacman.xLoc,pacman.yLoc);
+			pacman.xTile = startTiles.xTile;
+			pacman.yTile = startTiles.yTile;
+
+			//Reset all the ghosts to their starting position
+			blinky.x = 7*16;
+			blinky.y = 5*16;
+
+			pinky.x = 20*16;
+			pinky.y = 5*16;
+
+			inky.x = 7*16;
+			inky.y = 32*16;
+
+			clyde.x = 20*16;
+			clyde.y = 32*16;
+
+			if(pacman.lives == 0){
+				gameOver = true;
+				return;
+			}
+
+			//Set a timeout so the game stops for a bit
+			timeout = 100;
+		}
+	}
+}
+
 function debug(ISDEBUG){
 	if(ISDEBUG){
 		canvas.fillStyle = "#FFF";
+		canvas.textAlign = 'left'
+		canvas.font="11px Calibri";
 		canvas.fillText("pacman movement = "+pacman.movement,0,10);
 		canvas.fillText("pacman nextDirection = "+pacman.nextDirection,0,20);
 		canvas.fillText("pacman pos: x = "+ pacman.xLoc + " y = " + pacman.yLoc,0,30);
@@ -305,6 +369,7 @@ function debug(ISDEBUG){
 		canvas.fillText("pacman up = "+pacman.up,0,70);
 		canvas.fillText("pacman down = "+pacman.down,0,80);
 		canvas.fillText("pacman energizer = "+pacman.energizer,0,90);
+		canvas.fillText("pacman lives = "+pacman.lives,0,100);
 		canvas.fillText("blinky movement = "+blinky.movement,200,10);
 		canvas.fillText("blinky nextDirection = "+blinky.nextDirection,200,20);
 		canvas.fillText("blinky pos: x = "+ blinky.x + " y = " + blinky.y,200,30);
@@ -381,7 +446,6 @@ function loadData(data,forward){
 		}
 		else if(forward){
 			myTileset.map[data.dotNumX][data.dotNumY] = 'e';
-			console.log("eating dot at column" + column + "and row" + row);
 		}
 
 	}
@@ -434,6 +498,7 @@ function assertTime(change,value){
 		}
 	}
 }
+
 
 $(document).on("change", "#pinkySelect", function(){
 	 pinky.setAI($("#pinkySelect option:selected").text());

@@ -43,6 +43,12 @@ window.addEventListener('keypress', function (e) {
 		pacman.up = myTileset.checkUp(pacman.xTile,pacman.yTile);
 		pacman.down = myTileset.checkDown(pacman.xTile,pacman.yTile);
 
+	}
 
+	if(e.charCode == 32){
+		if(gameOver){
+			gameOver = false;
+			pacman.lives = 3;
+		}
 	}
 }, false);

@@ -10,6 +10,7 @@ function player(){
 	var startTiles = myTileset.findTile(I.xLoc,I.yLoc);
 	I.xTile = startTiles.xTile;
 	I.yTile = startTiles.yTile;
+	I.lives = 3;
 	/* Movement gets 5 different values
 	 * 0 means it is still
 	 * 1 means go left
@@ -162,7 +163,6 @@ function player(){
 	 	I.sprite.draw(I.xLoc - (I.width/2), I.yLoc - (I.height/2),I.rotate);
 	};
 
-	
 	
 	return I;
 }
