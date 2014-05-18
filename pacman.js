@@ -21,7 +21,7 @@ var FPS = 30;
 
 var timeout = 0;
 
-var DEBUG = true;
+var DEBUG = false;
 
 var gameOver = true;
 
@@ -94,6 +94,7 @@ function update(){
 			}
 		}
 		debug(DEBUG);
+		checkWinOrDie();
 	}
 };
 
@@ -113,12 +114,14 @@ function draw(){
 		}
 	}
 	else{
+		canvas.fillStyle = "#FFF";
+		canvas.fillRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
 		canvas.fillStyle="#000";
 		canvas.textAlign = 'center'
 		canvas.font="30pt Calibri";
 		canvas.fillText("Extensible PacMan",CANVAS_WIDTH/2, CANVAS_HEIGHT/3);
 		canvas.font="15px Calibri";
-		canvas.fillText("An explorable explanation of the AI and mechanics of PacMan", CANVAS_WIDTH/2, CANVAS_HEIGHT/2);
+		canvas.fillText("An explorable explanation of PacMan's ghost AI", CANVAS_WIDTH/2, CANVAS_HEIGHT/2);
 		canvas.fillText("Press space to start", CANVAS_WIDTH/2,CANVAS_HEIGHT/1.5);
 	}
 }
@@ -133,140 +136,11 @@ var pinky = ghost(20*16,5*16,"pinky.png", true);
 var inky = ghost(7*16,32*16,"inky.png", true);
 var clyde = ghost(20*16,32*16,"clyde.png",true);
 
+blinky.setAI('blinky');
+pinky.setAI('pinky');
+inky.setAI('inky');
+clyde.setAI('clyde');
 
-//Blinky literally just follows pacman directly
-//His target tile is always just the target tile of pacman
-blinky.findTarget = function(){
-	blinky.target = {x:pacman.xTile,y:pacman.yTile};
-	if(blinky.flip == true){
-		if(blinky.movement === 1){blinky.nextDirection = 2;}
-		if(blinky.movement === 2){blinky.nextDirection = 1;}
-		if(blinky.movement === 3){blinky.nextDirection = 4;}
-		if(blinky.movement === 4){blinky.nextDirection = 3;}
-		blinky.flip = false
-	}
-	if(pacman.energizer>0){
-		blinky.target = {x:0,y:2};
-	}
-}
-
-//Pinky chases 4 ahead of PacMan
-//There is a noted bug which I am including here
-pinky.findTarget = function(){
-
-	if(pacman.movement == 1){
-		pinky.target = {x:pacman.xTile-4,y:pacman.yTile};
-	}
-	else if(pacman.movement == 2){
-		pinky.target = {x:pacman.xTile+4,y:pacman.yTile};
-	}
-	//Here I am implementing the bug
-	else if(pacman.movement == 3){
-		pinky.target = {x:pacman.xTile-4, y:pacman.yTile-4};
-	}
-	else if(pacman.movement == 4){
-		pinky.target = {x:pacman.xTile, y:pacman.yTile + 4};
-	}
-	if(pinky.flip == true){
-		if(pinky.movement === 1){pinky.nextDirection = 2;}
-		if(pinky.movement === 2){pinky.nextDirection = 1;}
-		if(pinky.movement === 3){pinky.nextDirection = 4;}
-		if(pinky.movement === 4){pinky.nextDirection = 3;}
-		pinky.flip = false;
-	}
-	if(pacman.energizer>0){
-		pinky.target={x:33,y:2};
-	}
-}
-
-
-/* Inky needs blinky's target tile and current location to find his
- * own. Inky takes blinky's target, which is pacman, and adds 2 tiles
- * in the direction pacman is facing. Then he takes that tile and gets
- * difference between it and blinky's current location call it x. That difference
- * is doubled to 2x. Inky's target tile is at the end of a line segment 2x
- * long with one end at blinky's current location and midpoint being that
- * 2 offset tile. The offset tile location has a bug much like pinky where
- * When pacman is pointing up, the offset is 2 up AND 2 LEFT of blinky's
- * target(pacman's location).
- * 
- */
-
-inky.findTarget = function(){
-	var offset = {};
-	if(pacman.movement == 1){
-		offset.x = blinky.target.x - 2;
-		offset.y = blinky.target.y;
-	}
-	else if(pacman.movement == 2){
-		offset.x = blinky.target.x + 2;
-		offset.y = blinky.target.y;
-	}
-	else if(pacman.movement == 3){
-		offset.x = blinky.target.x - 2;
-		offset.y = blinky.target.y - 2;
-	}
-	else if(pacman.movement == 4){
-		offset.x = blinky.target.x;
-		offset.y = blinky.target.y + 2;
-	}
-	//If pacman isn't moving make it chase
-	else{
-		inky.target = {x:28, y:34};
-		return;
-	}
-	//make offset in terms of pixel not tile
-	//get the pixel in the center of the offset tile
-	offset.x = (offset.x*16)+8;
-	offset.y = (offset.y*16)+8;
-
-	//Find distance between offset tile and blinky's location
-	//Not absolute because we are going to double this and
-	//find it i relation to blinky IE this might be below and
-	//to the left, so we retain the sign
-	var dist = {};
-	dist.x = 2*(offset.x-blinky.x);
-	dist.y = 2*(offset.y-blinky.y);
-	var targetTile = myTileset.findTile(blinky.x+dist.x,blinky.y+dist.y);
-	inky.target = {x:targetTile.xTile,y:targetTile.yTile};
-	//switch directions once pacman gets the energizer
-	if(inky.flip == true){
-		if(inky.movement === 1){inky.nextDirection = 2;}
-		if(inky.movement === 2){inky.nextDirection = 1;}
-		if(inky.movement === 3){inky.nextDirection = 4;}
-		if(inky.movement === 4){inky.nextDirection = 3;}
-		inky.flip = false;
-	}
-	if(pacman.energizer>0){
-		inky.target = {x:28, y:34};
-	}
-
-}
-
-clyde.findTarget = function(){
-	//find the euclidian distance between clyde's tile
-	//and pacman's tile
-	//Get the pixel locations of these tiles
-	var clydeTile = myTileset.findLoc(clyde.xTile,clyde.yTile);
-	var pacTile = myTileset.findLoc(pacman.xTile,pacman.yTile);
-	var distance = Math.sqrt(((clydeTile.xLoc-pacTile.xLoc)*(clydeTile.xLoc-pacTile.xLoc))+((clydeTile.yLoc-pacTile.yLoc)*(clydeTile.yLoc-pacTile.yLoc)));
-	if(distance > 8*myTileset.tileWidth){
-		clyde.target = {x:pacman.xTile,y:pacman.yTile};
-	}
-	else{
-		clyde.target = {x:0,y:34};
-	}
-	if(clyde.flip == true){
-		if(clyde.movement === 1){clyde.nextDirection = 2;}
-		if(clyde.movement === 2){clyde.nextDirection = 1;}
-		if(clyde.movement === 3){clyde.nextDirection = 4;}
-		if(clyde.movement === 4){clyde.nextDirection = 3;}
-		clyde.flip = false;
-	}
-	if(pacman.energizer>0){
-		clyde.target = {x:0,y:34};
-	}
-}
 
 //Right now this just draws a circle around pacman
 //Very cheap effect for right, can look better in the future
@@ -352,6 +226,9 @@ function ghostCollision(ghost){
 			//Set a timeout so the game stops for a bit
 			timeout = 100;
 		}
+		else{
+			ghost.eaten = true;
+		}
 	}
 }
 
@@ -370,6 +247,7 @@ function debug(ISDEBUG){
 		canvas.fillText("pacman down = "+pacman.down,0,80);
 		canvas.fillText("pacman energizer = "+pacman.energizer,0,90);
 		canvas.fillText("pacman lives = "+pacman.lives,0,100);
+		canvas.fillText("Dots eaten = "+pacman.totalDots,0,110);
 		canvas.fillText("blinky movement = "+blinky.movement,200,10);
 		canvas.fillText("blinky nextDirection = "+blinky.nextDirection,200,20);
 		canvas.fillText("blinky pos: x = "+ blinky.x + " y = " + blinky.y,200,30);
@@ -439,13 +317,17 @@ function loadData(data,forward){
 	inky.update();
 	clyde.update();
 
-	//Restore the dot
+	//Restore the dot state
 	if(data.dotNumX && data.dotNumY){
 		if(!forward){
 			myTileset.map[data.dotNumX][data.dotNumY] = 'o';
+			//I don't know why this needs to be 0.5, but it does
+			//This happens twice for some reason
+			pacman.totalDots -= 0.5;
 		}
 		else if(forward){
 			myTileset.map[data.dotNumX][data.dotNumY] = 'e';
+			pacman.totalDots += 1;
 		}
 
 	}
@@ -499,6 +381,30 @@ function assertTime(change,value){
 	}
 }
 
+
+function checkWinOrDie(){
+	if(pacman.totalDots == 244){
+		gameOver = true;
+		pacman.xLoc = 224;
+		pacman.yLoc = 420;
+		var startTiles = myTileset.findTile(pacman.xLoc,pacman.yLoc);
+		pacman.xTile = startTiles.xTile;
+		pacman.yTile = startTiles.yTile;
+
+		//Reset all the ghosts to their starting position
+		blinky.x = 7*16;
+		blinky.y = 5*16;
+
+		pinky.x = 20*16;
+		pinky.y = 5*16;
+
+		inky.x = 7*16;
+		inky.y = 32*16;
+
+		clyde.x = 20*16;
+		clyde.y = 32*16;
+	}
+}
 
 $(document).on("change", "#pinkySelect", function(){
 	 pinky.setAI($("#pinkySelect option:selected").text());

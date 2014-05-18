@@ -43,6 +43,9 @@ function ghost(x,y,ghostSprite,lookahead,target){
 	lookahead = lookahead || false;
 
 	I.target = target || {x:0,y:0};
+
+	I.eaten = false;
+
 	//PacMan has to move
 	I.update = function(){
 		//Update what tile the ghost is on
@@ -126,6 +129,10 @@ function ghost(x,y,ghostSprite,lookahead,target){
 			else{
 				I.decide();
 			}
+		}
+
+		if(I.xTile == 14 && I.yTile == 14){
+			I.eaten = false;
 		}
 	};
 
@@ -352,6 +359,9 @@ function ghost(x,y,ghostSprite,lookahead,target){
 		if(pacman.energizer>0){
 			I.target = {x:0,y:2};
 		}
+		if(I.eaten){
+			I.target = {x:14, y:15};
+		}
 	}
 
 	//Pinky chases 4 ahead of PacMan
@@ -379,6 +389,9 @@ function ghost(x,y,ghostSprite,lookahead,target){
 		}
 		if(pacman.energizer>0){
 			I.target={x:33,y:2};
+		}
+		if(I.eaten){
+			I.target = {x:14, y:15};
 		}
 	}
 	/* Inky needs blinky's target tile and current location to find his
@@ -440,6 +453,9 @@ function ghost(x,y,ghostSprite,lookahead,target){
 		if(pacman.energizer>0){
 			I.target = {x:28, y:34};
 		}
+		if(I.eaten){
+			I.target = {x:14, y:15};
+		}
 
 	}
 
@@ -465,6 +481,9 @@ function ghost(x,y,ghostSprite,lookahead,target){
 		}
 		if(pacman.energizer>0){
 			I.target = {x:0,y:34};
+		}
+		if(I.eaten){
+			I.target = {x:14, y:15};
 		}
 	}
 

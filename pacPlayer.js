@@ -43,6 +43,9 @@ function player(){
 	//We need to know if we are eating a dot
 	I.dotEat = false;
 
+	//Need to know how many total dots have been eaten
+	I.totalDots = 0;
+
 	//PacMan has to move
 	I.update = function(){
 		//Update what tile pacman is on
@@ -55,6 +58,7 @@ function player(){
 			if(myTileset.map[I.xTile][I.yTile] === 'o'){
 				myTileset.map[I.xTile][I.yTile] = 'e';
 				I.dotEat = true;
+				I.totalDots += 1;
 			}
 			//Check if we are getting an energizer pellet
 			if(myTileset.map[I.xTile][I.yTile] === 'O'){
@@ -64,6 +68,7 @@ function player(){
 				inky.flip = true;
 				clyde.flip = true;
 				pinky.flip = true
+				I.totalDots += 1;
 			}
 
 			//update the movement options
@@ -163,6 +168,6 @@ function player(){
 	 	I.sprite.draw(I.xLoc - (I.width/2), I.yLoc - (I.height/2),I.rotate);
 	};
 
-	
+
 	return I;
 }
