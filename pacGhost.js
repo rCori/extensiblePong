@@ -6,11 +6,17 @@
  * or bones, those would be skelingtons. Also very scary
  */
 
+//load the spritesheet for the scared sprites
+
+
+
 function ghost(x,y,ghostSprite,lookahead,target){
 	var I = {};
 	//Eventually "color" will be "sprite" and hopefully then "animation"
 	I.x = x;
 	I.y = y;
+
+	var scared = spritesheet("scatter.png",canvas,16,16,32,16);
 
 	//Height and width of the character
 	I.height = 16;
@@ -285,9 +291,13 @@ function ghost(x,y,ghostSprite,lookahead,target){
 	 	if(pacman.energizer == 0){
 	 		I.sprite.draw(I.x - (I.width/2), I.y - (I.height/2));
 	 	}
-	 	else{
-	 		canvas.fillStyle = "#0000FF";
-	 		canvas.fillRect(I.x - (I.width/2), I.y - (I.height/2), I.width, I.height);	
+	 	else if(I.eaten){
+			scared[1].draw(I.x - (I.width/2), I.y - (I.height/2));
+	 	}
+	 	else if(pacman.energizer > 0){
+	 		//canvas.fillStyle = "#0000FF";
+	 		//canvas.fillRect(I.x - (I.width/2), I.y - (I.height/2), I.width, I.height);	
+	 		scared[0].draw(I.x - (I.width/2), I.y - (I.height/2));
 	 	}
 	};
 

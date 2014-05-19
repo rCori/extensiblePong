@@ -5,13 +5,12 @@
 //var pathname = /* "the/path/to/the/sprites" */ {{=URL('static','images')}};
 pathname= pathname + '/';
 console.log(pathname);
-function sprite(image,canvas,width,height){
+function sprite(image,canvas,width,height,srcX,srcY){
 	/* The building block basic one frame single image
 	 * sprite
 	 */
 	 var I = {};
 
-	 console.log(typeof image);
 
 
 	 //If you are getting an image filename
@@ -49,11 +48,33 @@ function sprite(image,canvas,width,height){
 	 	}
 
 	 }
-	 //If you are getting image data from a
+	 //If you are getting image data from a spritesheet
+	 //Image is alreasy loaded
 	 else{
 	 	I.imageObj = image;
-	 	I.draw = function(x,y){
-	 		canvas.putImageData(I.imageObj,x,y);
+	 	I.draw = function(x,y, degree){
+				//optional argument
+	 			degree = degree || 0;
+	 			if(degree != 0){
+	 				//Save the context
+	 				canvas.save();
+	 				//translate the canvas to center of where we are drawing the the thing
+	 				canvas.translate(x+(I.width/2),y+(I.height/2));
+
+	 				//rotate the canvas
+	 				canvas.rotate(degree*(Math.PI/180));
+
+	 				//draw the thing
+	 				canvas.drawImage(image,srcX,srcY,width,height,width/2*(-1),height/2*(-1),width,height);
+
+	 				//Now fix everything
+	 				canvas.rotate(degree *(Math.PI/180)*(-1));
+	 				canvas.translate((x+(I.width/2))*(-1),(y+(I.height/2))*(-1));
+	 			}
+	 			//There is no degree to rotate for.
+	 			else{
+	 				canvas.drawImage(image,srcX,srcY,width,height,x,y,width,height);
+	 			}
 	 	}
 	 }
 	 I.width = width;
@@ -61,6 +82,8 @@ function sprite(image,canvas,width,height){
 
 	 return I;
 }
+
+
 
 function spritesheet(image, canvas,tileWidth, tileHeight, sheetWidth, sheetHeight){
 	/* User must specify height and width of each sprite
@@ -72,28 +95,15 @@ function spritesheet(image, canvas,tileWidth, tileHeight, sheetWidth, sheetHeigh
 	 */
 
 
-	 //The total object to be returned
-	 var I = {};
-
-	 //First make a fake canvas for you to draw the entire sheet onto
-	 var fakeCanvasElement = jQuery("<canvas id='fake' ></canvas>");
-	 var fakeCanvas = fakeCanvasElement.get(0).getContext("2d");
-	 fakeCanvasElement.appendTo('body');
-
-	 //Where we store the tile data
-	 //We will return this
-	 var tiles = [];
-
-	 //How many tiles across
+	 //We need to know how many tiles across and high
 	 var tilesX = sheetWidth/tileWidth;
-	 //How many tiles high
 	 var tilesY = sheetHeight/tileHeight;
 
+	 var imageObj = new Image();
 
+	 imageObj.src = pathname + image;
 
-	 var sheetObj = new Image();
-
-	 var sprites = new Array();
+	 var sprites = new Array(); 
 
 	 //LoaderProxy
 	 //Every member of sprite must be declared a noop or null here
@@ -102,30 +112,18 @@ function spritesheet(image, canvas,tileWidth, tileHeight, sheetWidth, sheetHeigh
 	 	sprites[i].draw = jQuery.noop;
 	 }
 
-	 sheetObj.onload = function(){
-	 	//Draw the tilesheet to the fake ass canvas
-	 	fakeCanvas.drawImage(sheetObj,0,0);
+	 imageObj.onload = function(){
 	 	for (var i = 0; i<tilesY; i++){
 	 		for (var j = 0; j<tilesX; j++){
-	 			tiles.push(fakeCanvas.getImageData(j*tileWidth, i*tileHeight, tileWidth, tileHeight));
+	 			sprites[(i*tilesX) + j] = sprite(imageObj,canvas,tileWidth, tileHeight, j*tileWidth, i*tileHeight);
 	 		}
 	 	}
-	 	//remove the canvas
-	 	fakeCanvas = null;
-	 	jQuery('#fake').remove();
-
-
-	 	for(var i = 0; i<tiles.length; i++){
-	 		sprites[i] = (sprite(tiles[i],canvas,tileWidth,tileHeight));
-	 	}
-
 	 }
-	 //Get the source of the tile sheet
-	 sheetObj.src = pathname + image;
 
-	 //return the tiles
 	 return sprites;
+
 }
+
 
 function animation(sprites){
 	/*This will take an array of sprites and give

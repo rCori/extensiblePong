@@ -141,7 +141,6 @@ pinky.setAI('pinky');
 inky.setAI('inky');
 clyde.setAI('clyde');
 
-
 //Right now this just draws a circle around pacman
 //Very cheap effect for right, can look better in the future
 clyde.visualize = function(){
