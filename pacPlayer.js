@@ -49,8 +49,8 @@ function player(){
 
 	//PacMan has to move
 	I.update = function(){
-		//Update what tile pacman is on
 		I.dotEat = false;
+		//Update what tile pacman is on
 		var newTile = myTileset.findTile(I.xLoc,I.yLoc);
 		if(newTile.xTile != I.xTile || newTile.yTile != I.yTile){
 			I.xTile = newTile.xTile;
@@ -72,6 +72,8 @@ function player(){
 				pinky.flip = true
 				I.totalDots += 1;
 				I.score += 50;
+				//We will check for this being an energizer later
+				I.dotEat = true;
 
 			}
 

@@ -21,7 +21,7 @@ var FPS = 30;
 
 var timeout = 0;
 
-var DEBUG = false;
+var DEBUG = true;
 
 var gameOver = true;
 
@@ -207,7 +207,6 @@ function ghostCollision(ghost){
 				gameOver = true;
 				return;
 			}
-
 			//Set a timeout so the game stops for a bit
 			timeout = 100;
 		}
@@ -255,6 +254,9 @@ function saveData(){
 		pacY: pacman.yLoc,
 		pacRot: pacman.rotate,
 		pacDir: pacman.movement,
+		pacScore: pacman.score,
+		pacEng: pacman.energizer,
+		pacTotDot: pacman.totalDots,
 		blinkyX: blinky.x,
 		blinkyY: blinky.y,
 		inkyX: inky.x,
@@ -272,6 +274,7 @@ function saveData(){
 		data.dotNumX = pacTile.xTile;
 		data.dotNumY = pacTile.yTile;
 	}
+
 	return data;
 }
 
@@ -284,6 +287,9 @@ function loadData(data,forward){
 	pacman.yLoc = data.pacY;
 	pacman.rotate = data.pacRot;
 	pacman.movement = data.pacDir;
+	pacman.score = data.pacScore;
+	pacman.energizer = data.pacEng;
+	pacman.totalDots = data.pacTotDot;
 	blinky.x = data.blinkyX;
 	blinky.y = data.blinkyY;
 	inky.x = data.inkyX;
@@ -305,14 +311,21 @@ function loadData(data,forward){
 	//Restore the dot state
 	if(data.dotNumX && data.dotNumY){
 		if(!forward){
-			myTileset.map[data.dotNumX][data.dotNumY] = 'o';
-			//I don't know why this needs to be 0.5, but it does
-			//This happens twice for some reason
-			pacman.totalDots -= 0.5;
+			/*A long conditional to see if we are actually eating an
+			 * energizer and not a regular pellet
+			 */
+			if((data.dotNumX == 1 && data.dotNumY == 6) || 
+				(data.dotNumX == 1 && data.dotNumY == 26) ||
+				(data.dotNumX == 26 && data.dotNumY == 6) ||
+				(data.dotNumX == 26 && data.dotNumY == 26)){
+			myTileset.map[data.dotNumX][data.dotNumY] = 'O';
+			}
+			else{
+				myTileset.map[data.dotNumX][data.dotNumY] = 'o';
+			}
 		}
 		else if(forward){
 			myTileset.map[data.dotNumX][data.dotNumY] = 'e';
-			pacman.totalDots += 1;
 		}
 
 	}
