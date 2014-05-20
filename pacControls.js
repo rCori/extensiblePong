@@ -48,7 +48,7 @@ window.addEventListener('keypress', function (e) {
 	if(e.charCode == 32){
 		if(gameOver){
 			gameOver = false;
-			pacman.lives = 3;
+			initValues(true);
 		}
 	}
 }, false);

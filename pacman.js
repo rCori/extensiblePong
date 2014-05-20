@@ -67,6 +67,7 @@ var myMapData = /* 1 */[['M','M','M','7','4','4','4','4','4','4','4','4','1','M'
 				/*27 */ ['M','M','M','8','o','o','O','o','o','o','o','o','2','M','M','M','8','e','2','M','M','M','8','o','o','o','O','=','=','o','o','o','o','2','M','M'],
 				/*28 */ ['M','M','M','9','6','6','6','6','6','6','6','6','3','M','M','M','8','e','2','M','M','M','9','6','6','6','6','3','9','6','6','6','6','3','M','M']]
 var myTileset = tileset(myMapData,CANVAS_WIDTH, CANVAS_HEIGHT,'spritesheet.png',canvas);
+
 setInterval(function(){
 	draw();
 	update();
@@ -102,6 +103,8 @@ function draw(){
 	if(!gameOver){
 		myTileset.renderMap(canvas);
 		pacman.draw();
+		pacman.showScore(0,10);
+		pacman.showLives(10,550);
 		blinky.draw();
 		pinky.draw();
 		inky.draw();
@@ -198,24 +201,7 @@ function ghostCollision(ghost){
 	if(ghost.xTile == pacman.xTile && ghost.yTile == pacman.yTile){
 		if(pacman.energizer == 0){
 			pacman.lives -= 1;
-			pacman.xLoc = 224;
-			pacman.yLoc = 420;
-			var startTiles = myTileset.findTile(pacman.xLoc,pacman.yLoc);
-			pacman.xTile = startTiles.xTile;
-			pacman.yTile = startTiles.yTile;
-
-			//Reset all the ghosts to their starting position
-			blinky.x = 7*16;
-			blinky.y = 5*16;
-
-			pinky.x = 20*16;
-			pinky.y = 5*16;
-
-			inky.x = 7*16;
-			inky.y = 32*16;
-
-			clyde.x = 20*16;
-			clyde.y = 32*16;
+			initValues(false);
 
 			if(pacman.lives == 0){
 				gameOver = true;
@@ -384,25 +370,47 @@ function assertTime(change,value){
 function checkWinOrDie(){
 	if(pacman.totalDots == 244){
 		gameOver = true;
-		pacman.xLoc = 224;
-		pacman.yLoc = 420;
-		var startTiles = myTileset.findTile(pacman.xLoc,pacman.yLoc);
-		pacman.xTile = startTiles.xTile;
-		pacman.yTile = startTiles.yTile;
-
-		//Reset all the ghosts to their starting position
-		blinky.x = 7*16;
-		blinky.y = 5*16;
-
-		pinky.x = 20*16;
-		pinky.y = 5*16;
-
-		inky.x = 7*16;
-		inky.y = 32*16;
-
-		clyde.x = 20*16;
-		clyde.y = 32*16;
+		initValues(true);
 	}
+}
+
+function initValues(startOver){
+	pacman.xLoc = 224;
+	pacman.yLoc = 420;
+	var startTiles = myTileset.findTile(pacman.xLoc,pacman.yLoc);
+	pacman.xTile = startTiles.xTile;
+	pacman.yTile = startTiles.yTile;
+
+	//Reset all the ghosts to their starting position
+	blinky.x = 7*16;
+	blinky.y = 5*16;
+
+	pinky.x = 20*16;
+	pinky.y = 5*16;
+
+	inky.x = 7*16;
+	inky.y = 32*16;
+
+	clyde.x = 20*16;
+	clyde.y = 32*16;
+
+	//We need to set more initial values
+	if(startOver){
+		pacman.score = 0;
+		pacman.lives = 3;
+		pacman.totalDots = 0;
+		//We are trying to reset all the dots
+		for (var snap in timeSnaps){
+			if(timeSnaps[snap].dotNumX){
+				myTileset.map[timeSnaps[snap].dotNumX][timeSnaps[snap].dotNumY] = 'o';
+			}
+		}
+		timeSnaps = [];
+		$("#timeSlider").slider("option","max",0);
+		$( "#timeAmount" ).val(0);
+		$("#timeSlider").slider("value",0);
+
+	} 
 }
 
 $(document).on("change", "#pinkySelect", function(){

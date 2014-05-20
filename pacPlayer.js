@@ -11,6 +11,7 @@ function player(){
 	I.xTile = startTiles.xTile;
 	I.yTile = startTiles.yTile;
 	I.lives = 3;
+	I.score = 0;
 	/* Movement gets 5 different values
 	 * 0 means it is still
 	 * 1 means go left
@@ -59,6 +60,7 @@ function player(){
 				myTileset.map[I.xTile][I.yTile] = 'e';
 				I.dotEat = true;
 				I.totalDots += 1;
+				I.score += 10;
 			}
 			//Check if we are getting an energizer pellet
 			if(myTileset.map[I.xTile][I.yTile] === 'O'){
@@ -69,6 +71,8 @@ function player(){
 				clyde.flip = true;
 				pinky.flip = true
 				I.totalDots += 1;
+				I.score += 50;
+
 			}
 
 			//update the movement options
@@ -167,6 +171,20 @@ function player(){
 		
 	 	I.sprite.draw(I.xLoc - (I.width/2), I.yLoc - (I.height/2),I.rotate);
 	};
+
+
+	I.showScore = function(x,y){
+		canvas.fillStyle = "#FFF";
+		canvas.textAlign = 'left'
+		canvas.font="14px Calibri";
+		canvas.fillText("Score : "+I.score,x,y);
+	}
+
+	I.showLives = function(x,y){
+		for(var i = 1; i<I.lives; i++){
+			I.sprite.draw(x+(i*I.width),y);
+		}
+	}
 
 
 	return I;
