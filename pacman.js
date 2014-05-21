@@ -21,7 +21,7 @@ var FPS = 30;
 
 var timeout = 0;
 
-var DEBUG = true;
+var DEBUG = false;
 
 var gameOver = true;
 
@@ -144,6 +144,8 @@ pinky.setAI('pinky');
 inky.setAI('inky');
 clyde.setAI('clyde');
 
+
+
 //Right now this just draws a circle around pacman
 //Very cheap effect for right, can look better in the future
 clyde.visualize = function(){
@@ -257,6 +259,7 @@ function saveData(){
 		pacScore: pacman.score,
 		pacEng: pacman.energizer,
 		pacTotDot: pacman.totalDots,
+		pacLives: pacman.lives,
 		blinkyX: blinky.x,
 		blinkyY: blinky.y,
 		inkyX: inky.x,
@@ -290,6 +293,7 @@ function loadData(data,forward){
 	pacman.score = data.pacScore;
 	pacman.energizer = data.pacEng;
 	pacman.totalDots = data.pacTotDot;
+	pacman.lives = data.pacLives;
 	blinky.x = data.blinkyX;
 	blinky.y = data.blinkyY;
 	inky.x = data.inkyX;

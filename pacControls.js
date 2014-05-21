@@ -32,11 +32,11 @@ window.addEventListener('keypress', function (e) {
 	if(e.charCode == 112){
 		gamePaused = !gamePaused;
 		if(!gamePaused){
-			timeSnaps = timeSnaps.slice(0,$( "#timeSlider" ).slider('value'));
+			timeSnaps = timeSnaps.slice(0,$( "#timeSlider" ).slider('value')+1);
 		}
-		$("#timeSlider").slider("option","max",timeSnaps.length-1);
-		$( "#timeAmount" ).val(timeSnaps.length-1);
-		$("#timeSlider").slider("value",timeSnaps.length-1);
+		$("#timeSlider").slider("option","max",timeSnaps.length);
+		$( "#timeAmount" ).val(timeSnaps.length);
+		$("#timeSlider").slider("value",timeSnaps.length);
 		//How you like them apples
 		pacman.left = myTileset.checkLeft(pacman.xTile,pacman.yTile);
 		pacman.right = myTileset.checkRight(pacman.xTile,pacman.yTile);
@@ -49,6 +49,8 @@ window.addEventListener('keypress', function (e) {
 		if(gameOver){
 			gameOver = false;
 			initValues(true);
+			//Get another initial time step
+			snapTime(saveData);
 		}
 	}
 }, false);
