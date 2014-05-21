@@ -8,6 +8,7 @@
 
 //load the spritesheet for the scared sprites
 
+var CLYDECIRCLE = 8;
 
 
 function ghost(x,y,ghostSprite,lookahead,target){
@@ -474,7 +475,7 @@ function ghost(x,y,ghostSprite,lookahead,target){
 		var clydeTile = myTileset.findLoc(I.xTile,I.yTile);
 		var pacTile = myTileset.findLoc(pacman.xTile,pacman.yTile);
 		var distance = Math.sqrt(((clydeTile.xLoc-pacTile.xLoc)*(clydeTile.xLoc-pacTile.xLoc))+((clydeTile.yLoc-pacTile.yLoc)*(clydeTile.yLoc-pacTile.yLoc)));
-		if(distance > 8*myTileset.tileWidth){
+		if(distance > CLYDECIRCLE*myTileset.tileWidth){
 			I.target = {x:pacman.xTile,y:pacman.yTile};
 		}
 		else{

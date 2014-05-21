@@ -152,7 +152,7 @@ clyde.visualize = function(){
 	canvas.strokeStyle = "#FF6600";
 	canvas.fillStyle = "#FF6600";
 	canvas.beginPath();
-	canvas.arc(pacman.xLoc,pacman.yLoc,16*8,0,2*Math.PI);
+	canvas.arc(pacman.xLoc,pacman.yLoc,16*CLYDECIRCLE,0,2*Math.PI);
 	canvas.stroke();
 
 	var extraRightCost = 0;
@@ -366,6 +366,44 @@ $(function() {
 	});
 	$( "#timeAmount" ).val( $( "#timeSlider" ).slider( "value" ) );
 });
+
+//This slider is for the user to change the value of clyde's circle
+$(function() {
+	var lastval;
+	var newval;
+	$( "#clydeCircleSlider" ).slider({
+		value:8,
+		min:4,
+		max:16,
+		step:1,
+		slide: function( event, ui ) {
+			CLYDECIRCLE = ui.value;
+			$( "#clydeCircleAmount" ).val( ui.value );
+		}
+	});
+	$( "#clydeCircleAmount" ).val( $( "#clydeCircleSlider" ).slider( "value" ) );
+});
+
+//Get it started
+$( "#clydeCircleAmount" ).val( 8 );
+
+//This slider is for the user to change the speed of the game
+$(function() {
+	var lastval;
+	var newval;
+	$( "#gameSpeedSlider" ).slider({
+		value:3,
+		min:1,
+		max:7,
+		step:0.5,
+		slide: function( event, ui ) {
+			SPEEDCONSTANT = ui.value;
+			$( "#gameSpeedAmount" ).val( ui.value );
+		}
+	});
+	$( "#gameSpeedAmount" ).val( $( "#gameSpeedSlider" ).slider( "value" ) );
+});
+$( "#gameSpeedAmount" ).val( 3);
 
 //This is how I do the time warp again
 function assertTime(change,value){
