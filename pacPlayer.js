@@ -1,5 +1,9 @@
 //pacPlayer.js
 
+//The speed of pacman and ghosts are relative to one constant.
+var SPEEDCONSTANT = 3;
+
+
 function player(){
 	var I = {};
 	//All the starting info
@@ -76,7 +80,7 @@ function player(){
 				I.dotEat = true;
 
 			}
-
+			I.speedWagon(I.dotEat);
 			//update the movement options
 			//wrap around
 			if(((newTile.xTile < 1) || (newTile.xTile>26)) && (I.yTile == 17)){
@@ -186,6 +190,56 @@ function player(){
 		for(var i = 1; i<I.lives; i++){
 			I.sprite.draw(x+(i*I.width),y);
 		}
+	}
+
+	//Set the speeds fo different situations
+	//There are four different situations to account for
+	//All four combinations of when pacman is or is not eating a dot(dotEat)
+	//and if an energizer is active. Also if a ghost is eaten
+	I.speedWagon = function(dotEat){
+		if(!dotEat){
+			if(pacman.energizer == 0){
+				//Set the speeds for the ghosts and pacman normally
+				pacman.velocity = 0.8*SPEEDCONSTANT;
+				blinky.velocity = 0.75*SPEEDCONSTANT;
+				inky.velocity = 0.75*SPEEDCONSTANT;
+				pinky.velocity = 0.75*SPEEDCONSTANT;
+				clyde.velocity = 0.75*SPEEDCONSTANT;
+			}
+			else
+			{
+				//Set the speeds for the ghosts and pacman during energizer
+				pacman.velocity = 0.9*SPEEDCONSTANT;
+				blinky.velocity = 0.5*SPEEDCONSTANT;
+				inky.velocity = 0.5*SPEEDCONSTANT;
+				pinky.velocity = 0.5*SPEEDCONSTANT;
+				clyde.velocity = 0.5*SPEEDCONSTANT;
+			}
+		}
+		else{
+			if(pacman.energizer == 0){
+				//Set the speeds for the ghosts and pacman normally
+				pacman.velocity = 0.71*SPEEDCONSTANT;
+				blinky.velocity = 0.75*SPEEDCONSTANT;
+				inky.velocity = 0.75*SPEEDCONSTANT;
+				pinky.velocity = 0.75*SPEEDCONSTANT;
+				clyde.velocity = 0.75*SPEEDCONSTANT;
+			}
+			else
+			{
+				//Set the speeds for the ghosts and pacman during energizer
+				pacman.velocity = 0.79*SPEEDCONSTANT;
+				blinky.velocity = 0.5*SPEEDCONSTANT;
+				inky.velocity = 0.5*SPEEDCONSTANT;
+				pinky.velocity = 0.5*SPEEDCONSTANT;
+				clyde.velocity = 0.5*SPEEDCONSTANT;
+			}
+		}
+		if(blinky.eaten == true) blinky.velocity = 3 * SPEEDCONSTANT;
+		if(inky.eaten == true) inky.velocity = 3 * SPEEDCONSTANT;
+		if(pinky.eaten == true) pinky.velocity = 3 * SPEEDCONSTANT;
+		if(clyde.eaten == true) clyde.velocity = 3 * SPEEDCONSTANT;
+
 	}
 
 

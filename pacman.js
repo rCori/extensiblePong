@@ -68,6 +68,7 @@ var myMapData = /* 1 */[['M','M','M','7','4','4','4','4','4','4','4','4','1','M'
 				/*28 */ ['M','M','M','9','6','6','6','6','6','6','6','6','3','M','M','M','8','e','2','M','M','M','9','6','6','6','6','3','9','6','6','6','6','3','M','M']]
 var myTileset = tileset(myMapData,CANVAS_WIDTH, CANVAS_HEIGHT,'spritesheet.png',canvas);
 
+
 setInterval(function(){
 	draw();
 	update();
@@ -145,7 +146,6 @@ inky.setAI('inky');
 clyde.setAI('clyde');
 
 
-
 //Right now this just draws a circle around pacman
 //Very cheap effect for right, can look better in the future
 clyde.visualize = function(){
@@ -212,8 +212,16 @@ function ghostCollision(ghost){
 			//Set a timeout so the game stops for a bit
 			timeout = 100;
 		}
-		else{
+		else if(ghost.eaten == false){
 			ghost.eaten = true;
+			var ghostsEaten = 4;
+			if(blinky.eaten == false) ghostsEaten--;
+			if(inky.eaten == false) ghostsEaten--;
+			if(pinky.eaten == false) ghostsEaten--;
+			if(clyde.eaten == false) ghostsEaten--;
+			var temp = 400 * ghostsEaten;
+			pacman.score += temp;
+			console.log(temp);
 		}
 	}
 }
@@ -390,6 +398,7 @@ function checkWinOrDie(){
 		initValues(true);
 	}
 }
+
 
 function initValues(startOver){
 	pacman.xLoc = 224;

@@ -294,9 +294,7 @@ function ghost(x,y,ghostSprite,lookahead,target){
 	 	else if(I.eaten){
 			scared[1].draw(I.x - (I.width/2), I.y - (I.height/2));
 	 	}
-	 	else if(pacman.energizer > 0){
-	 		//canvas.fillStyle = "#0000FF";
-	 		//canvas.fillRect(I.x - (I.width/2), I.y - (I.height/2), I.width, I.height);	
+	 	else if(pacman.energizer > 0){	
 	 		scared[0].draw(I.x - (I.width/2), I.y - (I.height/2));
 	 	}
 	};
