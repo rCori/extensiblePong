@@ -86,6 +86,7 @@ function update(){
 				pinky.update();
 				inky.update();
 				clyde.update();
+				chaseTimer();
 				ghostCollision(blinky);
 				ghostCollision(clyde);
 				ghostCollision(pinky);
@@ -241,7 +242,9 @@ function debug(ISDEBUG){
 		canvas.fillText("pacman down = "+pacman.down,0,80);
 		canvas.fillText("pacman energizer = "+pacman.energizer,0,90);
 		canvas.fillText("pacman lives = "+pacman.lives,0,100);
-		canvas.fillText("Dots eaten = "+pacman.totalDots,0,110);
+		canvas.fillText("pacman lives = "+pacman.lives,0,100);
+		canvas.fillText("scatter = "+scatter,0,110);
+		canvas.fillText("ghostTimer = "+ghostTimer,0,120);
 		canvas.fillText("blinky movement = "+blinky.movement,200,10);
 		canvas.fillText("blinky nextDirection = "+blinky.nextDirection,200,20);
 		canvas.fillText("blinky pos: x = "+ blinky.x + " y = " + blinky.y,200,30);
@@ -404,6 +407,43 @@ $(function() {
 	$( "#gameSpeedAmount" ).val( $( "#gameSpeedSlider" ).slider( "value" ) );
 });
 $( "#gameSpeedAmount" ).val( 3);
+
+
+//This slider is for the user to change ghost chase timer
+$(function() {
+	var lastval;
+	var newval;
+	$( "#chaseSlider" ).slider({
+		value:20,
+		min:1,
+		max:40,
+		step:1,
+		slide: function( event, ui ) {
+			CHASETIMER = ui.value;
+			$( "#chaseAmount" ).val( ui.value );
+		}
+	});
+	$( "#chaseAmount" ).val( $( "#chaseSlider" ).slider( "value" ) );
+});
+$( "#chaseAmount" ).val( 20);
+
+//This slider is for the user to change ghost chase timer
+$(function() {
+	var lastval;
+	var newval;
+	$( "#scatterSlider" ).slider({
+		value:7,
+		min:1,
+		max:40,
+		step:1,
+		slide: function( event, ui ) {
+			SCATTERTIMER = ui.value;
+			$( "#scatterAmount" ).val( ui.value );
+		}
+	});
+	$( "#scatterAmount" ).val( $( "#scatterSlider" ).slider( "value" ) );
+});
+$( "#scatterAmount" ).val( 20);
 
 //This is how I do the time warp again
 function assertTime(change,value){

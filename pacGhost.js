@@ -10,6 +10,13 @@
 
 var CLYDECIRCLE = 8;
 
+var CHASETIMER = 20;
+
+var SCATTERTIMER = 7;
+
+var ghostTimer = 0;
+//All the ghosts need the same scatter control time
+var scatter = false;
 
 function ghost(x,y,ghostSprite,lookahead,target){
 	var I = {};
@@ -368,6 +375,10 @@ function ghost(x,y,ghostSprite,lookahead,target){
 		if(pacman.energizer>0){
 			I.target = {x:0,y:2};
 		}
+		if(scatter){
+			I.target = {x:0, y:2};
+		}
+		//This is what replaces our ghost house behavior
 		if(I.eaten){
 			I.target = {x:14, y:15};
 		}
@@ -398,6 +409,9 @@ function ghost(x,y,ghostSprite,lookahead,target){
 		}
 		if(pacman.energizer>0){
 			I.target={x:33,y:2};
+		}
+		if(scatter){
+			I.target = {x:33, y:2};
 		}
 		if(I.eaten){
 			I.target = {x:14, y:15};
@@ -462,6 +476,9 @@ function ghost(x,y,ghostSprite,lookahead,target){
 		if(pacman.energizer>0){
 			I.target = {x:28, y:34};
 		}
+		if(scatter){
+			I.target = {x:28, y:34};
+		}
 		if(I.eaten){
 			I.target = {x:14, y:15};
 		}
@@ -491,6 +508,9 @@ function ghost(x,y,ghostSprite,lookahead,target){
 		if(pacman.energizer>0){
 			I.target = {x:0,y:34};
 		}
+		if(scatter){
+			I.target = {x:0, y:34};
+		}
 		if(I.eaten){
 			I.target = {x:14, y:15};
 		}
@@ -512,4 +532,29 @@ function ghost(x,y,ghostSprite,lookahead,target){
 	}
 
 	return I;
+}
+
+ghostTimer = CHASETIMER * 30;
+
+function chaseTimer(){
+	//tick down the timer
+	ghostTimer -= 1;
+	//Now we make a change
+	if(ghostTimer <= 0){
+		//If we were scattering
+		if(scatter){
+			//Stop scattering
+			scatter = false;
+			ghostTimer = CHASETIMER * 30;
+		}
+		else{
+			//Start scattering
+			scatter = true;
+			ghostTimer = SCATTERTIMER * 30;
+		}
+		blinky.flip = true;
+		inky.flip = true;
+		clyde.flip = true;
+		pinky.flip = true;
+	}
 }

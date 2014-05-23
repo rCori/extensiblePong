@@ -73,7 +73,7 @@ function player(){
 				blinky.flip = true;
 				inky.flip = true;
 				clyde.flip = true;
-				pinky.flip = true
+				pinky.flip = true;
 				I.totalDots += 1;
 				I.score += 50;
 				//We will check for this being an energizer later
