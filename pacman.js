@@ -136,10 +136,10 @@ function draw(){
 var pacman = player();
 
 //Create the ghost objects
-var blinky = ghost(7*16,5*16,"blinky.png", true);
-var pinky = ghost(20*16,5*16,"pinky.png", true);
-var inky = ghost(7*16,32*16,"inky.png", true);
-var clyde = ghost(20*16,32*16,"clyde.png",true);
+var blinky = ghost(7*16,5*16,"blinky.png");
+var pinky = ghost(20*16,5*16,"pinky.png");
+var inky = ghost(7*16,32*16,"inky.png");
+var clyde = ghost(20*16,32*16,"clyde.png");
 
 blinky.setAI('blinky');
 pinky.setAI('pinky');

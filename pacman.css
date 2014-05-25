@@ -29,3 +29,9 @@ color:#FF0000;
 {
 color:#FF6600;
 }
+
+canvas
+{
+position: fixed;
+cursor: none;
+}

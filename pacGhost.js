@@ -18,7 +18,10 @@ var ghostTimer = 0;
 //All the ghosts need the same scatter control time
 var scatter = false;
 
-function ghost(x,y,ghostSprite,lookahead,target){
+//The dotCounter to see when the ghosts can leave the ghost house
+var ghostDotCounter = 0;
+
+function ghost(x,y,ghostSprite,target){
 	var I = {};
 	//Eventually "color" will be "sprite" and hopefully then "animation"
 	I.x = x;
@@ -54,11 +57,18 @@ function ghost(x,y,ghostSprite,lookahead,target){
 	//They might need to flip out
 	I.flip = false;
 
-	lookahead = lookahead || false;
-
 	I.target = target || {x:0,y:0};
 
 	I.eaten = false;
+
+	/* Give them a flag to enter or exit the house
+	 * 0 means default, not entering or exiting
+	 * 1 means entering
+	 * 2 means exiting
+	 * 3 means they are in the house and are waiting to get out but the counter IS NOT active for them
+	 * 4 means they are in the house waiting to get out and the counter IS active for them
+	 */
+	I.house = 0;
 
 	//PacMan has to move
 	I.update = function(){
@@ -69,7 +79,6 @@ function ghost(x,y,ghostSprite,lookahead,target){
 		if (I.xTile !=newTile.xTile || I.yTile != newTile.yTile){
 			I.xTile = newTile.xTile;
 			I.yTile = newTile.yTile;
-			//This is really hacky and needs changing
 			//This is the screen wrap routine, may need changing.
 			if(I.xTile < 2 && I.yTile == 17){
 				I.xTile = 25;
@@ -77,12 +86,10 @@ function ghost(x,y,ghostSprite,lookahead,target){
 			if(I.xTile > 25 && I.yTile == 17){
 				I.xTile = 2;
 			}
-			if(lookahead){
+			//If we aren't dealing with the ghostHouse just keep going
+			if(I.house == 0){
 				I.singleLookaheadSearch(I.target);
-				if(I.ai === undefined){
-					I.findTarget();
-				}
-				else if(I.ai==="blinky"){
+				if(I.ai==="blinky"){
 					I.blinkyFindTarget();
 				}
 				else if(I.ai==="inky"){
@@ -95,81 +102,54 @@ function ghost(x,y,ghostSprite,lookahead,target){
 					I.clydeFindTarget();
 				}
 			}
-			else{
-				I.decide();
-			}
+			
 		};
-
+		if(I.house != 0){
+			I.ghostHouse();
+		}		
 		//Need to check the status of tiles above or below the current
 		//LEFT
 		if(I.movement == 1 && myTileset.checkLeft(I.xTile,I.yTile)){
-			//if(myTileset.checkLeft(I.xTile,I.yTile)){
-				I.x -= I.velocity;
-				if(I.x < 0){
-					I.x = myTileset.width;
-				}
-				I.y = I.yTile * myTileset.tileHeight+(myTileset.tileHeight/2);
-			//}
+			I.x -= I.velocity;
+			if(I.x < 0){
+				I.x = myTileset.width;
+			}
+			I.y = I.yTile * myTileset.tileHeight+(myTileset.tileHeight/2);
 		}
 		else if(I.movement == 2 && myTileset.checkRight(I.xTile,I.yTile)){
 			//RIGHT
-			//if(myTileset.checkRight(I.xTile,I.yTile)){
-				I.x += I.velocity;
-				if(I.x >myTileset.width){
-					I.x = 0;
-				}
-				I.y = I.yTile * myTileset.tileHeight+(myTileset.tileHeight/2);
-			//}
+			I.x += I.velocity;
+			if(I.x >myTileset.width){
+				I.x = 0;
+			}
+			I.y = I.yTile * myTileset.tileHeight+(myTileset.tileHeight/2);
 		}
 		else if(I.movement == 3 && myTileset.checkUp(I.xTile,I.yTile)){
 			//UP
-			//if(myTileset.checkUp(I.xTile,I.yTile)){
-				I.y -= I.velocity;
-				I.x = I.xTile * myTileset.tileWidth+(myTileset.tileWidth/2);
-			//}
+			I.y -= I.velocity;
+			I.x = I.xTile * myTileset.tileWidth+(myTileset.tileWidth/2);
 		}
 		else if(I.movement == 4 && myTileset.checkDown(I.xTile,I.yTile)){
 			//DOWN
-			//if(myTileset.checkDown(I.xTile,I.yTile)){
-				I.y += I.velocity;
-				I.x = (I.xTile * myTileset.tileWidth)+(myTileset.tileWidth/2);
-			//}
+			I.y += I.velocity;
+			I.x = (I.xTile * myTileset.tileWidth)+(myTileset.tileWidth/2);
 		}
 		//You are stuck and need to make a new decision
 		else{
-			if(lookahead){
-				I.singleLookaheadSearch({x:pacman.xTile,y:pacman.yTile});
-			}
-			else{
-				I.decide();
-			}
+			I.singleLookaheadSearch(I.target);
 		}
 
-		if(I.xTile == 14 && I.yTile == 14){
-			I.eaten = false;
+		if(I.xTile == 14 && I.yTile == 14 && I.eaten == true){
+			console.log("not so scary");
+			//I.movement = 0;
+			I.house = 1;
+		}
+
+		if(pacman.energizer == 0){
+			I.scared = false;
 		}
 	};
 
-	//This controls the movement of the ghost's AI, very simple right now
-	I.decide = function(){
-		//potentially new movement vector
-		if(I.movement === 0){
-			I.movement = Math.floor((Math.random()*4)+1);
-		}
-		if(!myTileset.checkRight(I.xTile,I.yTile) && I.movement == 2){
-			I.movement = Math.floor((Math.random()*2)+3); 
-		}
-		if(!myTileset.checkLeft(I.xTile,I.yTile) && I.movement == 1){
-			I.movement = Math.floor((Math.random()*2)+3); 
-		}
-		if(!myTileset.checkUp(I.xTile,I.yTile) && I.movement == 3){
-			I.movement = Math.floor((Math.random()*2)+1); 
-		}
-		if(!myTileset.checkDown(I.xTile,I.yTile) && I.movement == 4){
-			I.movement = Math.floor((Math.random()*2)+1); 
-		}
-
-	};
 
 
 	//Allows the ghost to look ahead one tile to see where it should go next
@@ -296,14 +276,14 @@ function ghost(x,y,ghostSprite,lookahead,target){
 
 
 	I.draw = function(){
-	 	if(pacman.energizer == 0){
-	 		I.sprite.draw(I.x - (I.width/2), I.y - (I.height/2));
-	 	}
-	 	else if(I.eaten){
+	 	if(I.eaten){
 			scared[1].draw(I.x - (I.width/2), I.y - (I.height/2));
 	 	}
-	 	else if(pacman.energizer > 0){	
+	 	else if(I.scared){	
 	 		scared[0].draw(I.x - (I.width/2), I.y - (I.height/2));
+	 	}
+	 	else{
+	 		I.sprite.draw(I.x - (I.width/2), I.y - (I.height/2));
 	 	}
 	};
 
@@ -531,6 +511,34 @@ function ghost(x,y,ghostSprite,lookahead,target){
 		}
 	}
 
+	I.ghostHouse = function(){
+		if(I.house == 1){
+			console.log("going down");
+			I.movement = 0;
+			I.y += I.velocity * 0.25;
+			//Now turn the house thing off
+			if(I.yTile == 16){
+				I.house = 3;
+				I.eaten = false;
+				I.scared = false;
+			}
+		}
+		else if(I.house == 2){
+			console.log("going up");
+			I.movement = 0;
+			I.y -= I.velocity * 0.25;
+			//Now turn the house  thing off
+			if(I.yTile == 14){
+				I.house = 0;
+			}
+		}
+		//Blinky needs to get out immediatly
+		if(I.house == 3){
+			I.house = 2;
+		}
+		//Now we get ghost specific on who gets the active counter
+	}
+
 	return I;
 }
 
@@ -556,5 +564,16 @@ function chaseTimer(){
 		inky.flip = true;
 		clyde.flip = true;
 		pinky.flip = true;
+	}
+}
+
+
+//This function needs to override the ghosts update call
+//The ghost needs to literally pass through a wall that 
+//It otherwise should never do.
+function enterHouse(ghostName){
+	if(ghostName != null){
+		ghostName.y += 1;
+		ENTERINGGHOST = null;
 	}
 }

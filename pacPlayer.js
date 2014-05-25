@@ -70,6 +70,10 @@ function player(){
 			if(myTileset.map[I.xTile][I.yTile] === 'O'){
 				myTileset.map[I.xTile][I.yTile] = 'e';
 				I.energizer = 250;
+				blinky.scared = true;
+				inky.scared = true;
+				clyde.scared = true;
+				pinky.scared = true;
 				blinky.flip = true;
 				inky.flip = true;
 				clyde.flip = true;
