@@ -21,7 +21,7 @@ var FPS = 30;
 
 var timeout = 0;
 
-var DEBUG = false;
+var DEBUG = true;
 
 var gameOver = true;
 
@@ -91,6 +91,7 @@ function update(){
 				ghostCollision(clyde);
 				ghostCollision(pinky);
 				ghostCollision(inky);
+				pacman.speedWagon(pacman.dotEat);
 			}
 			else{
 				timeout -= 1;
@@ -202,7 +203,7 @@ clyde.visualize = function(){
 
 function ghostCollision(ghost){
 	if(ghost.xTile == pacman.xTile && ghost.yTile == pacman.yTile){
-		if(pacman.energizer == 0){
+		if(ghost.scared == 0){
 			pacman.lives -= 1;
 			initValues(false);
 
@@ -213,8 +214,8 @@ function ghostCollision(ghost){
 			//Set a timeout so the game stops for a bit
 			timeout = 100;
 		}
-		else if(ghost.eaten == false){
-			ghost.eaten = true;
+		else if(ghost.scared == 1){
+			ghost.scared = 2;
 			var ghostsEaten = 4;
 			if(blinky.eaten == false) ghostsEaten--;
 			if(inky.eaten == false) ghostsEaten--;
@@ -253,8 +254,9 @@ function debug(ISDEBUG){
 		canvas.fillText("blinky down = "+blinky.down,200,60);
 		canvas.fillText("blinky left = "+blinky.left,200,70);
 		canvas.fillText("blinky right = "+blinky.right,200,80);
-		canvas.fillText("inky target.x = "+inky.target.x,200,90);
-		canvas.fillText("inky target.y = "+inky.target.y,200,100);
+		canvas.fillText("blinky scared = "+blinky.scared,200,90);
+		canvas.fillText("inky target.x = "+inky.target.x,200,100);
+		canvas.fillText("inky target.y = "+inky.target.y,200,110);
 	}
 }
 
@@ -273,12 +275,17 @@ function saveData(){
 		pacLives: pacman.lives,
 		blinkyX: blinky.x,
 		blinkyY: blinky.y,
+		blinkyState: blinky.scared,
 		inkyX: inky.x,
 		inkyY: inky.y,
+		inkyState: inky.scared,
 		pinkyX: pinky.x,
 		pinkyY: pinky.y,
+		pinkyState: pinky.scared,
 		clydeX: clyde.x,
-		clydeY: clyde.y
+		clydeY: clyde.y,
+		clydeState: clyde.scared,
+		scatter: scatter
 	}
 	//Find out what dot pacman is eating
 	//If he is eating one
@@ -307,13 +314,17 @@ function loadData(data,forward){
 	pacman.lives = data.pacLives;
 	blinky.x = data.blinkyX;
 	blinky.y = data.blinkyY;
+	blinky.scared = data.blinkyState;
 	inky.x = data.inkyX;
 	inky.y = data.inkyY;
+	inky.scared = data.inkyState;
 	pinky.x = data.pinkyX;
 	pinky.y = data.pinkyY;
+	pinky.scared = data.pinkyState;
 	clyde.x = data.clydeX;
 	clyde.y = data.clydeY;
-	
+	clyde.scared = data.clydeState;
+	scatter = data.scatter;
 	//Now cycle through some updates
 	var tempTiles = myTileset.findTile(pacman.xLoc,pacman.yLoc);
 	pacman.xTile = tempTiles.xTile;
@@ -389,6 +400,28 @@ $(function() {
 
 //Get it started
 $( "#clydeCircleAmount" ).val( 8 );
+
+
+//This slider is for the user to change the value of clyde's circle
+$(function() {
+	var lastval;
+	var newval;
+	$( "#pinkyOffsetSlider" ).slider({
+		value:4,
+		min:1,
+		max:10,
+		step:1,
+		slide: function( event, ui ) {
+			PINKYOFFSET = ui.value;
+			$( "#pinkyOffsetAmount" ).val( ui.value );
+		}
+	});
+	$( "#pinkyOffsetAmount" ).val( $( "#pinkyOffsetSlider" ).slider( "value" ) );
+});
+
+//Get it started
+$( "#clydeCircleAmount" ).val( 8 );
+
 
 //This slider is for the user to change the speed of the game
 $(function() {
@@ -488,15 +521,19 @@ function initValues(startOver){
 	//Reset all the ghosts to their starting position
 	blinky.x = 7*16;
 	blinky.y = 5*16;
+	blinky.scared = 0;
 
 	pinky.x = 20*16;
 	pinky.y = 5*16;
+	pinky.scared = 0;
 
 	inky.x = 7*16;
 	inky.y = 32*16;
+	inky.scared = 0;
 
 	clyde.x = 20*16;
 	clyde.y = 32*16;
+	clyde.scared = 0;
 
 	//We need to set more initial values
 	if(startOver){

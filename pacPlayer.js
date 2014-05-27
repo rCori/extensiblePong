@@ -70,10 +70,10 @@ function player(){
 			if(myTileset.map[I.xTile][I.yTile] === 'O'){
 				myTileset.map[I.xTile][I.yTile] = 'e';
 				I.energizer = 250;
-				blinky.scared = true;
-				inky.scared = true;
-				clyde.scared = true;
-				pinky.scared = true;
+				blinky.scared = 1;
+				inky.scared = 1;
+				clyde.scared = 1;
+				pinky.scared = 1;
 				blinky.flip = true;
 				inky.flip = true;
 				clyde.flip = true;
@@ -84,7 +84,7 @@ function player(){
 				I.dotEat = true;
 
 			}
-			I.speedWagon(I.dotEat);
+			//I.speedWagon(I.dotEat);
 			//update the movement options
 			//wrap around
 			if(((newTile.xTile < 1) || (newTile.xTile>26)) && (I.yTile == 17)){
@@ -200,49 +200,87 @@ function player(){
 	//There are four different situations to account for
 	//All four combinations of when pacman is or is not eating a dot(dotEat)
 	//and if an energizer is active. Also if a ghost is eaten
+
+	//THIS NEEDS FIXING
 	I.speedWagon = function(dotEat){
 		if(!dotEat){
+
 			if(pacman.energizer == 0){
-				//Set the speeds for the ghosts and pacman normally
 				pacman.velocity = 0.8*SPEEDCONSTANT;
-				blinky.velocity = 0.75*SPEEDCONSTANT;
-				inky.velocity = 0.75*SPEEDCONSTANT;
-				pinky.velocity = 0.75*SPEEDCONSTANT;
-				clyde.velocity = 0.75*SPEEDCONSTANT;
 			}
 			else
 			{
-				//Set the speeds for the ghosts and pacman during energizer
 				pacman.velocity = 0.9*SPEEDCONSTANT;
+			}
+
+			if(blinky.scared == 0){
+				blinky.velocity = 0.75*SPEEDCONSTANT
+			}
+			else if(blinky.scared == 1){
 				blinky.velocity = 0.5*SPEEDCONSTANT;
+			}
+
+			if(inky.scared == 0){
+				inky.velocity = 0.75*SPEEDCONSTANT
+			}
+			else if(inky.scared == 1){
 				inky.velocity = 0.5*SPEEDCONSTANT;
+			}
+
+			if(pinky.scared == 0){
+				pinky.velocity = 0.75*SPEEDCONSTANT
+			}
+			else if(pinky.scared == 1){
 				pinky.velocity = 0.5*SPEEDCONSTANT;
+			}
+
+			if(clyde.scared == 0){
+				clyde.velocity = 0.75*SPEEDCONSTANT
+			}
+			else if(clyde.scared == 1){
 				clyde.velocity = 0.5*SPEEDCONSTANT;
 			}
 		}
 		else{
 			if(pacman.energizer == 0){
-				//Set the speeds for the ghosts and pacman normally
-				pacman.velocity = 0.71*SPEEDCONSTANT;
+				pacman.velcoty = 0.71*SPEEDCONSTANT;
+			}
+			else{
+				pacman.velocity = 0.79*SPEEDCONSTANT;
+			}
+
+			if(blinky.scared == 0){
 				blinky.velocity = 0.75*SPEEDCONSTANT;
+			}
+			else if(blinky.scared == 1){
+				blinky.velocity = 0.5*SPEEDCONSTANT;
+			}
+
+			if(inky.scared == 0){
 				inky.velocity = 0.75*SPEEDCONSTANT;
+			}
+			else if(inky.scared == 1){
+				inky.velocity = 0.5*SPEEDCONSTANT;
+			}
+
+			if(pinky.scared == 0){
 				pinky.velocity = 0.75*SPEEDCONSTANT;
+			}
+			else if(pinky.scared == 1){
+				pinky.velocity = 0.5*SPEEDCONSTANT;
+			}
+
+			if(clyde.scared == 0){
 				clyde.velocity = 0.75*SPEEDCONSTANT;
 			}
-			else
-			{
-				//Set the speeds for the ghosts and pacman during energizer
-				pacman.velocity = 0.79*SPEEDCONSTANT;
-				blinky.velocity = 0.5*SPEEDCONSTANT;
-				inky.velocity = 0.5*SPEEDCONSTANT;
-				pinky.velocity = 0.5*SPEEDCONSTANT;
+			else if(clyde.scared == 1){
 				clyde.velocity = 0.5*SPEEDCONSTANT;
 			}
 		}
-		if(blinky.eaten == true) blinky.velocity = 3 * SPEEDCONSTANT;
-		if(inky.eaten == true) inky.velocity = 3 * SPEEDCONSTANT;
-		if(pinky.eaten == true) pinky.velocity = 3 * SPEEDCONSTANT;
-		if(clyde.eaten == true) clyde.velocity = 3 * SPEEDCONSTANT;
+		if(blinky.scared == 2) blinky.velocity = 3 * SPEEDCONSTANT;
+		if(inky.scared == 2) inky.velocity = 3 * SPEEDCONSTANT;
+		if(pinky.scared == 2) pinky.velocity = 3 * SPEEDCONSTANT;
+		if(clyde.scared == 2) clyde.velocity = 3 * SPEEDCONSTANT;
 
 	}
 

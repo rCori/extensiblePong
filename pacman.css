@@ -8,6 +8,7 @@
 position:absolute;
 top:100px;
 left:500px;
+width:50%;
 }
 
 #pinkyTitle
@@ -35,3 +36,23 @@ canvas
 position: fixed;
 cursor: none;
 }
+
+option[value="pinky"]
+{
+background-color:#FF33CC;
+} 
+
+option[value="clyde"]
+{
+background-color:#FF6600;
+} 
+
+option[value="blinky"]
+{
+background-color:#FF0000;
+} 
+
+option[value="inky"]
+{
+background-color:#00CCFF;
+} 

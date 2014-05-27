@@ -10,6 +10,8 @@
 
 var CLYDECIRCLE = 8;
 
+var PINKYOFFSET = 4;
+
 var CHASETIMER = 20;
 
 var SCATTERTIMER = 7;
@@ -27,7 +29,7 @@ function ghost(x,y,ghostSprite,target){
 	I.x = x;
 	I.y = y;
 
-	var scared = spritesheet("scatter.png",canvas,16,16,32,16);
+	var scaredSprite = spritesheet("scatter.png",canvas,16,16,32,16);
 
 	//Height and width of the character
 	I.height = 16;
@@ -59,6 +61,12 @@ function ghost(x,y,ghostSprite,target){
 
 	I.target = target || {x:0,y:0};
 
+	/* The ghosts need a state to be kept about being normal, scared, or eaten.
+	 * 0 is normal
+	 * 1 is scared
+	 * 2 is eaten(floating eyeballs)
+	 */
+	I.scared = 0;
 	I.eaten = false;
 
 	/* Give them a flag to enter or exit the house
@@ -139,14 +147,16 @@ function ghost(x,y,ghostSprite,target){
 			I.singleLookaheadSearch(I.target);
 		}
 
-		if(I.xTile == 14 && I.yTile == 14 && I.eaten == true){
+		if(I.xTile == 14 && I.yTile == 14 && I.scared == 2){
 			console.log("not so scary");
-			//I.movement = 0;
+			I.movement = 0;
 			I.house = 1;
 		}
 
-		if(pacman.energizer == 0){
-			I.scared = false;
+		//Energizer runs our and our ghost is still scared blue, turn him or her
+		//Back to nromal 
+		if(pacman.energizer == 0 && I.scared == 1){
+			I.scared = 0;
 		}
 	};
 
@@ -274,15 +284,15 @@ function ghost(x,y,ghostSprite,target){
 
 	}
 
-
+	//How we draw the ghost is totally determined by the scared sprite
 	I.draw = function(){
-	 	if(I.eaten){
-			scared[1].draw(I.x - (I.width/2), I.y - (I.height/2));
+	 	if(I.scared == 2){
+			scaredSprite[1].draw(I.x - (I.width/2), I.y - (I.height/2));
 	 	}
-	 	else if(I.scared){	
-	 		scared[0].draw(I.x - (I.width/2), I.y - (I.height/2));
+	 	else if(I.scared == 1){	
+	 		scaredSprite[0].draw(I.x - (I.width/2), I.y - (I.height/2));
 	 	}
-	 	else{
+	 	else if(I.scared == 0){
 	 		I.sprite.draw(I.x - (I.width/2), I.y - (I.height/2));
 	 	}
 	};
@@ -352,14 +362,14 @@ function ghost(x,y,ghostSprite,target){
 			if(I.movement === 4){I.nextDirection = 3;}
 			I.flip = false
 		}
-		if(pacman.energizer>0){
+		if(I.scared == 1){
 			I.target = {x:0,y:2};
 		}
 		if(scatter){
 			I.target = {x:0, y:2};
 		}
 		//This is what replaces our ghost house behavior
-		if(I.eaten){
+		if(I.scared == 2){
 			I.target = {x:14, y:15};
 		}
 	}
@@ -368,17 +378,17 @@ function ghost(x,y,ghostSprite,target){
 	//There is a noted bug which I am including here
 	I.pinkyFindTarget = function(){
 		if(pacman.movement == 1){
-			I.target = {x:pacman.xTile-4,y:pacman.yTile};
+			I.target = {x:pacman.xTile-PINKYOFFSET,y:pacman.yTile};
 		}
 		else if(pacman.movement == 2){
-			I.target = {x:pacman.xTile+4,y:pacman.yTile};
+			I.target = {x:pacman.xTile+PINKYOFFSET,y:pacman.yTile};
 		}
 		//Here I am implementing the bug
 		else if(pacman.movement == 3){
-			I.target = {x:pacman.xTile-4, y:pacman.yTile-4};
+			I.target = {x:pacman.xTile-PINKYOFFSET, y:pacman.yTile-PINKYOFFSET};
 		}
 		else if(pacman.movement == 4){
-			I.target = {x:pacman.xTile, y:pacman.yTile + 4};
+			I.target = {x:pacman.xTile, y:pacman.yTile + PINKYOFFSET};
 		}
 		if(I.flip == true){
 			if(I.movement === 1){I.nextDirection = 2;}
@@ -387,13 +397,13 @@ function ghost(x,y,ghostSprite,target){
 			if(I.movement === 4){I.nextDirection = 3;}
 			I.flip = false;
 		}
-		if(pacman.energizer>0){
+		if(I.scared == 1){
 			I.target={x:33,y:2};
 		}
 		if(scatter){
 			I.target = {x:33, y:2};
 		}
-		if(I.eaten){
+		if(I.scared == 2){
 			I.target = {x:14, y:15};
 		}
 	}
@@ -453,13 +463,13 @@ function ghost(x,y,ghostSprite,target){
 			if(I.movement === 4){I.nextDirection = 3;}
 			I.flip = false;
 		}
-		if(pacman.energizer>0){
+		if(I.scared == 1){
 			I.target = {x:28, y:34};
 		}
 		if(scatter){
 			I.target = {x:28, y:34};
 		}
-		if(I.eaten){
+		if(I.scared == 2){
 			I.target = {x:14, y:15};
 		}
 
@@ -485,13 +495,13 @@ function ghost(x,y,ghostSprite,target){
 			if(I.movement === 4){I.nextDirection = 3;}
 			I.flip = false;
 		}
-		if(pacman.energizer>0){
+		if(I.scared == 1){
 			I.target = {x:0,y:34};
 		}
 		if(scatter){
 			I.target = {x:0, y:34};
 		}
-		if(I.eaten){
+		if(I.scared == 2){
 			I.target = {x:14, y:15};
 		}
 	}
@@ -519,8 +529,7 @@ function ghost(x,y,ghostSprite,target){
 			//Now turn the house thing off
 			if(I.yTile == 16){
 				I.house = 3;
-				I.eaten = false;
-				I.scared = false;
+				I.scared = 0
 			}
 		}
 		else if(I.house == 2){
@@ -564,16 +573,5 @@ function chaseTimer(){
 		inky.flip = true;
 		clyde.flip = true;
 		pinky.flip = true;
-	}
-}
-
-
-//This function needs to override the ghosts update call
-//The ghost needs to literally pass through a wall that 
-//It otherwise should never do.
-function enterHouse(ghostName){
-	if(ghostName != null){
-		ghostName.y += 1;
-		ENTERINGGHOST = null;
 	}
 }

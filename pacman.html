@@ -34,6 +34,10 @@
                 <input type="text" id="clydeCircleAmount" style="border:0; color:#000000; font-weight:bold;">
                 <div style="width:100%" id="clydeCircleSlider"></div>
 
+                <label for="pinkyOffsetAmount">Pinky's Tile Offset:</label>
+                <input type="text" id="pinkyOffsetAmount" style="border:0; color:#000000; font-weight:bold;">
+                <div style="width:100%" id="pinkyOffsetSlider"></div>
+
                 <label for="gameSpeedAmount">Movement Speed:</label>
                 <input type="text" id="gameSpeedAmount" style="border:0; color:#000000; font-weight:bold;">
                 <div style="width:100%" id="gameSpeedSlider"></div>
@@ -46,37 +50,37 @@
                 <input type="text" id="scatterAmount" style="border:0; color:#000000; font-weight:bold;">
                 <div style="width:100%" id="scatterSlider"></div>
 
-                <p>Pinky chases four tiles ahead of Pacman. This means Pinky's target is dependant on Pacman's location and what direction he is facing. There is a bug in the original arcade game I am recreating here. If Pacman is pointing up, Pinky's target is 4 up AND 4 to the left of Pacman's current position.</p>
                 <h3 id="pinkyTitle">pinky</h3>
+                <p>Pinky chases four tiles ahead of Pacman. This means Pinky's target is dependant on Pacman's location and what direction he is facing. There is a bug in the original arcade game I am recreating here. If Pacman is pointing up, Pinky's target is 4 up AND 4 to the left of Pacman's current position.</p>
                 <select id="pinkySelect">
                     <option value="pinky">pinky</option>
                     <option value="blinky">blinky</option>
                     <option value="inky">inky</option>
                     <option value="clyde">clyde</option>
                 </select>
-                <p> Inky needs blinky's target tile and current location to find his own. Inky takes blinky's target, which is pacman, and adds 2 tilesin the direction pacman is facing. Then he takes that tile and gets thedifference between it and blinky's current location call it x. That differenceis doubled to 2x. Inky's target tile is at the end of a line segment 2x long with one end at blinky's current location and midpoint being that 2 offset tile. The offset tile location has a bug much like pinky where when pacman is pointing up, the offset is 2 up AND 2 LEFT of blinky's target(pacman's location).</p>
                 <h3 id="inkyTitle">inky</h3>
+                <p> Inky needs blinky's target tile and current location to find his own. Inky takes blinky's target, which is pacman, and adds 2 tilesin the direction pacman is facing. Then he takes that tile and gets thedifference between it and blinky's current location call it x. That differenceis doubled to 2x. Inky's target tile is at the end of a line segment 2x long with one end at blinky's current location and midpoint being that 2 offset tile. The offset tile location has a bug much like pinky where when pacman is pointing up, the offset is 2 up AND 2 LEFT of blinky's target(pacman's location).</p>
                 <select id="inkySelect">
-                    <option value="pinky">inky</option>
+                    <option value="inky">inky</option>
                     <option value="blinky">blinky</option>
-                    <option value="inky">pinky</option>
+                    <option value="pinky">pinky</option>
                     <option value="clyde">clyde</option>
                 </select>
-                <p>Blinky literally just follows Pacman directly. His target tile is always just the tile Pacman is currently located on</p>
                 <h3 id="blinkyTitle">blinky</h3>
+                <p>Blinky just follows Pacman directly. His target tile is always just the tile Pacman is currently located on.</p>
                 <select id="blinkySelect">
-                    <option value="pinky">blinky</option>
-                    <option value="blinky">pinky</option>
+                    <option value="blinky">blinky</option>
+                    <option value="pinky">pinky</option>
                     <option value="inky">inky</option>
                     <option value="clyde">clyde</option>
                 </select>
-                <p>Clyde's target is by default just Pacman's tile just like Blinky. However unlike Blinky, Clyde flees if he is withing a certain radius of pacman, represented here by an orange circle around Pacman. By default this distance is 8 tiles large although you may change it here with the Cyldes Circle slider</p>
                 <h3 id="clydeTitle">clyde</h3>
+                <p>Clyde's target is by default just Pacman's tile just like Blinky. However unlike Blinky, Clyde flees if he is withing a certain radius of pacman, represented here by an orange circle around Pacman. By default this distance is 8 tiles large although you may change it here with the Cyldes Circle slider</p>
                 <select id="clydeSelect">
-                    <option value="pinky">clyde</option>
+                    <option  value="clyde">clyde</option>
                     <option value="blinky">blinky</option>
                     <option value="inky">inky</option>
-                    <option value="clyde">pinky</option>
+                    <option value="pinky">pinky</option>
                 </select>
             </div>
 
