@@ -12,6 +12,8 @@ var CLYDECIRCLE = 8;
 
 var PINKYOFFSET = 4;
 
+var INKYOFFSET = 2;
+
 var CHASETIMER = 20;
 
 var SCATTERTIMER = 7;
@@ -349,6 +351,70 @@ function ghost(x,y,ghostSprite,target){
 
 		}
 
+		//Now the ghost spefici parts, differentiate by color
+
+		//pinky
+		if(color === "#FF66CC" && scatter == false && pinky.scared == 0){
+			canvas.lineWidth = 3;
+			canvas.beginPath();
+			canvas.moveTo(pacman.xTile*16+8, pacman.yTile*16+8);
+			//pointing up
+			if(pacman.movement == 3){
+				canvas.lineTo(pacman.xTile*16+8, (pacman.yTile-PINKYOFFSET)*16+8);
+				canvas.lineTo((pacman.xTile-PINKYOFFSET)*16+8, (pacman.yTile-PINKYOFFSET)*16+8);
+			}
+			//pointing right
+			else if(pacman.movement == 2){
+				canvas.lineTo((pacman.xTile+PINKYOFFSET)*16+8, pacman.yTile*16+8);
+			}
+			//pointing left
+			else if(pacman.movement == 1){
+				canvas.lineTo((pacman.xTile-PINKYOFFSET)*16+8, pacman.yTile*16+8);
+			}
+			//pointing down
+			else if(pacman.movement == 4){
+				canvas.lineTo(pacman.xTile*16+8, (pacman.yTile+PINKYOFFSET)*16+8);
+			}
+			canvas.stroke();
+			canvas.lineWidth = 1;
+
+		}
+
+		//inky
+		if(color === "#00FFFF" && scatter == false && inky.scared == 0){
+			canvas.lineWidth = 3;
+			canvas.beginPath();
+			canvas.moveTo(blinky.xTile*16+8,blinky.yTile*16+8);
+			canvas.lineTo(inky.target.x*16+8,inky.target.y*16+8);
+			canvas.stroke();
+
+
+			//Draw a little dot at the offset point
+			canvas.beginPath();
+			//pointing up
+			if(pacman.movement == 3){
+      			canvas.arc((pacman.xTile-2)*16+8, (pacman.yTile-2)*16+8, 6, 0, 2 * Math.PI, false);
+      		}
+      		//pointing left
+      		else if(pacman.movement == 1){
+      			canvas.arc((pacman.xTile-2)*16+8, pacman.yTile*16+8, 6, 0, 2 * Math.PI, false);
+      		}
+      		//pointing right
+      		else if(pacman.movement == 2){
+      			canvas.arc((pacman.xTile+2)*16+8, pacman.yTile*16+8, 6, 0, 2 * Math.PI, false);
+      		}
+      		//pointing down
+      		else if(pacman.movement == 3){
+      			canvas.arc(pacman.xTile*16+8, (pacman.yTile+2)*16+8, 6, 0, 2 * Math.PI, false);
+      		}
+      		canvas.fillStyle = color;
+      		canvas.fill();
+      		canvas.stroke();
+
+
+			canvas.lineWidth = 1;
+		}
+
 	}
 
 	//Blinky literally just follows pacman directly
@@ -451,8 +517,8 @@ function ghost(x,y,ghostSprite,target){
 		//find it i relation to blinky IE this might be below and
 		//to the left, so we retain the sign
 		var dist = {};
-		dist.x = 2*(offset.x-blinky.x);
-		dist.y = 2*(offset.y-blinky.y);
+		dist.x = INKYOFFSET*(offset.x-blinky.x);
+		dist.y = INKYOFFSET*(offset.y-blinky.y);
 		var targetTile = myTileset.findTile(blinky.x+dist.x,blinky.y+dist.y);
 		I.target = {x:targetTile.xTile,y:targetTile.yTile};
 		//switch directions once pacman gets the energizer

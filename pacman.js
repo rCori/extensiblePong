@@ -21,7 +21,7 @@ var FPS = 30;
 
 var timeout = 0;
 
-var DEBUG = true;
+var DEBUG = false;
 
 var gameOver = true;
 
@@ -285,7 +285,9 @@ function saveData(){
 		clydeX: clyde.x,
 		clydeY: clyde.y,
 		clydeState: clyde.scared,
-		scatter: scatter
+		scatter: scatter,
+		ghostTimer:ghostTimer
+
 	}
 	//Find out what dot pacman is eating
 	//If he is eating one
@@ -325,6 +327,7 @@ function loadData(data,forward){
 	clyde.y = data.clydeY;
 	clyde.scared = data.clydeState;
 	scatter = data.scatter;
+	ghostTimer = data.ghostTimer;
 	//Now cycle through some updates
 	var tempTiles = myTileset.findTile(pacman.xLoc,pacman.yLoc);
 	pacman.xTile = tempTiles.xTile;
@@ -419,9 +422,23 @@ $(function() {
 	$( "#pinkyOffsetAmount" ).val( $( "#pinkyOffsetSlider" ).slider( "value" ) );
 });
 
-//Get it started
-$( "#clydeCircleAmount" ).val( 8 );
 
+//This slider is for the user to change the value of clyde's circle
+$(function() {
+	var lastval;
+	var newval;
+	$( "#inkyOffsetSlider" ).slider({
+		value:2,
+		min:0.5,
+		max:3,
+		step:0.1,
+		slide: function( event, ui ) {
+			INKYOFFSET = ui.value;
+			$( "#inkyOffsetAmount" ).val( ui.value );
+		}
+	});
+	$( "#inkyOffsetAmount" ).val( $( "#inkyOffsetSlider" ).slider( "value" ) );
+});
 
 //This slider is for the user to change the speed of the game
 $(function() {
