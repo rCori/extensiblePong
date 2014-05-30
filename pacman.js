@@ -112,6 +112,7 @@ function draw(){
 		pinky.draw();
 		inky.draw();
 		clyde.draw();
+		//myAnimation.anim(10,10);
 		if(timeout == 0){
 			blinky.visualize("#FF0000");
 			pinky.visualize("#FF66CC");
@@ -146,6 +147,17 @@ blinky.setAI('blinky');
 pinky.setAI('pinky');
 inky.setAI('inky');
 clyde.setAI('clyde');
+
+
+/* Okay this works. Uncomment this to try it out again
+//make a simple animation object
+var sprite1 = sprite("pacman.png",canvas,16,16);
+var sprite2 = sprite("blinky.png",canvas,16,16);
+
+var spriteArray = [sprite1,sprite2];
+
+var myAnimation = animation(spriteArray,60);
+*/
 
 
 //Right now this just draws a circle around pacman
@@ -257,6 +269,8 @@ function debug(ISDEBUG){
 		canvas.fillText("blinky scared = "+blinky.scared,200,90);
 		canvas.fillText("inky target.x = "+inky.target.x,200,100);
 		canvas.fillText("inky target.y = "+inky.target.y,200,110);
+		canvas.fillText("myAnimation.currFrame = "+myAnimation.currFrame,200,120);
+		canvas.fillText("myAnimation.currSprite = "+myAnimation.currSprite,200,130);
 	}
 }
 

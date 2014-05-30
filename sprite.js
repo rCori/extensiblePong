@@ -125,8 +125,35 @@ function spritesheet(image, canvas,tileWidth, tileHeight, sheetWidth, sheetHeigh
 }
 
 
-function animation(sprites){
+function animation(sprites,rate){
 	/*This will take an array of sprites and give
 	 *back some sort of animation.
 	 */
+	//sprites is an array of sprite objects should have loaded by now
+	var I = {};
+
+	I.rate = rate;
+
+	I.currFrame = 0;
+
+	I.currSprite = 0;
+
+
+	I.anim = function(x,y){
+		//If you have been playing the animation for a rate number of frames
+		//currFrame needs to be increased
+		if(I.currFrame == I.rate){
+			I.currSprite++;
+			I.currFrame = 0;
+			//If your currSprite is the last one, wrap to 0
+			if(I.currSprite == sprites.length){
+				I.currSprite = 0;
+			}
+		}
+		sprites[I.currSprite].draw(x,y);
+		I.currFrame++;
+	}
+
+	return I;
+
 }
