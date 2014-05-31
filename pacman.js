@@ -117,7 +117,7 @@ function draw(){
 			blinky.visualize("#FF0000");
 			pinky.visualize("#FF66CC");
 			inky.visualize("#00FFFF");
-			clyde.visualize();
+			clyde.visualize("#FF6600");
 		}
 	}
 	else{
@@ -160,58 +160,6 @@ var myAnimation = animation(spriteArray,60);
 */
 
 
-//Right now this just draws a circle around pacman
-//Very cheap effect for right, can look better in the future
-clyde.visualize = function(){
-	canvas.strokeStyle = "#FF6600";
-	canvas.fillStyle = "#FF6600";
-	canvas.beginPath();
-	canvas.arc(pacman.xLoc,pacman.yLoc,16*CLYDECIRCLE,0,2*Math.PI);
-	canvas.stroke();
-
-	var extraRightCost = 0;
-	var extraDownCost = 0;
-
-	if(clyde.movement == 1) {extraRightCost = -1;}
-	if(clyde.movement == 2) {extraRightCost = 1;}
-	if(clyde.movement == 3) {extraDownCost = -1;}
-	if(clyde.movement == 4) {extraDownCost = 1;}
-
-	//If we calculated a right path
-	if(clyde.right != 9999){
-		canvas.beginPath();
-		canvas.moveTo((clyde.xTile+extraRightCost+1)*16+8,(clyde.yTile+extraDownCost)*16+8);
-		canvas.lineTo(clyde.target.x*16+8, clyde.target.y*16+8);
-		canvas.stroke();
-		canvas.fillRect((clyde.xTile+extraRightCost+1)*16,(clyde.yTile+extraDownCost)*16,16,16);
-	}
-	//If we calculated a left path
-	if(clyde.left != 9999){
-		canvas.beginPath();
-		canvas.moveTo((clyde.xTile+extraRightCost-1)*16+8,(clyde.yTile+extraDownCost)*16+8);
-		canvas.lineTo(clyde.target.x*16+8, clyde.target.y*16+8);
-		canvas.stroke();
-		canvas.fillRect((clyde.xTile+extraRightCost-1)*16,(clyde.yTile+extraDownCost)*16,16,16);
-
-	}
-	//If we calculated an up path
-	if(clyde.up != 9999){
-		canvas.beginPath();
-		canvas.moveTo((clyde.xTile+extraRightCost)*16+8,(clyde.yTile+extraDownCost-1)*16+8);
-		canvas.lineTo(clyde.target.x*16+8, clyde.target.y*16+8);
-		canvas.stroke();
-		canvas.fillRect((clyde.xTile+extraRightCost)*16,(clyde.yTile+extraDownCost-1)*16,16,16);
-	}
-	//If we calculated a down path
-	if(clyde.down != 9999){
-		canvas.beginPath();
-		canvas.moveTo((clyde.xTile+extraRightCost)*16+8,(clyde.yTile+extraDownCost+1)*16+8);
-		canvas.lineTo(clyde.target.x*16+8, clyde.target.y*16+8);
-		canvas.stroke();
-		canvas.fillRect((clyde.xTile+extraRightCost)*16,(clyde.yTile+extraDownCost+1)*16,16,16);
-
-	}
-}
 
 function ghostCollision(ghost){
 	if(ghost.xTile == pacman.xTile && ghost.yTile == pacman.yTile){

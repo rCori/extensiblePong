@@ -7,6 +7,7 @@
 var timeSnaps=[];
 
 //get snapped
+//This pushes a current time step ont he end of the array
 function snapTime(saveData){
 	//Get some object that at least contains all the positional data
 	var data = saveData();
@@ -14,6 +15,7 @@ function snapTime(saveData){
 
 }
 
+//This loads a time step
 function loadTime(index, loadData, forward){
 	if(timeSnaps[index] !== undefined){
 		var data = timeSnaps[index];

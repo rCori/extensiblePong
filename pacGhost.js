@@ -1,13 +1,14 @@
 //pacGhost.js
 /* Time to make some spooky ghosts
- * 2SPOOKY
- * This will look a lot like the human player exept controls
- * ghosts have no input
- * or bones, those would be skelingtons. Also very scary
+ * This object
  */
 
 //load the spritesheet for the scared sprites
 
+/* All the all caps variables are things the player
+ * can change with the sliders. And yes they need to
+ * be global, they are not member objects.
+ */
 var CLYDECIRCLE = 8;
 
 var PINKYOFFSET = 4;
@@ -18,9 +19,13 @@ var CHASETIMER = 20;
 
 var SCATTERTIMER = 7;
 
-var ghostTimer = 0;
 //All the ghosts need the same scatter control time
 var scatter = false;
+
+/*ghostTImer keeps track of time for the ghosts to switch between
+ *scatter and not scatter states
+ */
+var ghostTimer = 0;
 
 //The dotCounter to see when the ghosts can leave the ghost house
 var ghostDotCounter = 0;
@@ -31,6 +36,7 @@ function ghost(x,y,ghostSprite,target){
 	I.x = x;
 	I.y = y;
 
+	//All ghosts need to look scared or eaten the same way.
 	var scaredSprite = spritesheet("scatter.png",canvas,16,16,32,16);
 
 	//Height and width of the character
@@ -58,7 +64,11 @@ function ghost(x,y,ghostSprite,target){
 	I.left = 9999;
 	I.right = 9999;
 
-	//They might need to flip out
+	/* Setting this to true will cause the ghost to switch direction in the update call
+	 * Immediatly after switching direction, the update will also set this back to false
+	 * so it can be used to flip the ghosts again. The ghosts should only flip under special
+	 * circumstances so we need explicit control of it.
+	 */
 	I.flip = false;
 
 	I.target = target || {x:0,y:0};
@@ -351,9 +361,9 @@ function ghost(x,y,ghostSprite,target){
 
 		}
 
-		//Now the ghost spefici parts, differentiate by color
+		//Now the ghost speficic parts, differentiate by color
 
-		//pinky
+		//PINKY
 		if(color === "#FF66CC" && scatter == false && pinky.scared == 0){
 			canvas.lineWidth = 3;
 			canvas.beginPath();
@@ -380,7 +390,7 @@ function ghost(x,y,ghostSprite,target){
 
 		}
 
-		//inky
+		//INKY
 		if(color === "#00FFFF" && scatter == false && inky.scared == 0){
 			canvas.lineWidth = 3;
 			canvas.beginPath();
@@ -404,7 +414,7 @@ function ghost(x,y,ghostSprite,target){
       			canvas.arc((pacman.xTile+2)*16+8, pacman.yTile*16+8, 6, 0, 2 * Math.PI, false);
       		}
       		//pointing down
-      		else if(pacman.movement == 3){
+      		else if(pacman.movement == 4){
       			canvas.arc(pacman.xTile*16+8, (pacman.yTile+2)*16+8, 6, 0, 2 * Math.PI, false);
       		}
       		canvas.fillStyle = color;
@@ -413,6 +423,14 @@ function ghost(x,y,ghostSprite,target){
 
 
 			canvas.lineWidth = 1;
+		}
+		//CLYDE
+		if(color === "#FF6600" && scatter == false && clyde.scared == false){
+			canvas.strokeStyle = "#FF6600";
+			canvas.fillStyle = "#FF6600";
+			canvas.beginPath();
+			canvas.arc(pacman.xLoc,pacman.yLoc,16*CLYDECIRCLE,0,2*Math.PI);
+			canvas.stroke();
 		}
 
 	}
@@ -635,6 +653,7 @@ function chaseTimer(){
 			scatter = true;
 			ghostTimer = SCATTERTIMER * 30;
 		}
+		//All the ghosts do a flip
 		blinky.flip = true;
 		inky.flip = true;
 		clyde.flip = true;
