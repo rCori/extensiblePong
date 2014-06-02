@@ -1,6 +1,7 @@
 //tiles.js
-/* Pacman needs a tiling system so I am making one
- * Here goes nothing.
+/* Pacman needs a tiling system so this is the one I made
+ * It works for what it is used for but might not be
+ * wonderful for a more general use-case
  */
 
 //Make sure your data is a uniform matrix
@@ -72,125 +73,61 @@ function tileset(tileData, width, height, spriteMap, canvas){
 	 			switch(I.map[j][k]){
 	 			case 'o':
 	 				//draw pellet tile
-	 				//canvas.fillStyle = "#000000";
-	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				//canvas.fillStyle = "#FFFF00";
-	 				//canvas.fillRect((I.tileWidth * j)+(I.tileWidth/3), (I.tileHeight * k)+(I.tileHeight/3), I.tileWidth/3, I.tileHeight/3);
-	 				//console.log('Dot tile at ' + j + ', ' + k);
 	 				I.spriteMap[0].draw(I.tileWidth * j, I.tileHeight * k);
 	 				break;
 	 			case 'O':
 	 				//draw energizer tile
-	 				//canvas.fillStyle = "#000000";
-	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				//canvas.fillStyle = "#FFFFFF";
-	 				//canvas.fillRect((I.tileWidth * j)+(I.tileWidth/4), (I.tileHeight * k)+(I.tileHeight/4), I.tileWidth/2, I.tileHeight/2);
 	 				I.spriteMap[1].draw(I.tileWidth * j, I.tileHeight * k);
-	 				//console.log('Energizer tile at ' + j + ', ' + k);
 	 				break;
 	 			case '=':
 	 				//draw straight horizontal piece tile tile
-	 				//canvas.fillStyle = "#000000";
-	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				//canvas.fillStyle = "#0000FF";
-	 				//canvas.fillRect(I.tileWidth * j, (I.tileHeight * k)+(I.tileHeight/3), I.tileWidth, I.tileHeight/3);
 	 				I.spriteMap[2].draw(I.tileWidth * j, I.tileHeight * k);
-	 				//console.log('straight horiz piece tile at ' + j + ', ' + k);
 	 				break;
 	 			case 'I':
 	 				//draw straight vertical piece tile
-	 				//canvas.fillStyle = "#000000";
-	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				//canvas.fillStyle = "#0000FF";
-	 				//canvas.fillRect((I.tileWidth * j)+(I.tileWidth/3), I.tileHeight * k, I.tileWidth/3, I.tileHeight);
 	 				I.spriteMap[3].draw(I.tileWidth * j, I.tileHeight * k);
-	 				//console.log('straight vert piece tile at ' + j + ', ' + k);
 	 				break;
 	 			case '6':
 	 				//draw right end piece tile
-	 				//canvas.fillStyle = "#000000";
-	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				//canvas.fillStyle = "#0000FF";
-	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, 2*(I.tileWidth/3), I.tileHeight);
 	 				I.spriteMap[4].draw(I.tileWidth * j, I.tileHeight * k);
-	 				//console.log('Right end piece tile at' + j + ', ' + k);
 	 				break;
 	 			case '4':
 	 				//draw left end piece  tile
-	 				//canvas.fillStyle = "#000000";
-	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				//canvas.fillStyle = "#0000FF";
-	 				//canvas.fillRect(((I.tileWidth/3) * j), I.tileHeight * k, 2*(I.tileWidth/3), I.tileHeight);
 	 				I.spriteMap[5].draw(I.tileWidth * j, I.tileHeight * k);
-	 				//console.log('Left end piece tile at ' + j + ', ' + k);
 	 				break;
 	 			case '8':
 	 				//draw downward end piece tile
-	 				//canvas.fillStyle = "#000000";
-	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				//canvas.fillStyle = "#0000FF";
-	 				//canvas.fillRect((I.tileWidth * j)+(I.tileWidth/3), I.tileHeight * k, I.tileWidth/3, I.tileHeight-(I.tileHeight/3));
 	 				I.spriteMap[6].draw(I.tileWidth * j, I.tileHeight * k);
-	 				//console.log('Downward end piece tile at ' + j + ', ' + k);
 	 				break;
 				case '2':
 	 				//draw upward end piece tile
-	 				//canvas.fillStyle = "#000000";
-	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				//canvas.fillStyle = "#0000FF";
-	 				//canvas.fillRect((I.tileWidth * j)+(I.tileWidth/3), (I.tileHeight * k)+(I.tileHeght/3), I.tileWidth/3, 2*(I.tileHeight/3));
 	 				I.spriteMap[7].draw(I.tileWidth * j, I.tileHeight * k);
-	 				//console.log('Upward end piece tile at ' + j + ', ' + k);
 	 				break;
 	 			case '3':
 	 				//draw downright corner piece tile
-	 				//canvas.fillStyle = "#000000";
-	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				//canvas.fillStyle = "#0000FF";
-	 				//canvas.fillRect((I.tileWidth * j)+(2*(I.tileWidth/3)), (I.tileHeight * k)+(2*(I.tileHeight/3)), I.tileWidth/3, I.tileHeight/3);
 	 				I.spriteMap[8].draw(I.tileWidth * j, I.tileHeight * k);
-	 				//console.log('Downright corner piece tile at ' + j + ', ' + k);
 	 				break;
 	 			case '1':
 	 				//draw downleft corner piece tile
-	 				//canvas.fillStyle = "#000000";
-	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				//canvas.fillStyle = "#0000FF";
-	 				//canvas.fillRect(I.tileWidth * j, (I.tileHeight * k)+(2*(I.tileHeight/3)), I.tileWidth/3, I.tileHeight/3);
 	 				I.spriteMap[9].draw(I.tileWidth * j, I.tileHeight * k);
-	 				//console.log('Downleft corner piece tile at ' + j + ', ' + k);
 	 				break;
 	 			case '7':
 	 				//draw upleft corner piece tile
-	 				//canvas.fillStyle = "#000000";
-	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				//canvas.fillStyle = "#0000FF";
-	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth/3, I.tileHeight/3);
 	 				I.spriteMap[10].draw(I.tileWidth * j, I.tileHeight * k);
-	 				//console.log('upleft corner piece tile at ' + j + ', ' + k);
 	 				break;
 	 			case '9':
 	 				//draw upright corner piece tile
-	 				//canvas.fillStyle = "#000000";
-	 				//canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				//canvas.fillStyle = "#0000FF";
-	 				//canvas.fillRect((I.tileWidth * j)+(2*(I.tileWidth/3)), I.tileHeight * k, I.tileWidth/3, I.tileHeight/3);
 	 				I.spriteMap[11].draw(I.tileWidth * j, I.tileHeight * k);
-	 				//console.log('upright corner piece tile at ' + j + ', ' + k);
 	 				break;
 	 			case 'M':
 	 				//draw a piece inside the barrier(probably a solid color)
 	 				canvas.fillStyle = "#000000";
 	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				//I.spriteMap[12].draw(I.tileWidth * j, I.tileHeight * k);
-	 				//console.log('Inner barrier tile at ' + j + ', ' + k);
 	 				break;
 	 			case 'e':
 	 				//draw a blank movable space
 	 				canvas.fillStyle = "#000000";
 	 				canvas.fillRect(I.tileWidth * j, I.tileHeight * k, I.tileWidth, I.tileHeight);
-	 				//I.spriteMap[13].draw(I.tileWidth * j, I.tileHeight * k);
-	 				//console.log('Blank movable space tile at ' + j + ', ' + k);
 	 				break;
 	 			}
 
@@ -202,28 +139,38 @@ function tileset(tileData, width, height, spriteMap, canvas){
 
 	//Return the current tile based on the current absoulte map position
 	I.findTile = function(xLoc,yLoc){
+		//Construct the object to be returned
 	 	var J = {}
+	 	//Give it values xTile and yTile that we want
 	 	J.xTile = Math.floor(xLoc/I.tileWidth);
 	 	J.yTile = Math.floor(yLoc/I.tileHeight);
+	 	//Return our object
 	 	return J;
 
 	}
 	//Returns location assuming pac man is in the middle of a tile
+	//This function is essentially the inverse function of findTile
 	I.findLoc = function(xTile,yTile){
+		//Construct the object to be returned
 		var J = {};
+		//Give it values xLoc and yLoc
 		J.xLoc = xTile*I.tileWidth + (I.tileWidth/2);
 	 	J.yLoc = yTile*I.tileHeight + (I.tileHeight/2);
+	 	//Return our object
 	 	return J;
 	}
 
-	//Now we need a series of functions to check if we are encountering walls
-	//Return true if this is a place that can be moved to
-	//False if pacman can't go here.
-	//I should never have to check array bounds
-	//PacMan can't get to the edge of the screen
+	/* Now we need a series of functions to check if we are encountering walls
+	 * Return true if this is a place that can be moved to
+	 * False if pacman can't go here.
+	 * I should never have to check array bounds
+	 * PacMan can't get to the edge of the screen
+	 */
 	//RIGHT
 	I.checkRight = function(xTile,yTile){
+		//Get the tile to the right
 		var temp = I.map[xTile+1][yTile];
+		//Check if it's a tile you can move to
 		if((temp === 'o')||(temp === 'O')||(temp ==='M')||(temp === 'e')){
 			return true;
 		}
@@ -231,8 +178,11 @@ function tileset(tileData, width, height, spriteMap, canvas){
 			return false;
 		}
 	}
+	//LEFT
 	I.checkLeft = function(xTile,yTile){
+		//Get the tile to the left
 		var temp = I.map[xTile-1][yTile];
+		//Check if it's a tile you can move to
 		if((temp === 'o')||(temp === 'O')||(temp ==='M')||(temp === 'e')){
 			return true;
 		}
@@ -240,8 +190,11 @@ function tileset(tileData, width, height, spriteMap, canvas){
 			return false;
 		}
 	}
+	//UP
 	I.checkUp = function(xTile,yTile){
+		//Get the tile above
 		var temp = I.map[xTile][yTile-1];
+		//Check if it's a tile you can move to
 		if((temp === 'o')||(temp === 'O')||(temp ==='M')||(temp === 'e')){
 			return true;
 		}
@@ -249,8 +202,11 @@ function tileset(tileData, width, height, spriteMap, canvas){
 			return false;
 		}
 	}
+	//DOWN
 	I.checkDown = function(xTile,yTile){
+		//get the tile below
 		var temp = I.map[xTile][yTile+1];
+		//Check if it's a tile you can move to
 		if((temp === 'o')||(temp === 'O')||(temp ==='M')||(temp === 'e')){
 			return true;
 		}

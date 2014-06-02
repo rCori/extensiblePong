@@ -17,25 +17,28 @@ var canvas = canvasElement.get(0).getContext("2d");
 var myCanv = canvasElement.get(0);
 canvasElement.appendTo('body');
 
+/*Game runs at 30 frames per second.
+ * Changing this would actually change
+ * the speed of the game
+ */
 var FPS = 30;
 
+//When this isn't zero, the game stops updating and counts this down to 0
 var timeout = 0;
 
+//My big generic debug flag
 var DEBUG = false;
 
+//gameOver means you are looking at an intro screen and the game isn't going
 var gameOver = true;
 
+//The user controled game pause
 var gamePaused = false;
-//Lets call this a debug map
-/*Original pacman has a tileset of 28x36 so thats what we
- *will be going for here. Of course we will need to draw over
- *some of this as well.
- *If the game is 448x576 each tile is (448/28)x(576x36) or 16x16.
- * Eventually each tile will be a 16x16 pixel image
- */
-//myMapData = [['=','I','I'],['=','o','='],['o','O','o'],['I','6','I']];
-/* Now we are going to try a real Pacman map tile set
- * minus icons and ghost pen door
+/* Original PacMan has a tileset of 28x36 so thats what we
+ * will be going for here. Of course we will need to draw over
+ * some of this as well.
+ * If the game is 448x576 each tile is (448/28)x(576x36) or 16x16.
+ * This is the real PacMan tileset minus icons and ghost pen door
  * this is according to the pacman dossier
  */
 var myMapData = /* 1 */[['M','M','M','7','4','4','4','4','4','4','4','4','1','M','M','M','8','e','2','M','M','M','7','4','4','4','4','1','7','4','4','4','4','1','M','M'],
@@ -80,25 +83,32 @@ function update(){
 	if(!gameOver){
 		//update here
 		if(!gamePaused){
+			//If timeout is 0, the game goes on
 			if(timeout == 0){
+				//Deal with all the regular updates
 				pacman.update();
 				blinky.update();
 				pinky.update();
 				inky.update();
 				clyde.update();
+				//Alternate between chase and scatter
 				chaseTimer();
+				//Deal with player collision with ghosts
 				ghostCollision(blinky);
 				ghostCollision(clyde);
 				ghostCollision(pinky);
 				ghostCollision(inky);
-				pacman.speedWagon(pacman.dotEat);
+				//Deal with movement speed
+				pacman.speedWagon();
 			}
+			//If timeout is not 0, we are waiting for the game to start
 			else{
 				timeout -= 1;
 			}
 		}
+		//The debug information will be on if DEBUG is true
 		debug(DEBUG);
-		checkWinOrDie();
+		checkWin();
 	}
 };
 
@@ -174,13 +184,24 @@ function ghostCollision(ghost){
 			//Set a timeout so the game stops for a bit
 			timeout = 100;
 		}
+		//PacMan ate the ghost
 		else if(ghost.scared == 1){
+			//Now the ghosts are floating eyeballs running back to the house
 			ghost.scared = 2;
-			var ghostsEaten = 4;
-			if(blinky.eaten == false) ghostsEaten--;
-			if(inky.eaten == false) ghostsEaten--;
-			if(pinky.eaten == false) ghostsEaten--;
-			if(clyde.eaten == false) ghostsEaten--;
+			/* This count up how many ghosts are not scared when the scared
+			 * ghost gets eaten. This counts how many ghosts have been eaten
+			 * so far since the last energizer. We need this to get the
+			 * correct multiplier to add to PacMan's score.
+			 * 1 ghost: 400 points
+			 * 2 ghosts: 800 points
+			 * 3 ghosts: 1200 points
+			 * 4 ghosts: 1600 points
+			 */
+			var ghostsEaten = 0;
+			if(blinky.scared != 1) ghostsEaten++;
+			if(inky.scared != 1) ghostsEaten++;
+			if(pinky.scared != 1) ghostsEaten++;
+			if(clyde.scared != 1) ghostsEaten++;
 			var temp = 400 * ghostsEaten;
 			pacman.score += temp;
 			console.log(temp);
@@ -188,6 +209,7 @@ function ghostCollision(ghost){
 	}
 }
 
+//This debug function prints out a bunch of useful values at the top of the screen
 function debug(ISDEBUG){
 	if(ISDEBUG){
 		canvas.fillStyle = "#FFF";
@@ -224,6 +246,8 @@ function debug(ISDEBUG){
 
 /* This is the snapTime callback I need for
  * getting a bundle object of important data
+ * I aknowledge this is really huge, I wish it
+ * were more efficient but it does seem to work
  */
 function saveData(){
 	var data = {
@@ -482,7 +506,7 @@ function assertTime(change,value){
 }
 
 
-function checkWinOrDie(){
+function checkWin(){
 	if(pacman.totalDots == 244){
 		gameOver = true;
 		initValues(true);
@@ -496,6 +520,7 @@ function initValues(startOver){
 	var startTiles = myTileset.findTile(pacman.xLoc,pacman.yLoc);
 	pacman.xTile = startTiles.xTile;
 	pacman.yTile = startTiles.yTile;
+	pacman.movement = 0;
 
 	//Reset all the ghosts to their starting position
 	blinky.x = 7*16;
@@ -514,7 +539,10 @@ function initValues(startOver){
 	clyde.y = 32*16;
 	clyde.scared = 0;
 
-	//We need to set more initial values
+	/* We need to set more initial values
+	 * This is is if the game has ended completly
+	 * Not doing this means PacMan just lost a life
+	 */
 	if(startOver){
 		pacman.score = 0;
 		pacman.lives = 3;
@@ -523,13 +551,26 @@ function initValues(startOver){
 		for (var snap in timeSnaps){
 			if(timeSnaps[snap].dotNumX){
 				myTileset.map[timeSnaps[snap].dotNumX][timeSnaps[snap].dotNumY] = 'o';
+				/*A long conditional to see if we are actually eating an
+			 	* energizer and not a regular pellet
+			 	*/
+				if((timeSnaps[snap].dotNumX == 1 && timeSnaps[snap].dotNumY == 6) || 
+					(timeSnaps[snap].dotNumX == 1 && timeSnaps[snap].dotNumY == 26) ||
+					(timeSnaps[snap].dotNumX == 26 && timeSnaps[snap].dotNumY == 6) ||
+					(timeSnaps[snap].dotNumX == 26 && timeSnaps[snap].dotNumY == 26)){
+						myTileset.map[timeSnaps[snap].dotNumX][timeSnaps[snap].dotNumY] = 'O';
+				}
 			}
+
 		}
 		timeSnaps = [];
 		$("#timeSlider").slider("option","max",0);
 		$( "#timeAmount" ).val(0);
 		$("#timeSlider").slider("value",0);
 
+		//Set the ghost scatter values
+		scatter = false;
+		ghostTimer = 0;
 	} 
 }
 

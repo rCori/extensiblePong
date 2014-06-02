@@ -202,15 +202,14 @@ function player(){
 	//and if an energizer is active. Also if a ghost is eaten
 
 	//THIS NEEDS FIXING
-	I.speedWagon = function(dotEat){
-		if(!dotEat){
-
+	I.speedWagon = function(){
+		if(I.dotEat){
 			if(pacman.energizer == 0){
-				pacman.velocity = 0.8*SPEEDCONSTANT;
+				pacman.velocity = 0.8 * 3 /*SPEEDCONSTANT*/;
 			}
 			else
 			{
-				pacman.velocity = 0.9*SPEEDCONSTANT;
+				pacman.velocity = 0.9 * 3 /*SPEEDCONSTANT*/;
 			}
 
 			if(blinky.scared == 0){
@@ -243,10 +242,10 @@ function player(){
 		}
 		else{
 			if(pacman.energizer == 0){
-				pacman.velcoty = 0.71*SPEEDCONSTANT;
+				pacman.velcoty = 0.71 * 3 /*SPEEDCONSTANT*/;
 			}
 			else{
-				pacman.velocity = 0.79*SPEEDCONSTANT;
+				pacman.velocity = 0.79 * 3/*SPEEDCONSTANT*/;
 			}
 
 			if(blinky.scared == 0){

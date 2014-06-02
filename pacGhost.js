@@ -160,7 +160,6 @@ function ghost(x,y,ghostSprite,target){
 		}
 
 		if(I.xTile == 14 && I.yTile == 14 && I.scared == 2){
-			console.log("not so scary");
 			I.movement = 0;
 			I.house = 1;
 		}
@@ -361,10 +360,10 @@ function ghost(x,y,ghostSprite,target){
 
 		}
 
-		//Now the ghost speficic parts, differentiate by color
+		//Now the ghost speficic parts, differentiate by ai name
 
 		//PINKY
-		if(color === "#FF66CC" && scatter == false && pinky.scared == 0){
+		if(I.ai === "pinky" && scatter == false && I.scared == 0){
 			canvas.lineWidth = 3;
 			canvas.beginPath();
 			canvas.moveTo(pacman.xTile*16+8, pacman.yTile*16+8);
@@ -391,11 +390,11 @@ function ghost(x,y,ghostSprite,target){
 		}
 
 		//INKY
-		if(color === "#00FFFF" && scatter == false && inky.scared == 0){
+		if(I.ai === "inky" && scatter == false && I.scared == 0){
 			canvas.lineWidth = 3;
 			canvas.beginPath();
 			canvas.moveTo(blinky.xTile*16+8,blinky.yTile*16+8);
-			canvas.lineTo(inky.target.x*16+8,inky.target.y*16+8);
+			canvas.lineTo(I.target.x*16+8,I.target.y*16+8);
 			canvas.stroke();
 
 
@@ -425,9 +424,9 @@ function ghost(x,y,ghostSprite,target){
 			canvas.lineWidth = 1;
 		}
 		//CLYDE
-		if(color === "#FF6600" && scatter == false && clyde.scared == false){
-			canvas.strokeStyle = "#FF6600";
-			canvas.fillStyle = "#FF6600";
+		if(I.ai === "clyde" && scatter == false && I.scared == false){
+			canvas.strokeStyle = color;
+			canvas.fillStyle = color;
 			canvas.beginPath();
 			canvas.arc(pacman.xLoc,pacman.yLoc,16*CLYDECIRCLE,0,2*Math.PI);
 			canvas.stroke();
@@ -607,7 +606,7 @@ function ghost(x,y,ghostSprite,target){
 
 	I.ghostHouse = function(){
 		if(I.house == 1){
-			console.log("going down");
+			//console.log("going down");
 			I.movement = 0;
 			I.y += I.velocity * 0.25;
 			//Now turn the house thing off
@@ -617,7 +616,7 @@ function ghost(x,y,ghostSprite,target){
 			}
 		}
 		else if(I.house == 2){
-			console.log("going up");
+			//console.log("going up");
 			I.movement = 0;
 			I.y -= I.velocity * 0.25;
 			//Now turn the house  thing off
