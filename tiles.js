@@ -21,6 +21,7 @@ function checkMatrix(matrixHopeful){
 		return returnCode;
 	}
 	catch(err){
+		//We couldn't even see matrixHopeful as a 2D array
 		returnCode = 2;
 		return returnCode;
 	}

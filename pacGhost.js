@@ -22,10 +22,10 @@ var SCATTERTIMER = 7;
 //All the ghosts need the same scatter control time
 var scatter = false;
 
-/*ghostTImer keeps track of time for the ghosts to switch between
+/*ghostTimer keeps track of time for the ghosts to switch between
  *scatter and not scatter states
  */
-var ghostTimer = 0;
+var ghostTimer = CHASETIMER*30;
 
 //The dotCounter to see when the ghosts can leave the ghost house
 var ghostDotCounter = 0;
@@ -108,7 +108,15 @@ function ghost(x,y,ghostSprite,target){
 			}
 			//If we aren't dealing with the ghostHouse just keep going
 			if(I.house == 0){
-				I.singleLookaheadSearch(I.target);
+				//if((I.scared == 0)||(I.scared == 2)){
+					I.singleLookaheadSearch(I.target);
+				//}
+				/*
+				else if(I.scared == 1){
+					console.log("ahh")
+					I.randomMovement();
+				}
+				*/
 				if(I.ai==="blinky"){
 					I.blinkyFindTarget();
 				}
@@ -293,6 +301,118 @@ function ghost(x,y,ghostSprite,target){
 		}
 
 
+	}
+
+	//When the ghosts are scared, they are supposed to move around randomly
+	I.randomMovement = function(){
+		if(I.movement == I.nextDirection){
+			//If you are going left and you can continue going left
+			if((I.movement == 1) && (myTileset.checkLeft(I.xTile,I.yTile))){
+				if(myTileset.checkLeft(I.xTile-1,I.yTile)){
+					I.left = Math.random();
+				}
+				if(myTileset.checkUp(I.xTile-1,I.yTile)){
+					I.up = Math.random();
+				}
+				if(myTileset.checkDown(I.xTile-1,I.yTile)){
+					I.down = Math.random();
+				}
+			}
+			//You are going right and you can continue going right
+			else if((I.movement == 2) && (myTileset.checkRight(I.xTile,I.yTile))){
+				if(myTileset.checkRight(I.xTile+1,I.yTile)){
+					I.right = Math.random();
+				}
+				if(myTileset.checkUp(I.xTile+1,I.yTile)){
+					I.up = Math.random();
+				}
+				if(myTileset.checkDown(I.xTile+1,I.yTile)){
+					I.down = Math.random();
+				}
+			}
+			//You are going up and you can continue going up
+			else if((I.movement == 3) && (myTileset.checkUp(I.xTile,I.yTile))){
+				if(myTileset.checkUp(I.xTile,I.yTile-1)){
+					I.up = Math.random();
+				}
+				if(myTileset.checkRight(I.xTile,I.yTile-1)){
+					I.right = Math.random();
+				}
+				if(myTileset.checkLeft(I.xTile,I.yTile-1)){
+					I.left = Math.random();
+				}
+			}
+			//You are going down and you can continue to go down
+			else if((I.movement == 4) && (myTileset.checkDown(I.xTile,I.yTile))){
+				if(myTileset.checkDown(I.xTile,I.yTile+1)){
+					I.down = Math.random();
+				}
+				if(myTileset.checkRight(I.xTile,I.yTile+1)){
+					I.right = Math.random();
+				}
+				if(myTileset.checkLeft(I.xTile,I.yTile+1)){
+					I.left = Math.random();
+				}
+			}
+			//You are going nowhere or have hit a dead end.
+			else{
+				if(myTileset.checkDown(I.xTile,I.yTile) && I.movement != 3){
+					I.down = Math.random();
+				}
+				if(myTileset.checkRight(I.xTile,I.yTile) && I.movement !=1){
+					I.right = Math.random();
+				}
+				if(myTileset.checkLeft(I.xTile,I.yTile) && I.movement != 2){
+					I.left = Math.random();
+				}
+				if(myTileset.checkUp(I.xTile,I.yTile) && I.movement != 4){
+					I.up = Math.random();
+				}
+			}
+
+			var tempDist = Math.min(I.up,I.down,I.left,I.right);
+			//Make sure we actually found a smallest distance
+			if(tempDist != 9999){
+				//Now assign the shortest direction to the next direction
+				//Next time pacman changes diretion it will be to nextDirection
+				switch(tempDist){
+					case I.up:
+						I.nextDirection = 3;
+						break;
+					case I.down:
+						I.nextDirection = 4;
+						break;
+					case I.left:
+						I.nextDirection = 1;
+						break;
+					case I.right:
+						I.nextDirection = 2;
+						break;
+				}
+			}
+			/*Switch to nextDirection at the right time
+			 *If the direction we are going in is not nextDirection
+			 *We want to go in nextDirection as soon as possible
+			 */
+			else{
+				//If your next direction is up and you have the chance to switch do so
+				if(myTileset.checkUp(I.xTile,I.yTile) && I.nextDirection != 3){
+					I.movement = I.nextDirection;
+				}
+				//If your next direction is down and you have the chance to switch do so
+				if(myTileset.checkDown(I.xTile,I.yTile) && I.nextDirection != 4){
+					I.movement = I.nextDirection;
+				}
+				//If your next direction is right and you have the chance to switch do so
+				if(myTileset.checkRight(I.xTile,I.yTile) && I.nextDirection != 2){
+					I.movement = I.nextDirection;
+				}
+				//If your next direction is left and you have the chance to switch do so
+				if(myTileset.checkLeft(I.xTile,I.yTile) && I.nextDirection != 1){
+					I.movement = I.nextDirection;
+				}
+			}
+		}
 	}
 
 	//How we draw the ghost is totally determined by the scared sprite

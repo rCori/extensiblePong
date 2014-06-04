@@ -276,6 +276,7 @@ function player(){
 				clyde.velocity = 0.5*SPEEDCONSTANT;
 			}
 		}
+		//If any of the ghosts are floating eyeballs, this needs to be overridden
 		if(blinky.scared == 2) blinky.velocity = 3 * SPEEDCONSTANT;
 		if(inky.scared == 2) inky.velocity = 3 * SPEEDCONSTANT;
 		if(pinky.scared == 2) pinky.velocity = 3 * SPEEDCONSTANT;

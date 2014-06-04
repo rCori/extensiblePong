@@ -17,7 +17,7 @@ var canvas = canvasElement.get(0).getContext("2d");
 var myCanv = canvasElement.get(0);
 canvasElement.appendTo('body');
 
-/*Game runs at 30 frames per second.
+/* Game runs at 30 frames per second.
  * Changing this would actually change
  * the speed of the game
  */
@@ -77,6 +77,7 @@ setInterval(function(){
 	update();
 }, 1000/FPS);
 
+scatter = false;
 //Function for update game logic and drawing
 function update(){
 	//if the game is over don't do any of this
@@ -239,8 +240,6 @@ function debug(ISDEBUG){
 		canvas.fillText("blinky scared = "+blinky.scared,200,90);
 		canvas.fillText("inky target.x = "+inky.target.x,200,100);
 		canvas.fillText("inky target.y = "+inky.target.y,200,110);
-		canvas.fillText("myAnimation.currFrame = "+myAnimation.currFrame,200,120);
-		canvas.fillText("myAnimation.currSprite = "+myAnimation.currSprite,200,130);
 	}
 }
 
@@ -521,6 +520,8 @@ function initValues(startOver){
 	pacman.xTile = startTiles.xTile;
 	pacman.yTile = startTiles.yTile;
 	pacman.movement = 0;
+	pacman.nextDirection = 0;
+	pacman.rotate = 0;
 
 	//Reset all the ghosts to their starting position
 	blinky.x = 7*16;
@@ -538,6 +539,10 @@ function initValues(startOver){
 	clyde.x = 20*16;
 	clyde.y = 32*16;
 	clyde.scared = 0;
+
+	//Set the ghost scatter values
+	scatter = false;
+	ghostTimer = CHASETIMER * 30;
 
 	/* We need to set more initial values
 	 * This is is if the game has ended completly
@@ -568,9 +573,6 @@ function initValues(startOver){
 		$( "#timeAmount" ).val(0);
 		$("#timeSlider").slider("value",0);
 
-		//Set the ghost scatter values
-		scatter = false;
-		ghostTimer = 0;
 	} 
 }
 
