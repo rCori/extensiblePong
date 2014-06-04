@@ -27,7 +27,7 @@ var FPS = 30;
 var timeout = 0;
 
 //My big generic debug flag
-var DEBUG = false;
+var DEBUG = true;
 
 //gameOver means you are looking at an intro screen and the game isn't going
 var gameOver = true;

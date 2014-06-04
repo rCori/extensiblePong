@@ -108,15 +108,12 @@ function ghost(x,y,ghostSprite,target){
 			}
 			//If we aren't dealing with the ghostHouse just keep going
 			if(I.house == 0){
-				//if((I.scared == 0)||(I.scared == 2)){
+				if((I.scared == 0)||(I.scared == 2)){
 					I.singleLookaheadSearch(I.target);
-				//}
-				/*
+				}	
 				else if(I.scared == 1){
-					console.log("ahh")
 					I.randomMovement();
 				}
-				*/
 				if(I.ai==="blinky"){
 					I.blinkyFindTarget();
 				}
@@ -305,6 +302,11 @@ function ghost(x,y,ghostSprite,target){
 
 	//When the ghosts are scared, they are supposed to move around randomly
 	I.randomMovement = function(){
+		//assign these huge distances
+		I.up = 9999;
+		I.down = 9999;
+		I.left = 9999;
+		I.right = 9999;
 		if(I.movement == I.nextDirection){
 			//If you are going left and you can continue going left
 			if((I.movement == 1) && (myTileset.checkLeft(I.xTile,I.yTile))){
@@ -394,25 +396,26 @@ function ghost(x,y,ghostSprite,target){
 			 *If the direction we are going in is not nextDirection
 			 *We want to go in nextDirection as soon as possible
 			 */
-			else{
-				//If your next direction is up and you have the chance to switch do so
-				if(myTileset.checkUp(I.xTile,I.yTile) && I.nextDirection != 3){
-					I.movement = I.nextDirection;
-				}
-				//If your next direction is down and you have the chance to switch do so
-				if(myTileset.checkDown(I.xTile,I.yTile) && I.nextDirection != 4){
-					I.movement = I.nextDirection;
-				}
-				//If your next direction is right and you have the chance to switch do so
-				if(myTileset.checkRight(I.xTile,I.yTile) && I.nextDirection != 2){
-					I.movement = I.nextDirection;
-				}
-				//If your next direction is left and you have the chance to switch do so
-				if(myTileset.checkLeft(I.xTile,I.yTile) && I.nextDirection != 1){
-					I.movement = I.nextDirection;
-				}
+			}
+		else{
+			//If your next direction is up and you have the chance to switch do so
+			if(myTileset.checkUp(I.xTile,I.yTile) && I.nextDirection != 3){
+				I.movement = I.nextDirection;
+			}
+			//If your next direction is down and you have the chance to switch do so
+			if(myTileset.checkDown(I.xTile,I.yTile) && I.nextDirection != 4){
+				I.movement = I.nextDirection;
+			}
+			//If your next direction is right and you have the chance to switch do so
+			if(myTileset.checkRight(I.xTile,I.yTile) && I.nextDirection != 2){
+				I.movement = I.nextDirection;
+			}
+			//If your next direction is left and you have the chance to switch do so
+			if(myTileset.checkLeft(I.xTile,I.yTile) && I.nextDirection != 1){
+				I.movement = I.nextDirection;
 			}
 		}
+		
 	}
 
 	//How we draw the ghost is totally determined by the scared sprite
@@ -433,123 +436,123 @@ function ghost(x,y,ghostSprite,target){
 	*/
 	I.visualize = function(color){
 
-		canvas.strokeStyle = color;
-		canvas.fillStyle = color;
-		var extraRightCost = 0;
-		var extraDownCost = 0;
-
-		if(I.movement == 1) {extraRightCost = -1;}
-		if(I.movement == 2) {extraRightCost = 1;}
-		if(I.movement == 3) {extraDownCost = -1;}
-		if(I.movement == 4) {extraDownCost = 1;}
-
-		//If we calculated a right path
-		if(I.right != 9999){
-			canvas.beginPath();
-			canvas.moveTo((I.xTile+extraRightCost+1)*16+8,(I.yTile+extraDownCost)*16+8);
-			canvas.lineTo(I.target.x*16+8, I.target.y*16+8);
-			canvas.stroke();
-			canvas.fillRect((I.xTile+extraRightCost+1)*16,(I.yTile+extraDownCost)*16,16,16);
-
-		}
-		//If we calculated a left path
-		if(I.left != 9999){
-			canvas.beginPath();
-			canvas.moveTo((I.xTile+extraRightCost-1)*16+8,(I.yTile+extraDownCost)*16+8);
-			canvas.lineTo(I.target.x*16+8, I.target.y*16+8);
-			canvas.stroke();
-			canvas.fillRect((I.xTile+extraRightCost-1)*16,(I.yTile+extraDownCost)*16,16,16);
-
-		}
-		//If we calculated an up path
-		if(I.up != 9999){
-			canvas.beginPath();
-			canvas.moveTo((I.xTile+extraRightCost)*16+8,(I.yTile+extraDownCost-1)*16+8);
-			canvas.lineTo(I.target.x*16+8, I.target.y*16+8);
-			canvas.stroke();
-			canvas.fillRect((I.xTile+extraRightCost)*16,(I.yTile+extraDownCost-1)*16,16,16);
-
-		}
-		//If we calculated a down path
-		if(I.down != 9999){
-			canvas.beginPath();
-			canvas.moveTo((I.xTile+extraRightCost)*16+8,(I.yTile+extraDownCost+1)*16+8);
-			canvas.lineTo(I.target.x*16+8, I.target.y*16+8);
-			canvas.stroke();
-			canvas.fillRect((I.xTile+extraRightCost)*16,(I.yTile+extraDownCost+1)*16,16,16);
-
-		}
-
-		//Now the ghost speficic parts, differentiate by ai name
-
-		//PINKY
-		if(I.ai === "pinky" && scatter == false && I.scared == 0){
-			canvas.lineWidth = 3;
-			canvas.beginPath();
-			canvas.moveTo(pacman.xTile*16+8, pacman.yTile*16+8);
-			//pointing up
-			if(pacman.movement == 3){
-				canvas.lineTo(pacman.xTile*16+8, (pacman.yTile-PINKYOFFSET)*16+8);
-				canvas.lineTo((pacman.xTile-PINKYOFFSET)*16+8, (pacman.yTile-PINKYOFFSET)*16+8);
-			}
-			//pointing right
-			else if(pacman.movement == 2){
-				canvas.lineTo((pacman.xTile+PINKYOFFSET)*16+8, pacman.yTile*16+8);
-			}
-			//pointing left
-			else if(pacman.movement == 1){
-				canvas.lineTo((pacman.xTile-PINKYOFFSET)*16+8, pacman.yTile*16+8);
-			}
-			//pointing down
-			else if(pacman.movement == 4){
-				canvas.lineTo(pacman.xTile*16+8, (pacman.yTile+PINKYOFFSET)*16+8);
-			}
-			canvas.stroke();
-			canvas.lineWidth = 1;
-
-		}
-
-		//INKY
-		if(I.ai === "inky" && scatter == false && I.scared == 0){
-			canvas.lineWidth = 3;
-			canvas.beginPath();
-			canvas.moveTo(blinky.xTile*16+8,blinky.yTile*16+8);
-			canvas.lineTo(I.target.x*16+8,I.target.y*16+8);
-			canvas.stroke();
-
-
-			//Draw a little dot at the offset point
-			canvas.beginPath();
-			//pointing up
-			if(pacman.movement == 3){
-      			canvas.arc((pacman.xTile-2)*16+8, (pacman.yTile-2)*16+8, 6, 0, 2 * Math.PI, false);
-      		}
-      		//pointing left
-      		else if(pacman.movement == 1){
-      			canvas.arc((pacman.xTile-2)*16+8, pacman.yTile*16+8, 6, 0, 2 * Math.PI, false);
-      		}
-      		//pointing right
-      		else if(pacman.movement == 2){
-      			canvas.arc((pacman.xTile+2)*16+8, pacman.yTile*16+8, 6, 0, 2 * Math.PI, false);
-      		}
-      		//pointing down
-      		else if(pacman.movement == 4){
-      			canvas.arc(pacman.xTile*16+8, (pacman.yTile+2)*16+8, 6, 0, 2 * Math.PI, false);
-      		}
-      		canvas.fillStyle = color;
-      		canvas.fill();
-      		canvas.stroke();
-
-
-			canvas.lineWidth = 1;
-		}
-		//CLYDE
-		if(I.ai === "clyde" && scatter == false && I.scared == false){
+		//There is no AI to visualize if we are scared
+		if(I.scared != 1){
 			canvas.strokeStyle = color;
 			canvas.fillStyle = color;
-			canvas.beginPath();
-			canvas.arc(pacman.xLoc,pacman.yLoc,16*CLYDECIRCLE,0,2*Math.PI);
-			canvas.stroke();
+			var extraRightCost = 0;
+			var extraDownCost = 0;
+
+			if(I.movement == 1) {extraRightCost = -1;}
+			if(I.movement == 2) {extraRightCost = 1;}
+			if(I.movement == 3) {extraDownCost = -1;}
+			if(I.movement == 4) {extraDownCost = 1;}
+
+			//If we calculated a right path
+			if(I.right != 9999){
+				canvas.beginPath();
+				canvas.moveTo((I.xTile+extraRightCost+1)*16+8,(I.yTile+extraDownCost)*16+8);
+				canvas.lineTo(I.target.x*16+8, I.target.y*16+8);
+				canvas.stroke();
+				canvas.fillRect((I.xTile+extraRightCost+1)*16,(I.yTile+extraDownCost)*16,16,16);
+
+			}
+			//If we calculated a left path
+			if(I.left != 9999){
+				canvas.beginPath();
+				canvas.moveTo((I.xTile+extraRightCost-1)*16+8,(I.yTile+extraDownCost)*16+8);
+				canvas.lineTo(I.target.x*16+8, I.target.y*16+8);
+				canvas.stroke();
+				canvas.fillRect((I.xTile+extraRightCost-1)*16,(I.yTile+extraDownCost)*16,16,16);
+
+			}
+			//If we calculated an up path
+			if(I.up != 9999){
+				canvas.beginPath();
+				canvas.moveTo((I.xTile+extraRightCost)*16+8,(I.yTile+extraDownCost-1)*16+8);
+				canvas.lineTo(I.target.x*16+8, I.target.y*16+8);
+				canvas.stroke();
+				canvas.fillRect((I.xTile+extraRightCost)*16,(I.yTile+extraDownCost-1)*16,16,16);
+			}	
+			//If we calculated a down path
+			if(I.down != 9999){
+				canvas.beginPath();
+				canvas.moveTo((I.xTile+extraRightCost)*16+8,(I.yTile+extraDownCost+1)*16+8);
+				canvas.lineTo(I.target.x*16+8, I.target.y*16+8);
+				canvas.stroke();
+				canvas.fillRect((I.xTile+extraRightCost)*16,(I.yTile+extraDownCost+1)*16,16,16);
+
+			}
+
+			//Now the ghost speficic parts, differentiate by ai name
+
+			//PINKY
+			if(I.ai === "pinky" && scatter == false && I.scared == 0){
+				canvas.lineWidth = 3;
+				canvas.beginPath();
+				canvas.moveTo(pacman.xTile*16+8, pacman.yTile*16+8);
+				//pointing up
+				if(pacman.movement == 3){
+					canvas.lineTo(pacman.xTile*16+8, (pacman.yTile-PINKYOFFSET)*16+8);
+					canvas.lineTo((pacman.xTile-PINKYOFFSET)*16+8, (pacman.yTile-PINKYOFFSET)*16+8);
+				}
+				//pointing right
+				else if(pacman.movement == 2){
+					canvas.lineTo((pacman.xTile+PINKYOFFSET)*16+8, pacman.yTile*16+8);
+				}
+				//pointing left
+				else if(pacman.movement == 1){
+					canvas.lineTo((pacman.xTile-PINKYOFFSET)*16+8, pacman.yTile*16+8);
+				}
+				//pointing down
+				else if(pacman.movement == 4){
+					canvas.lineTo(pacman.xTile*16+8, (pacman.yTile+PINKYOFFSET)*16+8);
+				}
+				canvas.stroke();
+				canvas.lineWidth = 1;
+
+			}
+
+			//INKY
+			if(I.ai === "inky" && scatter == false && I.scared == 0){
+				canvas.lineWidth = 3;
+				canvas.beginPath();
+				canvas.moveTo(blinky.xTile*16+8,blinky.yTile*16+8);
+				canvas.lineTo(I.target.x*16+8,I.target.y*16+8);
+				canvas.stroke();
+
+
+				//Draw a little dot at the offset point
+				canvas.beginPath();
+				//pointing up
+				if(pacman.movement == 3){
+      				canvas.arc((pacman.xTile-2)*16+8, (pacman.yTile-2)*16+8, 6, 0, 2 * Math.PI, false);
+      			}
+      			//pointing left
+      			else if(pacman.movement == 1){
+      				canvas.arc((pacman.xTile-2)*16+8, pacman.yTile*16+8, 6, 0, 2 * Math.PI, false);
+      			}
+      			//pointing right
+      			else if(pacman.movement == 2){
+      				canvas.arc((pacman.xTile+2)*16+8, pacman.yTile*16+8, 6, 0, 2 * Math.PI, false);
+      			}
+      			//pointing down
+      			else if(pacman.movement == 4){
+      				canvas.arc(pacman.xTile*16+8, (pacman.yTile+2)*16+8, 6, 0, 2 * Math.PI, false);
+      			}
+      			canvas.fillStyle = color;
+      			canvas.fill();
+      			canvas.stroke();
+				canvas.lineWidth = 1;
+			}
+			//CLYDE
+			if(I.ai === "clyde" && scatter == false && I.scared == false){
+				canvas.strokeStyle = color;
+				canvas.fillStyle = color;
+				canvas.beginPath();
+				canvas.arc(pacman.xLoc,pacman.yLoc,16*CLYDECIRCLE,0,2*Math.PI);
+				canvas.stroke();
+			}
 		}
 
 	}
